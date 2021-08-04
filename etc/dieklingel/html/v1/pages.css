@@ -1,0 +1,45 @@
+::-webkit-scrollbar {
+    display: none;
+}
+
+.pages {
+    display: flex;
+    overflow-x: scroll;
+    width: 100%;
+    height: 100%;
+    scroll-snap-type: x mandatory;
+}
+
+.page {
+    width: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    overflow-y: scroll;
+    scroll-snap-type: y proximity;
+}
+
+.page > * {
+    scroll-snap-align: center;
+}
+
+iframe {
+    width: 100%;
+    outline: none;
+    border: none;
+    box-sizing: border-box;
+    display: block;
+    /*scroll-snap-align: center; */
+}
+
+.screensaver > * {
+    pointer-events: none;
+}
+
+.symbol {
+    pointer-events: none;
+    
+}
+
+#mainpage {
+    background-color: brown;
+}

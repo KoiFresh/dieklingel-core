@@ -1,0 +1,34 @@
+[
+    {
+        "devicename": "3bda9c6c33c41d77",
+        "os": "Android",
+        "server": "googleapis.com",
+        "sound": "normal_sound",
+        "token": "c8Fvum8irLg:APA91bEtLo4j3MSjcly0c-aCAi2z5mkA3pcSZUkMvK0tEidxU2tMEb3t3ScaEgJSe89ZAInHkfhiZid98CUkmCzEpd6L6cxQO5fKpBKoZlq7jRFLYwPlyQdWdMhu1hWAiT2PulajFzU8",
+        "username": "vm-kai.mayer"
+    },
+    {
+        "devicename": "74939ED6-8725-400E-B095-98B0E85C8676",
+        "os": "iOS",
+        "server": "apple.com",
+        "sound": "normal_sound",
+        "token": "6EB948514365D28B56C6773FE8C44EF6AD22BF603065A03EA505199192267DA8",
+        "username": "vm-kai.mayer"
+    },
+    {
+        "devicename": "4719A645-AE1C-4279-8E25-E58317F6E914",
+        "os": "iOS",
+        "server": "apple.com",
+        "sound": "normal_sound",
+        "token": "B4E0D01090A3EB71A04D8AEDBDC5D4ABBD4B439BACF0AC86CD012305A9C4920F",
+        "username": "vm-kai.mayer"
+    },
+    {
+        "devicename": "A7168F37-760B-4E3D-BEA7-6D99FBEB4605",
+        "os": "iOS",
+        "server": "apple.com",
+        "sound": "normal_sound",
+        "token": "",
+        "username": "vm-kai.mayer"
+    }
+]

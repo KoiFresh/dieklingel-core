@@ -1,0 +1,12 @@
+[
+    {
+        "displayname":"Kai Mayer",
+        "username":"vm-kai.mayer",
+        "password":"Kai",
+	"doorunit":"vm-kai.mayer-dieklingel",
+        "sip":{
+            "domain":"dieklingel.com",
+            "port":6050
+        }
+    }
+]

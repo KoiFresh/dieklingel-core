@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <!--<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height"/>-->
+        <meta name="viewport" content="width=600, height=1024">
+        <title>dieKlingel GUI</title>
+        <script src="index.js"></script>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <div class="view homescreen">
+            <div class="pages">
+                <div id="mainpage" class="page">
+                </div>
+                <div id="lockpage" class="page">
+                    <div class="passcode">
+                        <div class="digit"></div>
+                        <div class="digit"></div>
+                        <div class="digit"></div>
+                        <div class="digit"></div>
+                        <div class="digit"></div>
+                        <div class="digit"></div>
+                    </div>
+                    <div class="passcodefield"> 
+                        <button onclick="addDigit(this)">1</button>
+                        <button onclick="addDigit(this)">2</button>
+                        <button onclick="addDigit(this)">3</button>
+                        <button onclick="addDigit(this)">4</button>
+                        <button onclick="addDigit(this)">5</button>
+                        <button onclick="addDigit(this)">6</button>
+                        <button onclick="addDigit(this)">7</button>
+                        <button onclick="addDigit(this)">8</button>
+                        <button onclick="addDigit(this)">9</button>
+                        <a></a>
+                        <button id="hiddenButton" onclick="addDigit(this)">0</button>
+                        <a onclick="removeDigit()">remove</a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

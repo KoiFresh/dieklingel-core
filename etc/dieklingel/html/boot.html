@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Titel</title>
+	</head>
+	<script>
+		window.onload = () => {
+			console.log("Boot...");
+			check();
+			
+		}
+		
+		function check() {
+			checkServerState("http://127.0.0.1:8331", () => {
+			
+				window.location = "http://127.0.0.1:8331/engine.html?r=35&t=20";
+			}, () => {
+				setTimeout(() => {
+						check();
+				}, 500);
+			});
+		
+		}
+		
+		
+		function checkServerState(url, onopend, onclosed) {
+			var options = {
+				mode:"no-cors"
+			}
+			
+			fetch(url, options)
+				.then(() => {
+					onopend();
+				})
+				.catch(() => {
+					onclosed();
+				});
+		}		
+	</script>
+	<body style="background-color: black">
+		
+	</body>
+</html>

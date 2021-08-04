@@ -1,0 +1,9 @@
+#!/bin/bash
+killall chrome
+killall chromium
+killall chromium-browser
+rm -r -f /home/pi/.cache/chromium/
+python3 -m http.server --bind 127.0.0.1 --directory /etc/dieklingel/html 8081 2>/dev/null &
+#python3 -m http.server --bind 0.0.0.0 --directory /etc/dieklingel/html 8081 2> /dev/null &
+#chromium-browser --disable-pinch 'http://localhost:8081/engine.html?r=35&t=20'
+chromium-browser --disable-pinch --window-position=1,1 --window-size=600,1024 --kiosk 'http://localhost:8081/engine.html?r=35&t=18'

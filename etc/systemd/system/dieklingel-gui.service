@@ -1,0 +1,15 @@
+[Unit]
+Description=dieklingel-gui
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=pi
+Environment="DISPLAY=:0"
+ExecStart=/etc/dieklingel/html/start.gui
+
+[Install]
+WantedBy=multi-user.target
