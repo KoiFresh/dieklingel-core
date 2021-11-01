@@ -20,6 +20,7 @@ namespace dieklingel
         DisplayState,
         Log,
         Unlock,
+        SecureUnlock,
         EnterPasscode,
         Call,
         Register,
@@ -36,6 +37,7 @@ namespace dieklingel
             case DisplayState: return  "display-state";
             case Log: return "log";
             case Unlock: return  "unlock";
+            case SecureUnlock: return "secure-unlock";
             case EnterPasscode : return "enter-passcode";
             case Call: return  "call";
             case Register: return  "register";

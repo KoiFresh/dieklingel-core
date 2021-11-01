@@ -1,0 +1,47 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "dieKlingel Build Release",
+        "type": "shell",
+        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake ../ && make -j4",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "dieKlingel Build Debug",
+        "type": "shell",
+        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug ../ && make -j4",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "dieKlingel(WiringPi) Build Release",
+        "type": "shell",
+        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake DEFINES+=WIRINGPI ../ && make -j4",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "dieKlingel(WiringPi) Build Debug",
+        "type": "shell",
+        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug DEFINES+=DEBUG DEFINES+=WIRINGPI ../ && make -j4",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      }
+    ]
+  }

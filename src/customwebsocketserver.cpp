@@ -1,11 +1,16 @@
+/**
+ * @decprecated
+ * declared as deprecated since 2021-11-01 by Kai Mayer
+ **/
 #include <QWebSocketServer>
 #include <QWebSocket>
 #include "customwebsocketserver.h"
 
 customwebsocketserver::customwebsocketserver(QHostAddress address, int port, QObject *parent) : QObject(parent), websocketserver(new QWebSocketServer(QStringLiteral("dieklingel"), QWebSocketServer::NonSecureMode, this))
 {
-    if(websocketserver->listen(address, port))
+    if(websocketserver->listen(address , port))
     {
+        qDebug() << "DUP on Port: " << port;
          connect(websocketserver, &QWebSocketServer::newConnection, this, &customwebsocketserver::onNewConnection);
     }
 }

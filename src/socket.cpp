@@ -1,3 +1,7 @@
+/**
+ * @decprecated
+ * declared as deprecated since 2021-11-01 by Kai Mayer
+ **/
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QObject>

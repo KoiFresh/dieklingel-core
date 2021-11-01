@@ -1,3 +1,7 @@
+/**
+ * @decprecated
+ * declared as deprecated since 2021-11-01 by Kai Mayer
+ **/
 #ifndef SOCKET_H
 #define SOCKET_H
 

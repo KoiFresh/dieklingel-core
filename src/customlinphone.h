@@ -1,3 +1,7 @@
+/**
+ * @decprecated
+ * declared as deprecated since 2021-11-01 by Kai Mayer
+ **/
 #ifndef CUSTOMLINPHONE_H
 #define CUSTOMLINPHONE_H
 
@@ -29,13 +33,15 @@ signals:
 private:
     void iterate();
     QTimer* timer;
-    LinphoneCoreVTable vtable = {};
-    LinphoneCore *lc;
+    static LinphoneCoreVTable vtable;// = {};
+    static LinphoneCore *lc;
     LinphoneCall *lcall = NULL;
     LinphoneCallParams *cp;
     LinphoneProxyConfig* proxy_cfg;
     LinphoneAddress *from;
     LinphoneAuthInfo *info;
+    LinphoneConference *conf;
+    LinphoneConferenceParams *confp;
     bool m_isInOutgoingInCall;
     bool m_isInIncommingCall;
     static customlinphone* instance;

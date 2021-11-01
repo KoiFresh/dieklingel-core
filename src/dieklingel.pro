@@ -27,10 +27,11 @@ LIBS += -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lope
 LIBS += -lcurl
 LIBS += -llinphone
 LIBS += -lcryptopp
-contains(DEFINES, Q_PROCESSOR_ARM_V7) {
+LIBS += -lbctoolbox
+
+contains(DEFINES, WIRINGPI) {
    LIBS += -lwiringPi
 }
-
 
 
 SOURCES += \
@@ -39,8 +40,16 @@ SOURCES += \
         cryptonia.cpp \
         customlinphone.cpp \
         customwebsocketserver.cpp \
+        dupnotification.cpp \
+        dupserver.cpp \
+        ffmpegstream.cpp \
+        io.cpp \
         main.cpp \
-        socket.cpp
+        sipclient.cpp \
+        sipuri.cpp \
+        socket.cpp \
+        system.cpp \
+        toolbox.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -55,6 +64,14 @@ HEADERS += \
     customwebsocketserver.h \
     dieklingel.h \
     dieklingelcontext.h \
-    socket.h
+    dupnotification.h \
+    dupserver.h \
+    ffmpegstream.h \
+    io.h \
+    sipclient.h \
+    sipuri.h \
+    socket.h \
+    system.h \
+    toolbox.h
 
-
+#DEFINES += DEBUG

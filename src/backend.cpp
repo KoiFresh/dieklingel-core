@@ -1,3 +1,7 @@
+/**
+ * @decprecated
+ * declared as deprecated since 2021-11-01 by Kai Mayer
+ **/
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QtConcurrent>
@@ -171,7 +175,6 @@ dieklingel::backend::backend(QObject *parent) : QObject(parent)
         qDebug() << "connected";
         connect(ping, &QTimer::timeout,[=](){
             pushclient->ping();
-            qDebug() << "ping";
         });
         ping->start();
     });
@@ -437,8 +440,9 @@ void dieklingel::backend::signClicked(QJsonObject object)
     {
         socket::log("Fritz!Box Support is enabled", "info", "backend.cpp signClicked(QJsonObject object)");
         camera.release();
-        QJsonArray numbers = object["Sip"].toArray();
-        linphone->call("sip:" + numbers[0].toString() + "@" + config->value("Phone/Domain", "dieklingel.com").toString() + ":" + config->value("Phone/Port").toString());
+        QJsonArray numbers = object["sip"].toArray();
+        //linphone->call("sip:" + numbers[0].toString() + "@" + config->value("Phone/Domain", "dieklingel.com").toString() + ":" + config->value("Phone/Port").toString());
+        linphone->call("sip:" + QString("vm-kai.mayer") + "@" + config->value("Phone/Domain", "dieklingel.com").toString() + ":" + config->value("Phone/Port").toString());
     }
 }
 
