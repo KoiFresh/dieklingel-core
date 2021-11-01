@@ -24,12 +24,12 @@ Bevor mit der Installation begonnen wird, sollte die Umgebung vollständig eingr
 Laden Sie die Version 1.0-1 herunter: 
 
 ```bash
-wget https://dieklingel.com/software/download/$(dpkg --print-architecture)/dieklingel_1.0-1_$(dpkg --print-architecture).deb
+wget https://dieklingel.com/software/download/$(dpkg --print-architecture)/dieklingel_latest_$(dpkg --print-architecture).deb
 ```
 und installieren Sie diese:
 
 ```bash
-sudo apt-get update && sudo apt-get install ./dieklingel_1.1-1_$(dpkg --print-architecture).deb
+sudo apt-get update && sudo apt-get install ./dieklingel_latest_$(dpkg --print-architecture).deb
 ```
 
 nach der Installation üperprüfen Sie ob der gewählte Benutzer zu Ihrem System passt
