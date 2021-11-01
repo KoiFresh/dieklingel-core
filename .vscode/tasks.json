@@ -16,7 +16,7 @@
       {
         "label": "dieKlingel Build Debug",
         "type": "shell",
-        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug ../ && make -j4",
+        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug DEFINES+=DEBUG ../ && make -j4",
         "group": "build",
         "presentation": {
           "reveal": "always",
