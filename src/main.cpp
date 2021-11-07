@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     //dieklingel::socket::initialize(false); // false -> Protokolle und Logs werden nur über den Socket und nicht auf der Konsole ausgegeben
     //dieklingel::backend backend;
+#ifdef DEBUG
+    qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Compield with debug log";
+#endif
     dieklingel::Io::init();
     static QSettings* config = new QSettings("/etc/dieklingel/config.ini", QSettings::NativeFormat);
 
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
 
         } catch (QException ex) {
 #ifdef DEBUG
-            qDebug() << "[main] There are some errors in your Phone/Register config";
+            qDebug() << "[DEBUG][main.cpp, main()] \r\n\t There are some errors in your Phone/Register config";
 #endif
         }
     }
@@ -69,7 +72,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(dupserver, &dieklingel::dup::Server::onNewNotification, [dupserver](dieklingel::dup::Notification notification, bool responseRequested){
 #ifdef DEBUG
-        qDebug() << "[DEBUG][main] context: " << dieklingel::ContextAsQString(notification.context());
+        qDebug() << "[DEBUG][main.cpp, main()] \r\n\t context: " << dieklingel::ContextAsQString(notification.context());
 #endif
         dieklingel::dup::Notification response = dieklingel::dup::Notification::fromQJson(dieklingel::Context::Response, QJsonObject());
         switch (notification.context()) {
@@ -82,15 +85,18 @@ int main(int argc, char *argv[])
                 if(dieklingel::System::hashPow(notification.dataObject()["passcode"].toString(), 2) != g_doorsecret)
                 {
 #ifdef DEBUG
-                    qDebug() << "[DEBUG][main] The passcode is not correct ";
+                    qDebug() << "[DEBUG][main.cpp, main()] \r\n\t The passcode is not correct ";
 #endif
                    break;
                 }
             case dieklingel::Context::SecureUnlock:
+            {
                 dieklingel::System::execute("unlock");
-                response = dieklingel::dup::Notification::fromNotification(dieklingel::Context::Unlock, notification);
+                dieklingel::dup::Notification notify = dieklingel::dup::Notification::empty();
+                response = dieklingel::dup::Notification::fromNotification(dieklingel::Context::Unlock, notify);
                 dupserver->send(response);
                 break;
+            }
             case dieklingel::Context::Unlock:
                 break;
             case dieklingel::Context::DeviceUpdate:
@@ -219,6 +225,7 @@ int main(int argc, char *argv[])
                 break;
             }
             default:
+                dupserver->send(notification);
                 break;
         }
         if(responseRequested)
@@ -232,19 +239,19 @@ int main(int argc, char *argv[])
         switch (state) {
             case sip::SessionState::Waiting:
 #if DEBUG
-                qDebug() << "[DEBUG][main] Session State Waiting";
+                qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Session State Waiting";
 #endif
                 break;
             case sip::SessionState::Active:
                 dieklingel::System::execute("call-start");
 #if DEBUG
-                qDebug() << "[DEBUG][main] Session State Active";
+                qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Session State Active";
 #endif
                 break;
             case sip::SessionState::Ended:
                 dieklingel::System::execute("call-end");
 #if DEBUG
-                qDebug() << "[DEBUG][main] Session State Ended";
+                qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Session State Ended";
 #endif
                 break;
         }

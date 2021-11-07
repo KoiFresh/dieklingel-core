@@ -23,9 +23,9 @@ void dieklingel::Io::init()
 #endif
 
 #ifdef WIRINGPI
-    qDebug() << "[io, init] Compiled with wiring pi";
+    qDebug() << "[INFO][io.cpp, init()] \r\n\t Compiled with wiring pi";
 #else
-    qDebug() << "[io, init] Compiled without wiring pi";
+    qDebug() << "[INFO][io.cpp, init()] \r\n\t Compiled without wiring pi";
 #endif
     m_instance = new Io();
     m_iteration = new QTimer();

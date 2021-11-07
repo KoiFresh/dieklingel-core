@@ -55,7 +55,7 @@ void sip::Client::m_initialize()
     if(nullptr == m_linphoneCore)
     {
 #if DEBUG
-        qDebug() << "[DEBUG] starting to initialize the Linphone Core and the iteration timer";
+        qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t starting to initialize the Linphone Core and the iteration timer";
 #endif
         m_vtable.call_state_changed = m_callStateChanged;
         m_vtable.call_created = m_callCreated;
@@ -63,7 +63,9 @@ void sip::Client::m_initialize()
         linphone_core_set_stun_server(m_linphoneCore, "stun1.l.google.com:19302");
         //linphone_core_set_video_device(m_linphoneCore, linphone_core_get_video_devices(m_linphoneCore)[2]);
         //qDebug() << linphone_core_get_video_devices(m_linphoneCore)[0];
-        qDebug() << linphone_core_get_version();
+#if DEBUG
+        qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t " << "Linphone Core Version:" << linphone_core_get_version();
+#endif
         //qDebug() << linphone_core_get_ringback(m_linphoneCore);
         /*linphone_core_set_ringback(m_linphoneCore, NULL);
         linphone_core_set_ring(m_linphoneCore ,NULL);
@@ -76,7 +78,7 @@ void sip::Client::m_initialize()
         m_iteration_timer->start();
         connect(GetInstance(), &sip::Client::SessionStateChanged, sip::Client::m_sessionStateChanged);
 #if DEBUG
-        qDebug() << "[DEBUG] end of initialize Linphone Core \r\n";
+        qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t end of initialize Linphone Core";
 #endif
     }
 }
@@ -92,18 +94,13 @@ void sip::Client::m_iterate()
 
 void sip::Client::m_sessionStateChanged(sip::SessionState state)
 {
-    qDebug() << "session state changed";
     switch (state) {
-        case sip::SessionState::Waiting:
-            qDebug() << "Session state waiting";
             //linphone_core_set_playback_gain_db(m_linphoneCore, LINPHONE_CORE_PLAYBACK_GAIN_SILENT);
             break;
         case sip::SessionState::Active:
-            qDebug() << "Session state active";
             //linphone_core_set_playback_gain_db(m_linphoneCore, LINPHONE_CORE_PLAYBACK_GAIN_LOUD);
             break;
         case sip::SessionState::Ended:
-            qDebug() << "Session state ende";
             //linphone_core_set_playback_gain_db(m_linphoneCore, LINPHONE_CORE_PLAYBACK_GAIN_SILENT);
             break;
     }
@@ -121,7 +118,6 @@ void sip::Client::m_sessionStateChanged(sip::SessionState state)
 void sip::Client::m_callCreated(LinphoneCore *core, LinphoneCall *call)
 {
     // notihg to do after a call is created
-    qInfo() << "Call created";
 }
 
 void sip::Client::m_callStateChanged(LinphoneCore *core, LinphoneCall *call, LinphoneCallState callState, const char *message)
@@ -130,9 +126,7 @@ void sip::Client::m_callStateChanged(LinphoneCore *core, LinphoneCall *call, Lin
     LinphoneCall *current;
     switch(callState){
         case LinphoneCallIncomingReceived: // 1
-            qInfo() << "Incomming Call!";
-            qDebug() << linphone_core_get_conference_size(core); // new
-            qDebug() << linphone_core_in_call(core);
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] Incomming Call!";
             if(linphone_core_in_call(core))
             {
                 current = linphone_core_get_current_call(core);
@@ -154,28 +148,26 @@ void sip::Client::m_callStateChanged(LinphoneCore *core, LinphoneCall *call, Lin
 
             break;
         case LinphoneCallOutgoingInit: // 2
-            qInfo() << "Call Outgoing Init";
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] Call Outgoing Init";
             break;
        case LinphoneCallOutgoingRinging: // 4
-            qInfo() << "It is now ringing remotely !\n";
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] It is now ringing remotely !";
 
             break;
        case LinphoneCallOutgoingEarlyMedia: // 5
-            qInfo() << "Receiving some early media\n";
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] Receiving some early media";
             break;
        case LinphoneCallConnected: // 6
-            qInfo() << "We are connected !\n";
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] We are connected !";
             //linphone_core_add_to_conference(core, call);
-
             linphone_core_set_playback_gain_db(m_linphoneCore, 1.0f);
-            qDebug() << "GAIN:" << linphone_core_get_playback_gain_db(core);
+
             break;
        case LinphoneCallStreamsRunning: // 7
-            qInfo() << "Media streams established !\n";
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] Media streams established !";
 
             //linphone_core_enter_conference(core);
 
-            qDebug() << "GAIN:" << linphone_core_get_playback_gain_db(m_linphoneCore);
             emit m_instance->SessionStateChanged(SessionState::Active);
             if(linphone_core_get_calls_nb(core) > 1)
             {
@@ -192,7 +184,6 @@ void sip::Client::m_callStateChanged(LinphoneCore *core, LinphoneCall *call, Lin
             while(NULL != client)
             {
                 LinphoneCall *cl = static_cast<LinphoneCall*>(client->data);
-                qDebug() << cl << "CALL" << linphone_call_state_to_string(linphone_call_get_state(cl));
                 if(linphone_call_get_state(cl) == LinphoneCallState::LinphoneCallOutgoingEarlyMedia)
                 {
                     linphone_call_terminate(cl);
@@ -202,17 +193,17 @@ void sip::Client::m_callStateChanged(LinphoneCore *core, LinphoneCall *call, Lin
             //linphone_core_enter_conference(core);
         case LinphoneCallError: // 12
             //linphone_core_set_playback_gain_db(m_linphoneCore, 1);
-            qInfo() << "Call error !";
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] Call error !";
             break;
         case LinphoneCallEnd: // 13
-            qInfo() << "Call is terminated.\n";
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] Call is terminated.";
             if(linphone_core_get_conference_size(core) < 1)
             {
                 emit m_instance->SessionStateChanged(SessionState::Ended);
             }
             break;
         default:
-            qInfo() << "Unhandled notification " << callState;
+            qInfo() << "[INFO][sipclient.cpp, m_callStateChanged] Unhandled notification " << callState;
      }
 }
 
@@ -231,7 +222,7 @@ void sip::Client::Register(QString username, QString password, QString domain, i
         m_initialize();
     }
 #if DEBUG
-    qDebug() << "[DEBUG] starting to register new account";
+    qDebug() << "[DEBUG][sipclient.cpp, Register()] \r\n\t starting to register new account";
 #endif
     Uri *uri = new Uri(username, domain, port);
     LinphoneAuthInfo *info = linphone_auth_info_new(username.toLocal8Bit().data() , NULL, password.toLocal8Bit().data(), NULL, NULL, NULL);
@@ -253,7 +244,7 @@ void sip::Client::Register(QString username, QString password, QString domain, i
     {
         linphone_core_set_default_proxy_config(m_linphoneCore, proxyCfg);
 #ifdef DEBUG
-        qDebug() << "[DEBUG] register the account as default";
+        qDebug() << "[DEBUG][sipclient.cpp, Register()] \r\n\t register the account as default";
 #endif
     }
     m_linhponeCallParams = linphone_core_create_call_params(m_linphoneCore, m_linphoneCall);
@@ -266,7 +257,7 @@ void sip::Client::Register(QString username, QString password, QString domain, i
         //m_linphoneConference = linphone_core_create_conference_with_params(m_linphoneCore, m_linphoneConferenceParams);
     }
 #ifdef DEBUG
-   qDebug() << "[DEBUG] end of registering a new account";
+   qDebug() << "[DEBUG][sipclient.cpp, Register()] \r\n\t end of registering a new account";
 #endif
 }
 
@@ -300,7 +291,7 @@ void sip::Client::Call(QList<sip::Uri*> uris)
     if(!linphone_core_in_call(m_linphoneCore))
     {
 #ifdef DEBUG
-        qDebug() << "[DEBUG] start to add a call to a conference";
+        qDebug() << "[DEBUG][sipclient.cpp, Call()] \r\n\t start to add a call to a conference";
 #endif
         //linphone_core_enter_conference(m_linphoneCore);
         /**
@@ -333,16 +324,18 @@ void sip::Client::Call(QList<sip::Uri*> uris)
                 //linphone_call_set_output_audio_device(cl, nullptr);
                 linphone_core_set_playback_gain_db(m_linphoneCore, 1000.0f);
             } */
-
-            LinphoneAddress *address = linphone_core_create_address(m_linphoneCore, uris[0]->toQByteArray().data());
-            LinphoneCall *cl = linphone_core_invite_address_with_params(m_linphoneCore, address, m_linhponeCallParams);
-            linphone_core_set_playback_gain_db(m_linphoneCore, 1000.0f);
-            emit m_instance->SessionStateChanged(SessionState::Waiting);
+            if(uris.length() > 0) 
+            {
+                LinphoneAddress *address = linphone_core_create_address(m_linphoneCore, uris[0]->toQByteArray().data());
+                LinphoneCall *cl = linphone_core_invite_address_with_params(m_linphoneCore, address, m_linhponeCallParams);
+                linphone_core_set_playback_gain_db(m_linphoneCore, 1000.0f);
+                emit m_instance->SessionStateChanged(SessionState::Waiting);
+            }
         }
     }else
     {
 #ifdef DEBUG
-        qDebug() << "[DEBUG] cant initialize the call, because the default proxy is not registerd";
+        qDebug() << "[DEBUG][sipclient.cpp, Call()] \r\n\t cant initialize the call, because we are already in a call";
 #endif
     }
 }

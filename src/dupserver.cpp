@@ -8,7 +8,7 @@ dieklingel::dup::Server::Server(QHostAddress address, int port, QObject *parent)
     if(m_websocketserver->listen(address , port))
     {
 #ifdef DEBUG
-        qDebug() << "[dupserver] a local server is runnign on port: " << port;
+        qDebug() << "[DEBUG][dupserver.cpp, Server()] \r\n\t a local server is runnign on port: " << port;
 #endif
         connect(m_websocketserver, &QWebSocketServer::newConnection, this, &Server::m_onNewConnection);
     }
@@ -34,7 +34,9 @@ void dieklingel::dup::Server::subscribeForPushNotification(QString url, QString 
     m_key = cryptonia::Normalize(key, 32);
     m_pushclient = new QWebSocket();
     QUrl qurl(protocol + "://" + url);
+    m_pushclientUrl = qurl;
     connect(m_pushclient, &QWebSocket::connected, this, &Server::m_onPushClientConnected);
+    connect(m_pushclient, &QWebSocket::disconnected, this, &Server::m_onPushClientDisconnected);
     m_pushclient->open(qurl);
 }
 
@@ -72,9 +74,12 @@ void dieklingel::dup::Server::m_onTextMessageReceived(QString message)
  */
 void dieklingel::dup::Server::m_onSocketDisconnected()
 {
-    QWebSocket *socket = m_websocketserver->nextPendingConnection();
-    m_clients.removeAll(socket);
-    socket->deleteLater();
+    //QWebSocket *socket = m_websocketserver->nextPendingConnection();
+    QWebSocket *socket = qobject_cast<QWebSocket *>(sender());
+    if(NULL != socket) {
+        m_clients.removeAll(socket);
+        socket->deleteLater();
+    }
 }
 
 /**
@@ -83,6 +88,9 @@ void dieklingel::dup::Server::m_onSocketDisconnected()
  */
 void dieklingel::dup::Server::m_onPushClientConnected()
 {
+#if DEBUG
+    qDebug() << "[DEBUG][dupserver.cpp, m_onPushClientConnected()] \r\n\t the pushclient subscribtion succesfully connected to the server";
+#endif
     connect(m_pushclient, &QWebSocket::textMessageReceived, this, &dieklingel::dup::Server::m_onPushTextMessageReceived);
     QString iv = m_key.left(16);
     QString registry = cryptonia::Encrypt(m_username,m_key,iv);
@@ -120,7 +128,13 @@ void dieklingel::dup::Server::response(Notification notification)
  */
 void dieklingel::dup::Server::m_onPushClientDisconnected()
 {
+#if DEBUG
+    qDebug() << "[DEBUG][dupserver.cpp, m_onPushClientDisconnected()] \r\n\t the pushclient subscribtion disconnected from the server";
+#endif
     m_ping->stop();
+    QTimer::singleShot(5000, [=](){
+        m_pushclient->open(m_pushclientUrl);
+    });
 }
 
 /**

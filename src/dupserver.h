@@ -33,6 +33,7 @@ namespace dieklingel
             QWebSocketServer *m_websocketserver;
             QList<QWebSocket*> m_clients;
             QWebSocket *m_pushclient;
+            QUrl m_pushclientUrl;
             QString m_username;
             QString m_key;
             QTimer *m_ping;

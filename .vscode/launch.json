@@ -22,6 +22,26 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "dieKlingel Build and Launch",
+            "program": "${workspaceFolder}/src/build/dieklingel",
+            "args": [],
+            "request": "launch",
+            "type": "cppdbg",
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "dieKlingel Build Debug",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }
