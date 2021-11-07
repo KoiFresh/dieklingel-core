@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if [ $1 = "build" ]
+then
+    #zip -r interface.zip interface/
+    #zip -r viewport.zip viewport/
+    #zip -r ressources.zip ressources/
+fi
+
+opt="--kiosk"
+if [ $2 = "debug" ]
+then
+    opt=""
+fi
+
+path=/tmp/dieklingel-gui
+if [ $USER != root ] 
+then
+    #killall chrome 2>/dev/null
+    #killall python3 2>/dev/null
+    rm -r $path && mkdir $path
+    unzip /etc/dieklingel-gui/interface.zip -d $path 2>/dev/null
+    unzip /etc/dieklingel-gui/viewport.zip -d $path 2>/dev/null
+    unzip /etc/dieklingel-gui/ressources.zip -d $path 2>/dev/null
+    export DISPLAY=:0
+    if [ "$(which chromium)" = "/snap/bin/chromium" ]
+    then
+        rm -rf /home/$USER/snap/chromium/common/.cache/chromium
+    else 
+        rm -rf /home/$USER/.cache/chromium
+    fi
+    pkill -f http.server
+    python3 -m http.server --bind 0.0.0.0 --directory $path 8081 2>/dev/null &
+    #pkill -f http.server
+    chromium-browser --disable-pinch --window-position=1,1  --window-size=600,1024 $opt "http://localhost:8081/viewport?t=10&r=10&b=10&l=10" 2>/dev/null
+    #pkill -f http.server
+fi
