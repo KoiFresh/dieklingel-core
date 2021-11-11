@@ -37,7 +37,7 @@ dieklingel::dup::Notification dieklingel::dup::Notification::fromQJson(dieklinge
     return  notification;
 }
 
-dieklingel::dup::Notification dieklingel::dup::Notification::fromQJson(dieklingel::Context context, QJsonArray data)
+/*dieklingel::dup::Notification dieklingel::dup::Notification::fromQJson(dieklingel::Context context, QJsonArray data)
 {
     QJsonObject obj;
     QJsonObject header;
@@ -51,11 +51,11 @@ dieklingel::dup::Notification dieklingel::dup::Notification::fromQJson(dieklinge
     notification.m_context = context;
     notification.m_isObject = false;
     return  notification;
-}
+}*/
 
 dieklingel::dup::Notification dieklingel::dup::Notification::fromNotification(dieklingel::Context context, Notification parent)
 {
-    Notification notification;
+    /*Notification notification;
     if(parent.isObject())
     {
         notification = Notification::fromQJson(context, parent.dataObject());
@@ -65,6 +65,8 @@ dieklingel::dup::Notification dieklingel::dup::Notification::fromNotification(di
         notification = Notification::fromQJson(context, parent.dataArray());
     }
     return  notification;
+    */
+   return parent;
 }
 
 dieklingel::dup::Notification dieklingel::dup::Notification::empty()
@@ -89,7 +91,7 @@ QJsonObject dieklingel::dup::Notification::dataObject()
     }
 }
 
-QJsonArray dieklingel::dup::Notification::dataArray()
+/*QJsonArray dieklingel::dup::Notification::dataArray()
 {
     if(!m_isObject)
     {
@@ -98,7 +100,7 @@ QJsonArray dieklingel::dup::Notification::dataArray()
     {
         return QJsonArray();
     }
-}
+}*/
 
 dieklingel::Context dieklingel::dup::Notification::context()
 {
@@ -110,7 +112,7 @@ bool dieklingel::dup::Notification::isObject()
     return m_isObject;
 }
 
-bool dieklingel::dup::Notification::isArray()
+/*bool dieklingel::dup::Notification::isArray()
 {
     return !m_isObject;
-}
+}*/

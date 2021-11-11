@@ -13,12 +13,12 @@ namespace dieklingel {
         public:
             QString toString();
             QJsonObject dataObject();
-            QJsonArray dataArray();
+            //QJsonArray dataArray();
             dieklingel::Context context();
             bool isObject();
-            bool isArray();
+            //bool isArray();
             static Notification fromQJson(dieklingel::Context context, QJsonObject data);
-            static Notification fromQJson(dieklingel::Context context, QJsonArray data);
+            //static Notification fromQJson(dieklingel::Context context, QJsonArray data);
             static Notification fromString(QString message, bool secure = false);
             static Notification fromNotification(dieklingel::Context context, Notification parent);
             static Notification empty();

@@ -78,7 +78,9 @@ int main(int argc, char *argv[])
         switch (notification.context()) {
             case dieklingel::Context::Register:
             {
-                response = dieklingel::dup::Notification::fromQJson(dieklingel::Context::Response, dieklingel::System::readUsers());
+                QJsonObject obj;
+                obj.insert("Users", dieklingel::System::readUsers());
+                response = dieklingel::dup::Notification::fromQJson(dieklingel::Context::Response,obj);
                 break;
             }
             case dieklingel::Context::EnterPasscode:
