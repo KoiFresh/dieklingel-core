@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
                 int deviceCount = devices.count();
                 for(int i = 0; i < deviceCount; i++)  {
                     QJsonObject currentDevice = devices[i].toObject();
-                    if(currentDevice["devicename"].toString() == data["devicename"].toString())
+                    if(currentDevice["Devicename"].toString() == data["Devicename"].toString())
                     {
                         devices.replace(i, data);
                         alreadyExists = true;

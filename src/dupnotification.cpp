@@ -12,8 +12,8 @@ dieklingel::dup::Notification dieklingel::dup::Notification::fromString(QString 
 {
     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject obj = doc.object();
-    QJsonObject data = obj["body"].toObject()["data"].toObject();
-    Context context = dieklingel::QStringAsContext(obj["body"].toObject()["context"].toString());
+    QJsonObject data = obj["Body"].toObject()["Data"].toObject();
+    Context context = dieklingel::QStringAsContext(obj["Body"].toObject()["Context"].toString());
 
     context = (secure && context == Context::Unlock) ? Context::SecureUnlock : context;
     context = (!secure && context == Context::SecureUnlock) ? Context::Unlock : context;
@@ -25,11 +25,11 @@ dieklingel::dup::Notification dieklingel::dup::Notification::fromQJson(dieklinge
 {
     QJsonObject obj;
     QJsonObject header;
-    obj.insert("header", header);
+    obj.insert("Header", header);
     QJsonObject body;
-    body.insert("context", dieklingel::ContextAsQString(context));
-    body.insert("data", data);
-    obj.insert("body", body);
+    body.insert("Context", dieklingel::ContextAsQString(context));
+    body.insert("Data", data);
+    obj.insert("Body", body);
     Notification notification;
     notification.m_notification = obj;
     notification.m_context = context;
@@ -41,11 +41,11 @@ dieklingel::dup::Notification dieklingel::dup::Notification::fromQJson(dieklinge
 {
     QJsonObject obj;
     QJsonObject header;
-    obj.insert("header", header);
+    obj.insert("Header", header);
     QJsonObject body;
-    body.insert("context", dieklingel::ContextAsQString(context));
-    body.insert("data", data);
-    obj.insert("body", body);
+    body.insert("Context", dieklingel::ContextAsQString(context));
+    body.insert("Data", data);
+    obj.insert("Body", body);
     Notification notification;
     notification.m_notification = obj;
     notification.m_context = context;
@@ -82,7 +82,7 @@ QJsonObject dieklingel::dup::Notification::dataObject()
 {
     if(m_isObject)
     {
-        return m_notification["body"].toObject()["data"].toObject();
+        return m_notification["Body"].toObject()["Data"].toObject();
     }else
     {
         return QJsonObject();
@@ -93,7 +93,7 @@ QJsonArray dieklingel::dup::Notification::dataArray()
 {
     if(!m_isObject)
     {
-        return m_notification["body"].toObject()["data"].toArray();
+        return m_notification["Body"].toObject()["Data"].toArray();
     }else
     {
         return QJsonArray();
