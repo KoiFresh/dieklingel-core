@@ -1,0 +1,18 @@
+{
+    "timeout":30000,
+    "screensaver":"screensaver.html",
+    "custom":[
+        "<button class='event' data='{\"Body\":{\"Context\":\"script\", \"Data\":{\"Event\":\"light\", \"Args\":[\"on\"]}}}'><img src='/ressources/light.png' style='max-width: 70%'></button>",
+        "<button class='event' data='{\"Body\":{\"Context\":\"script\", \"Data\":{\"Event\":\"light\", \"Args\":[\"off\"]}}}'><img src='/ressources/light.png' style='max-width: 70%'></button>"
+    ],
+    "signs":[
+        {
+            "name":"sign1.html",
+            "data": {
+                "text":"<b>Kai Mayer</b>",
+                "call":[],
+                "notify":["vm-kai.mayer@dieklingel.com:6050"]
+            }
+        }
+    ]
+}

@@ -22,8 +22,8 @@ void dieklingel::System::execute(QString event, QStringList args)
     p->setArguments(args);
     p->start();
 #if DEBUG
-    QObject::connect(p, &QProcess::errorOccurred,[p](){
-        qDebug() << "[DEBUG][system.cpp, execute()] \r\n\t " << p->errorString();
+    QObject::connect(p, &QProcess::errorOccurred,[p, path, args](){
+        qDebug() << "[DEBUG][system.cpp, execute()] \r\n\t " << p->errorString() << path << args;
     });
 #endif
 

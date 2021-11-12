@@ -37,6 +37,7 @@ void dieklingel::dup::Server::subscribeForPushNotification(QString url, QString 
     m_pushclientUrl = qurl;
     connect(m_pushclient, &QWebSocket::connected, this, &Server::m_onPushClientConnected);
     connect(m_pushclient, &QWebSocket::disconnected, this, &Server::m_onPushClientDisconnected);
+    connect(m_pushclient, &QWebSocket::textMessageReceived, this, &dieklingel::dup::Server::m_onPushTextMessageReceived);
     m_pushclient->open(qurl);
 }
 
@@ -91,7 +92,6 @@ void dieklingel::dup::Server::m_onPushClientConnected()
 #if DEBUG
     qDebug() << "[DEBUG][dupserver.cpp, m_onPushClientConnected()] \r\n\t the pushclient subscribtion succesfully connected to the server";
 #endif
-    connect(m_pushclient, &QWebSocket::textMessageReceived, this, &dieklingel::dup::Server::m_onPushTextMessageReceived);
     QString iv = m_key.left(16);
     QString registry = cryptonia::Encrypt(m_username,m_key,iv);
     m_pushclient->sendTextMessage(registry);

@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
                 break;
             }
             case dieklingel::Context::EnterPasscode:
-                if(dieklingel::System::hashPow(notification.dataObject()["passcode"].toString(), 2) != g_doorsecret)
+                if(dieklingel::System::hashPow(notification.dataObject()["Passcode"].toString(), 2) != g_doorsecret)
                 {
 #ifdef DEBUG
                     qDebug() << "[DEBUG][main.cpp, main()] \r\n\t The passcode is not correct ";
@@ -219,11 +219,11 @@ int main(int argc, char *argv[])
             case dieklingel::Context::Script:
             {
                 QStringList args;
-                foreach(QJsonValue value, notification.dataObject()["args"].toArray())
+                foreach(QJsonValue value, notification.dataObject()["Args"].toArray())
                 {
                     args << value.toString();
                 }
-                dieklingel::System::execute(notification.dataObject()["event"].toString(), args);
+                dieklingel::System::execute(notification.dataObject()["Event"].toString(), args);
                 break;
             }
             default:

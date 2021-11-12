@@ -5,6 +5,7 @@ then
     #zip -r interface.zip interface/
     #zip -r viewport.zip viewport/
     #zip -r ressources.zip ressources/
+    echo "build not implemented"
 fi
 
 opt="--kiosk"
@@ -22,6 +23,7 @@ then
     unzip /etc/dieklingel-gui/interface.zip -d $path 2>/dev/null
     unzip /etc/dieklingel-gui/viewport.zip -d $path 2>/dev/null
     unzip /etc/dieklingel-gui/ressources.zip -d $path 2>/dev/null
+    cp /etc/dieklingel-gui/config.json $path/ressources
     export DISPLAY=:0
     if [ "$(which chromium)" = "/snap/bin/chromium" ]
     then
