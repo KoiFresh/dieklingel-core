@@ -129,12 +129,12 @@ int main(int argc, char *argv[])
                 dieklingel::System::execute("ring");
                 QList<sip::Uri*> calls;
                 QList<QString> notify;
-                foreach (QJsonValue value, notification.dataObject()["call"].toArray())
+                foreach (QJsonValue value, notification.dataObject()["Call"].toArray())
                 {
                     sip::Uri uri(value.toString());
                     calls.append(new sip::Uri(value.toString()));
                 }
-                foreach (QJsonValue value, notification.dataObject()["notify"].toArray())
+                foreach (QJsonValue value, notification.dataObject()["Notify"].toArray())
                 {
                     notify << value.toString();
                 }
@@ -159,8 +159,8 @@ int main(int argc, char *argv[])
                         foreach(QJsonValue dev, devices)
                         {
                             QJsonObject device = dev.toObject();
-                            if( (username == device["username"].toString() )||
-                                (username.mid(0, username.indexOf("@")) == device["username"].toString()) )
+                            if( (username == device["Username"].toString() )||
+                                (username.mid(0, username.indexOf("@")) == device["Username"].toString()) )
                             {
                                 CURL *curl;
                                 CURLcode res;
@@ -178,20 +178,20 @@ int main(int argc, char *argv[])
                                     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
                                     QJsonObject message;
-                                    message.insert("devicename", device["devicename"]);
-                                    message.insert("os",device["os"]);
-                                    message.insert("server",device["server"]);
-                                    message.insert("sound", device["sound"]);
-                                    message.insert("token", device["token"]);
-                                    message.insert("username",device["username"]);
-                                    message.insert("image", bufferImage);
+                                    message.insert("Devicename", device["Devicename"]);
+                                    message.insert("Os",device["Os"]);
+                                    message.insert("Server",device["Server"]);
+                                    message.insert("Sound", device["Sound"]);
+                                    message.insert("Token", device["Token"]);
+                                    message.insert("Username",device["Username"]);
+                                    message.insert("Image", bufferImage);
                                     QJsonObject notify;
                                     QJsonObject alert;
-                                    alert.insert("title", title);
-                                    alert.insert("body", text);
-                                    notify.insert("alert", alert);
-                                    notify.insert("action","call");
-                                    message.insert("notify", notify);
+                                    alert.insert("Title", title);
+                                    alert.insert("Body", text);
+                                    notify.insert("Alert", alert);
+                                    notify.insert("Action","call");
+                                    message.insert("Notify", notify);
                                     QJsonDocument document(message);
                                     QString str = document.toJson(QJsonDocument::Compact);
                                     QByteArray ba = str.toLocal8Bit();

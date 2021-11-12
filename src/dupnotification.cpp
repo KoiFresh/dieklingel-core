@@ -55,18 +55,9 @@ dieklingel::dup::Notification dieklingel::dup::Notification::fromQJson(dieklinge
 
 dieklingel::dup::Notification dieklingel::dup::Notification::fromNotification(dieklingel::Context context, Notification parent)
 {
-    /*Notification notification;
-    if(parent.isObject())
-    {
-        notification = Notification::fromQJson(context, parent.dataObject());
-    }else
-    if(parent.isArray())
-    {
-        notification = Notification::fromQJson(context, parent.dataArray());
-    }
+    Notification notification;
+    notification = Notification::fromQJson(context, parent.dataObject());
     return  notification;
-    */
-   return parent;
 }
 
 dieklingel::dup::Notification dieklingel::dup::Notification::empty()
