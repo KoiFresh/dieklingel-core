@@ -51,8 +51,11 @@ sudo systemctl enable dieklingel-gui
 
 **dieklingel-core** ist vollständig installiert und kann nun Konfiguriert werden. 
 
-##### 2. Installation aus dem Quellcode
+##### 2. Installation aus dem Quellcode mit VSCode
+kommt bald ...
 
+##### 2. Installation aus dem Quellcode
+(veraltet) 
 Die vorbereitung um dieklingel-core aus dem Quellcode zu bauen sind die Selben wie durch die Installation durch ein vorhandenes Debian Packet.
 
 Installieren Sie abhägingkeiten, welche zur Kompilierung notwendig sind:
