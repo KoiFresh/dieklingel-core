@@ -5,7 +5,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include/x86_64-linux-gnu/qt5/**",
-                "/usr/include/opencv4"
+                "/usr/include/opencv4",
+                "/usr/include/arm-linux-gnueabihf/qt5/QtCore",
+                "/usr/include/arm-linux-gnueabihf/qt5/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

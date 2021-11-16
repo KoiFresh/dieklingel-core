@@ -6,7 +6,7 @@
       {
         "label": "dieKlingel Build Release",
         "type": "shell",
-        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake ../ && make -j4",
+        "command": "rm -rf ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake ../ && make -j4",
         "group": "build",
         "presentation": {
           "reveal": "always",
@@ -16,7 +16,7 @@
       {
         "label": "dieKlingel Build Debug",
         "type": "shell",
-        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug DEFINES+=DEBUG ../ && make -j4",
+        "command": "rm -rf ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug DEFINES+=DEBUG ../ && make -j4",
         "group": "build",
         "presentation": {
           "reveal": "always",
@@ -26,7 +26,7 @@
       {
         "label": "dieKlingel(WiringPi) Build Release",
         "type": "shell",
-        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake DEFINES+=WIRINGPI ../ && make -j4",
+        "command": "rm -rf ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake DEFINES+=WIRINGPI ../ && make -j4",
         "group": "build",
         "presentation": {
           "reveal": "always",
@@ -36,7 +36,7 @@
       {
         "label": "dieKlingel(WiringPi) Build Debug",
         "type": "shell",
-        "command": "rm -r ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug DEFINES+=DEBUG DEFINES+=WIRINGPI ../ && make -j4",
+        "command": "rm -rf ${workspaceFolder}/src/build && mkdir ${workspaceFolder}/src/build && cd ${workspaceFolder}/src/build && qmake CONFIG+=debug DEFINES+=DEBUG DEFINES+=WIRINGPI ../ && make -j4",
         "group": "build",
         "presentation": {
           "reveal": "always",
