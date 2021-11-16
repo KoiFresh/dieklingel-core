@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
 
     static QString iv = g_key.left(16);
     static QString g_registry = cryptonia::Encrypt(g_username, g_key, iv);
-    static QString g_pushsubscriberpath = config->value("Ct/Domain", "ct.dieklingel.com").toString() + config->value("Ct/Path", "/push/subscribe").toString();
+    static QString g_pushsubscriberpath = config->value("Ct/Domain", "ct.dieklingel.com").toString() + config->value("Ct/Subpath", "/push/subscribe").toString();
+    static QString g_pushpostpath = config->value("Ct/Domain", "ct.dieklingel.com").toString() + config->value("Ct/Postpath", "/push/post").toString();
     static QString g_doorsecret = config->value("Door/Secret", "").toString();
 
     static QString bufferImage;
@@ -169,7 +170,8 @@ int main(int argc, char *argv[])
                                 {
                                     //socket::log("send push notification", "info", "backend.cpp signClicked(QJsonObject object)");
                                     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
-                                    curl_easy_setopt(curl, CURLOPT_URL, "https://dev.ct.dieklingel.com/push/post");
+                                    //curl_easy_setopt(curl, CURLOPT_URL, "https://dev.ct.dieklingel.com/push/post");
+                                    curl_easy_setopt(curl, CURLOPT_URL, dieklingel::Toolbox::QString_to_Char(g_pushpostpath));
                                     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
                                     curl_easy_setopt(curl, CURLOPT_DEFAULT_PROTOCOL, "https");
                                     struct curl_slist *headers = NULL;
