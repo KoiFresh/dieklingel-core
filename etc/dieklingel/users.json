@@ -1,12 +1,14 @@
 [
     {
-        "displayname":"Kai Mayer",
-        "username":"vm-kai.mayer",
-        "password":"Kai",
-	"doorunit":"vm-kai.mayer-dieklingel",
-        "sip":{
-            "domain":"dieklingel.com",
-            "port":6050
+        "Displayname":"Steffi",
+        "Username":"xxx.xxx@dieklingel.de",
+        "Password":"123",
+	"Number":"doorunit-xxx.xxx@dieklingel.com",
+        "Sip":{
+            "Username":"xxx",
+            "Password":"123",
+            "Domain":"dieklingel.com",
+            "Üort":6050
         }
     }
 ]
