@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "dieKlingel Launch",
-            "program": "${workspaceFolder}/src/build/dieklingel",
+            "program": "${workspaceFolder}/usr/bin/dieklingel",
             "args": [],
             "request": "launch",
             "type": "cppdbg",
@@ -25,7 +25,7 @@
         },
         {
             "name": "dieKlingel Build and Launch",
-            "program": "${workspaceFolder}/src/build/dieklingel",
+            "program": "${workspaceFolder}/usr/bin/dieklingel",
             "args": [],
             "request": "launch",
             "type": "cppdbg",

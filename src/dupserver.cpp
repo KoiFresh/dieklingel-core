@@ -38,6 +38,8 @@ void dieklingel::dup::Server::subscribeForPushNotification(QString url, QString 
     connect(m_pushclient, &QWebSocket::connected, this, &Server::m_onPushClientConnected);
     connect(m_pushclient, &QWebSocket::disconnected, this, &Server::m_onPushClientDisconnected);
     connect(m_pushclient, &QWebSocket::textMessageReceived, this, &dieklingel::dup::Server::m_onPushTextMessageReceived);
+    m_ping = new QTimer();
+    m_ping->setInterval(5000);
     m_pushclient->open(qurl);
 }
 
@@ -95,8 +97,6 @@ void dieklingel::dup::Server::m_onPushClientConnected()
     QString iv = m_key.left(16);
     QString registry = cryptonia::Encrypt(m_username,m_key,iv);
     m_pushclient->sendTextMessage(registry);
-    m_ping = new QTimer();
-    m_ping->setInterval(5000);
     connect(m_ping, &QTimer::timeout,[=](){
         m_pushclient->ping();
     });
@@ -131,7 +131,10 @@ void dieklingel::dup::Server::m_onPushClientDisconnected()
 #if DEBUG
     qDebug() << "[DEBUG][dupserver.cpp, m_onPushClientDisconnected()] \r\n\t the pushclient subscribtion disconnected from the server";
 #endif
-    m_ping->stop();
+    if(nullptr != m_ping) 
+    {
+        m_ping->stop();
+    }
     QTimer::singleShot(5000, [=](){
         m_pushclient->open(m_pushclientUrl);
     });

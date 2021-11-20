@@ -1,5 +1,5 @@
 // compile with "g++ -o pulse-aec pulse-aec.cpp
-"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
