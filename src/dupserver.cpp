@@ -7,9 +7,7 @@ dieklingel::dup::Server::Server(QHostAddress address, int port, QObject *parent)
 {
     if(m_websocketserver->listen(address , port))
     {
-#ifdef DEBUG
-        qDebug() << "[DEBUG][dupserver.cpp, Server()] \r\n\t a local server is runnign on port: " << port;
-#endif
+        qInfo() << "[Info][dupserver.cpp, Server()] \r\n\t a local server is runnign on port: " << port;
         connect(m_websocketserver, &QWebSocketServer::newConnection, this, &Server::m_onNewConnection);
     }
 }
