@@ -12,13 +12,17 @@
 #include "io.h"
 #include "cryptonia.h"
 
+#define TIME_TO_WAIT 10 // wait 10ms every loop
+#define MAX_TIME_MS 1000 // count until 1 sec
+#define TIME_1_SEC 1000 // reach one second
+
 // meaning of comments:
 // cbot => comment because of timer -> used to prevent a timer from being started by Kai Mayer, created because of thread problems
 
 /**
  * main entry of dieklingel-core application
  * @author Kai Mayer
- * @version 2.0-0
+ * @version 2.2-2
  */
 
 int main(int argc, char *argv[])
@@ -281,10 +285,18 @@ int main(int argc, char *argv[])
     QSound::play("/etc/dieklingel/Sounds/boot.wav");
     dieklingel::System::execute("boot");
     // running endless and call all Iterate functions
+    int timeReached = 0;
     while(true) {
         sip::Client::Iterate();
-        dieklingel::Io::s_iterate();
-        QThread::msleep(10);
+        if(TIME_1_SEC == timeReached) {
+            dieklingel::Io::s_iterate();
+        }
+        a.processEvents();
+        QThread::msleep(TIME_TO_WAIT);
+        timeReached += TIME_TO_WAIT;
+        if(timeReached > MAX_TIME_MS) {
+            timeReached = 0;
+        }
     }
     return a.exec();
 }
