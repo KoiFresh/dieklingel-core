@@ -23,6 +23,7 @@ namespace sip
         static void Call(sip::Uri sipuri);
         static void Call(QList<Uri*> uris);
         static Client *GetInstance();
+        static void Iterate();
     signals:
         void SessionStateChanged(SessionState state);
     private:
@@ -30,6 +31,8 @@ namespace sip
         static void m_initialize();
         static void m_callCreated(LinphoneCore *core, LinphoneCall *call);
         static void m_callStateChanged(LinphoneCore *core, LinphoneCall *call, LinphoneCallState callState, const char *message);
+        static PayloadType* m_payloadType;
+        static bctbx_list_t* m_videoPayloadTypes;
         static QTimer *m_iteration_timer;
         static LinphoneCoreVTable m_vtable;
         static LinphoneCore *m_linphoneCore;
@@ -41,7 +44,7 @@ namespace sip
         static LinphoneAuthInfo *m_authInfo;
         static Client *m_instance;
     private slots:
-        static void m_iterate();
+        //static void m_iterate();
         static void m_sessionStateChanged(sip::SessionState state);
     };
 }

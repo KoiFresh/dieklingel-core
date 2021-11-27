@@ -60,7 +60,7 @@ Die vorbereitung um dieklingel-core aus dem Quellcode zu bauen sind die Selben w
 
 Installieren Sie abhägingkeiten, welche zur Kompilierung notwendig sind:
 ```bash
-sudo apt-get update && sudo apt-get install -y git qt5-default liblinphone-dev libcurl4-openssl-dev libopencv-dev libcrypto++-dev libcrypto++-doc libcrypto++-utils build-essential libncurses5-dev make libncursesw5-dev flex bison libssl-dev bcc qtmultimedia5-dev libqt5websockets5-dev qtdeclarative5-dev qtquickcontrols2-5-dev wiringpi 
+sudo apt-get update && sudo apt-get install -y git qt5-default liblinphone-dev libcurl4-openssl-dev libopencv-dev libcrypto++-dev libcrypto++-doc libcrypto++-utils build-essential libncurses5-dev make libncursesw5-dev flex bison libssl-dev bcc qtmultimedia5-dev libqt5websockets5-dev qtdeclarative5-dev qtquickcontrols2-5-dev wiringpi zip chromium-browser
 ```
 Als nächstes Klonen Sie dieses Git-Repo und wechseln in das Verzeichnis
 ```bash
@@ -71,7 +71,7 @@ Nun können Sie mit dem Kompilieren beginnen:
 
 Bereitstellen mit GPIO Unterstützung (nur für RaspberryPi):
 ```bash
-qmake DEFINES+=Q_PROCESSOR_ARM_V7 ../
+qmake DEFINES+=WIRINGPI ../
 ```
 Bereitstellen ohne GPIO Unterstützung:
 ```bash
@@ -83,11 +83,6 @@ make
 sudo make install
 ```
 
-Um alle Konfigurationsdatein zu erhalten, sollten Sie noch das Debian Packet **dieklingel_1.0-1_config.deb** installieren:
-```bash
-cd ../../ 
-sudo apt-get install ./dieklingel_1.0-1_config.deb
-```
 nach der Installation üperprüfen Sie ob der gewählte Benutzer zu Ihrem System passt
 Dazu öffnen Sie mit einm Texteditor Ihrer Wahl folgende Datei ``` sudo nano /etc/systemd/system/dieklingel-gui.service``` und änderen Gegebenenfalls die Zeil ``` user=pi``` in den 
 von Ihnen gewählten Benutzer. 

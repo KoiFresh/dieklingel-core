@@ -11,16 +11,17 @@ namespace dieklingel {
         Q_OBJECT
     public:
         static void init();
-        static Io *getInstance();
+        static Io *s_instance();
+        static void s_iterate();
     signals:
         void movementDetected(bool risingEdge = false);
     private:
         Io();
-        static Io *m_instance;
-        static QTimer *m_iteration;
-        static bool risingEdgeMovement;
+        static Io *s_instance_;
+        static QTimer *s_iteration_;
+        static bool s_bRisingEdgeMovement_;
     private slots:
-        static void m_iterate();
+        //static void m_iterate();
     };
 }
 

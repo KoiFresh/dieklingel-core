@@ -1,13 +1,9 @@
 #include <QCoreApplication>
-#include <QTimer>
 #include <QSound>
 #include <QtConcurrent>
 #include <opencv2/opencv.hpp>
 #include <curl/curl.h>
-#include "backend.h"
-#include "socket.h"
 #include "toolbox.h"
-#include "ffmpegstream.h"
 #include "sipclient.h"
 #include "dupserver.h"
 #include "dupnotification.h"
@@ -15,6 +11,9 @@
 #include "sipuri.h"
 #include "io.h"
 #include "cryptonia.h"
+
+// meaning of comments:
+// cbot => comment because of timer -> used to prevent a timer from being started by Kai Mayer, created because of thread problems
 
 /**
  * main entry of dieklingel-core application
@@ -30,7 +29,7 @@ int main(int argc, char *argv[])
 #ifdef DEBUG
     qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Compield with debug log";
 #endif
-    dieklingel::Io::init();
+    //cbot dieklingel::Io::init();
     static QSettings* config = new QSettings("/etc/dieklingel/config.ini", QSettings::NativeFormat);
 
     static QString g_username = config->value("Ct/Username", "none").toString();
@@ -261,10 +260,13 @@ int main(int argc, char *argv[])
         }
     });
 
-    QObject::connect(dieklingel::Io::getInstance(), &dieklingel::Io::movementDetected, [dupserver](bool risingEdge){
+    QObject::connect(dieklingel::Io::s_instance(), &dieklingel::Io::movementDetected, [dupserver](bool risingEdge){
         dieklingel::dup::Notification notification = dieklingel::dup::Notification::fromQJson(dieklingel::Context::Movement, QJsonObject());
         dupserver->send(notification);
         if(risingEdge) {
+            dieklingel::System::execute("movement");
+        }
+        /*if(risingEdge) {
             cv::VideoCapture capture;
             if(capture.open(0))
             {
@@ -273,10 +275,16 @@ int main(int argc, char *argv[])
                 capture.release();
                 bufferImage = dieklingel::Toolbox::Mat_to_b64QString(snapshot);
             }
-        }
+        }*/
     });
 
     QSound::play("/etc/dieklingel/Sounds/boot.wav");
     dieklingel::System::execute("boot");
+    // running endless and call all Iterate functions
+    while(true) {
+        sip::Client::Iterate();
+        dieklingel::Io::s_iterate();
+        QThread::msleep(10);
+    }
     return a.exec();
 }

@@ -28,6 +28,7 @@ LIBS += -lcurl
 LIBS += -llinphone
 LIBS += -lcryptopp
 LIBS += -lbctoolbox
+LIBS += -lortp
 
 contains(DEFINES, WIRINGPI) {
    LIBS += -lwiringPi

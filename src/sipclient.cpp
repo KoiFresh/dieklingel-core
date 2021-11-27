@@ -4,6 +4,7 @@
 #include <linphone/callbacks.h>
 #include <linphone/linphonecore.h>
 #include <linphone/linphonecore_utils.h>
+#include <linphone/payload_type.h>
 #include "sipclient.h"
 #include "toolbox.h"
 
@@ -35,6 +36,8 @@ LinphoneConference *sip::Client::m_linphoneConference = nullptr;
 LinphoneConferenceParams *sip::Client::m_linphoneConferenceParams = nullptr;
 QTimer *sip::Client::m_iteration_timer = nullptr;
 sip::Client *sip::Client::m_instance = nullptr;
+PayloadType* sip::Client::m_payloadType = nullptr;
+bctbx_list_t* sip::Client::m_videoPayloadTypes = nullptr;
 
 sip::Client *sip::Client::GetInstance()
 {
@@ -57,10 +60,15 @@ void sip::Client::m_initialize()
 #if DEBUG
         qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t starting to initialize the Linphone Core and the iteration timer";
 #endif
+        m_payloadType = &payload_type_vp8;
+        m_videoPayloadTypes = bctbx_list_new(m_payloadType);
         m_vtable.call_state_changed = m_callStateChanged;
         m_vtable.call_created = m_callCreated;
         m_linphoneCore = linphone_core_new(&m_vtable, NULL, NULL, NULL);
         linphone_core_set_stun_server(m_linphoneCore, "stun1.l.google.com:19302");
+        linphone_core_set_video_codecs(m_linphoneCore, m_videoPayloadTypes);
+        linphone_core_enable_payload_type(m_linphoneCore, m_payloadType, true);
+        linphone_core_set_preferred_framerate(m_linphoneCore, 26.0);
         //linphone_core_set_video_device(m_linphoneCore, linphone_core_get_video_devices(m_linphoneCore)[2]);
         //qDebug() << linphone_core_get_video_devices(m_linphoneCore)[0];
 #if DEBUG
@@ -73,9 +81,9 @@ void sip::Client::m_initialize()
         linphone_core_set_ringer_device(m_linphoneCore, NULL);*/
         m_instance = new Client();
         m_iteration_timer = new QTimer();
-        m_iteration_timer->setInterval(1);
-        connect(m_iteration_timer, &QTimer::timeout, Client::m_iterate);
-        m_iteration_timer->start();
+        m_iteration_timer->setInterval(500);
+        // cbot connect(m_iteration_timer, &QTimer::timeout, Client::m_iterate);
+        // cbot m_iteration_timer->start();
         connect(GetInstance(), &sip::Client::SessionStateChanged, sip::Client::m_sessionStateChanged);
 #if DEBUG
         qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t end of initialize Linphone Core";
@@ -87,10 +95,14 @@ void sip::Client::m_initialize()
  * @brief sip::Client::m_iterate
  * Called every 50 milliseconds to iterate the linphonecore
  */
-void sip::Client::m_iterate()
+void sip::Client::Iterate()
 {
     linphone_core_iterate(m_linphoneCore);
 }
+/*void sip::Client::m_iterate()
+{
+    linphone_core_iterate(m_linphoneCore);
+}*/
 
 void sip::Client::m_sessionStateChanged(sip::SessionState state)
 {
@@ -249,6 +261,7 @@ void sip::Client::Register(QString username, QString password, QString domain, i
     }
     m_linhponeCallParams = linphone_core_create_call_params(m_linphoneCore, m_linphoneCall);
     linphone_call_params_enable_video(m_linhponeCallParams, true);
+    //linphone_call_params_enable_video(m_linhponeCallParams, false);
     linphone_call_params_set_video_direction(m_linhponeCallParams, LinphoneMediaDirection::LinphoneMediaDirectionSendOnly);
     m_linphoneConferenceParams = linphone_conference_params_new(m_linphoneCore);
     linphone_conference_params_enable_video(m_linphoneConferenceParams, true);
