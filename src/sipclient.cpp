@@ -66,8 +66,8 @@ void sip::Client::m_initialize()
         m_vtable.call_created = m_callCreated;
         m_linphoneCore = linphone_core_new(&m_vtable, NULL, NULL, NULL);
         linphone_core_set_stun_server(m_linphoneCore, "stun1.l.google.com:19302");
-        linphone_core_set_video_codecs(m_linphoneCore, m_videoPayloadTypes);
-        linphone_core_enable_payload_type(m_linphoneCore, m_payloadType, true);
+        //linphone_core_set_video_codecs(m_linphoneCore, m_videoPayloadTypes);
+        //linphone_core_enable_payload_type(m_linphoneCore, m_payloadType, true);
         linphone_core_set_preferred_framerate(m_linphoneCore, 26.0);
         //linphone_core_set_video_device(m_linphoneCore, linphone_core_get_video_devices(m_linphoneCore)[2]);
         //qDebug() << linphone_core_get_video_devices(m_linphoneCore)[0];
@@ -260,8 +260,8 @@ void sip::Client::Register(QString username, QString password, QString domain, i
 #endif
     }
     m_linhponeCallParams = linphone_core_create_call_params(m_linphoneCore, m_linphoneCall);
-    linphone_call_params_enable_video(m_linhponeCallParams, true);
-    //linphone_call_params_enable_video(m_linhponeCallParams, false);
+    //linphone_call_params_enable_video(m_linhponeCallParams, true);
+    linphone_call_params_enable_video(m_linhponeCallParams, false);
     linphone_call_params_set_video_direction(m_linhponeCallParams, LinphoneMediaDirection::LinphoneMediaDirectionSendOnly);
     m_linphoneConferenceParams = linphone_conference_params_new(m_linphoneCore);
     linphone_conference_params_enable_video(m_linphoneConferenceParams, true);

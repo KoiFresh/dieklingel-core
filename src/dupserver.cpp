@@ -1,4 +1,5 @@
 #include <QJsonDocument>
+#include <opencv2/opencv.hpp>
 #include "dupserver.h"
 #include "cryptonia.h"
 #include "dupnotification.h"
@@ -44,6 +45,11 @@ void dieklingel::dup::Server::subscribeForPushNotification(QString url, QString 
 void dieklingel::dup::Server::send(dieklingel::dup::Notification notification)
 {
     m_sendToEveryClient(notification.toString());
+}
+
+void dieklingel::dup::Server::publishImage(cv::Mat mat) 
+{
+    m_pushclient->sendBinaryMessage();
 }
 
 /**

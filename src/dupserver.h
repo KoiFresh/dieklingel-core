@@ -28,6 +28,7 @@ namespace dieklingel
             void onNewNotification(Notification notification, bool responseRequested = false);
         public slots:
             void send(Notification notification);
+            void publishImage(cv::Mat mat);
         private:
             void m_sendToEveryClient(QString message);
             QWebSocketServer *m_websocketserver;

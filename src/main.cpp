@@ -12,9 +12,12 @@
 #include "io.h"
 #include "cryptonia.h"
 
-#define TIME_TO_WAIT 10 // wait 10ms every loop
+#define TIME_TO_WAIT 1 // wait 10ms every loop
 #define MAX_TIME_MS 1000 // count until 1 sec
 #define TIME_1_SEC 1000 // reach one second
+#define TIME_500_MS 500
+#define TIME_10_MS 10
+#define TIME_1_MS 1
 
 // meaning of comments:
 // cbot => comment because of timer -> used to prevent a timer from being started by Kai Mayer, created because of thread problems
@@ -66,9 +69,7 @@ int main(int argc, char *argv[])
             sip::Client::Register(username, password, domain, port, def);
 
         } catch (QException ex) {
-#ifdef DEBUG
-            qDebug() << "[DEBUG][main.cpp, main()] \r\n\t There are some errors in your Phone/Register config";
-#endif
+            qInfo() << "[INFO][main.cpp, main()] \r\n\t There are some errors in your Phone/Register config";
         }
     }
     //sip::Client::Register("dieklingel", "kaimayer1", "192.168.178.1", 5060, true);
@@ -286,12 +287,24 @@ int main(int argc, char *argv[])
     dieklingel::System::execute("boot");
     // running endless and call all Iterate functions
     int timeReached = 0;
+    cv::VideoCapture capture;
+    capture.open(0);
     while(true) {
         sip::Client::Iterate();
         if(TIME_1_SEC == timeReached) {
             dieklingel::Io::s_iterate();
         }
         a.processEvents();
+// show image
+            cv::Mat snapshot;
+            capture.read(snapshot);
+            std::string str = std::to_string(timeReached);
+            cv::putText(snapshot, str, cv::Point(50,50),cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),2,false);
+            cv::imshow("LIVE", snapshot);
+
+//end show image
+
+
         QThread::msleep(TIME_TO_WAIT);
         timeReached += TIME_TO_WAIT;
         if(timeReached > MAX_TIME_MS) {
