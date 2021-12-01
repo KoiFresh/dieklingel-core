@@ -17,7 +17,8 @@ namespace dieklingel
     {
     public:
         static char* QString_to_Char(QString value);
-        static QString Mat_to_b64QString(cv::Mat mat);
+        static QString s_mat_to_b64qstring(cv::Mat mat);
+        static QByteArray s_mat_to_qbytearray(cv::Mat mat);
 
     private:
         Toolbox() {};

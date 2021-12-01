@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include "dupserver.h"
 #include "cryptonia.h"
+#include "toolbox.h"
 #include "dupnotification.h"
 
 dieklingel::dup::Server::Server(QHostAddress address, int port, QObject *parent) : QObject(parent), m_websocketserver(new QWebSocketServer(QStringLiteral("dieklingel"), QWebSocketServer::NonSecureMode, this))
@@ -47,9 +48,10 @@ void dieklingel::dup::Server::send(dieklingel::dup::Notification notification)
     m_sendToEveryClient(notification.toString());
 }
 
-void dieklingel::dup::Server::publishImage(cv::Mat mat) 
+void dieklingel::dup::Server::sendMjpegFrame(cv::Mat frame) 
 {
-    m_pushclient->sendBinaryMessage();
+    QByteArray data = Toolbox::s_mat_to_qbytearray(frame);
+    m_pushclient->sendBinaryMessage(data);
 }
 
 /**

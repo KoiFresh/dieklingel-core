@@ -3,6 +3,9 @@
 #include <QtConcurrent>
 #include <opencv2/opencv.hpp>
 #include <curl/curl.h>
+#include <QUdpSocket>
+#include <QTcpSocket>
+#include <QHostInfo>
 #include "toolbox.h"
 #include "sipclient.h"
 #include "dupserver.h"
@@ -12,12 +15,16 @@
 #include "io.h"
 #include "cryptonia.h"
 
-#define TIME_TO_WAIT 1 // wait 10ms every loop
 #define MAX_TIME_MS 1000 // count until 1 sec
 #define TIME_1_SEC 1000 // reach one second
 #define TIME_500_MS 500
+#define TIME_30_MS 30
 #define TIME_10_MS 10
 #define TIME_1_MS 1
+#define MAX_UDP_DATAGRAM_SIZE 65535
+
+#define BETA_VIDEO_IP "85.214.41.43"
+#define BETA_VIDEO_PORT 2222
 
 // meaning of comments:
 // cbot => comment because of timer -> used to prevent a timer from being started by Kai Mayer, created because of thread problems
@@ -48,11 +55,13 @@ int main(int argc, char *argv[])
     static QString g_pushsubscriberpath = config->value("Ct/Domain", "ct.dieklingel.com").toString() + config->value("Ct/Subpath", "/push/subscribe").toString();
     static QString g_pushpostpath = config->value("Ct/Domain", "ct.dieklingel.com").toString() + config->value("Ct/Postpath", "/push/post").toString();
     static QString g_doorsecret = config->value("Door/Secret", "").toString();
-
     static QString bufferImage;
+    static cv::Mat g_s_lastSnapshot;
+    static cv::VideoCapture g_s_capture;
 
     dieklingel::dup::Server *dupserver = new dieklingel::dup::Server(QHostAddress::Any, g_duoport);
-    dupserver->subscribeForPushNotification(g_pushsubscriberpath, g_username, g_key);
+    //dupserver->subscribeForPushNotification(g_pushsubscriberpath, g_username, g_key);
+    dupserver->subscribeForPushNotification("dev.ct.dieklingel.com:3381/push/subscribe", g_username, g_key, "ws");
 
     QString authstring = config->value("Phone/Register", "").toString();
     QStringList auths = authstring.split(" ");
@@ -152,7 +161,9 @@ int main(int argc, char *argv[])
                         cv::Mat snapshot;
                         capture.read(snapshot);
                         capture.release();
-                        bufferImage = dieklingel::Toolbox::Mat_to_b64QString(snapshot);
+                        bufferImage = dieklingel::Toolbox::s_mat_to_b64qstring(snapshot);
+                    }else {
+                        bufferImage = dieklingel::Toolbox::s_mat_to_b64qstring(g_s_lastSnapshot);
                     }
 
                     QString title = "dieklingel.com " + QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm:ss");
@@ -287,26 +298,45 @@ int main(int argc, char *argv[])
     dieklingel::System::execute("boot");
     // running endless and call all Iterate functions
     int timeReached = 0;
-    cv::VideoCapture capture;
-    capture.open(0);
+    
+    g_s_capture.open(0);
+    cv::Mat raw;
+    g_s_capture.read(g_s_lastSnapshot);
+    g_s_capture.release();
+    raw = cv::imread("/home/kai/Bilder/input_.jpeg");
+    cv::resize(raw, g_s_lastSnapshot, cv::Size(640, 480));
+
+    QUdpSocket* socket = new QUdpSocket();
     while(true) {
+        // every millisecond
+        a.processEvents();
         sip::Client::Iterate();
-        if(TIME_1_SEC == timeReached) {
+        //every second
+        if(timeReached % TIME_1_SEC == 0) 
+        {
             dieklingel::Io::s_iterate();
         }
-        a.processEvents();
-// show image
-            cv::Mat snapshot;
-            capture.read(snapshot);
-            std::string str = std::to_string(timeReached);
-            cv::putText(snapshot, str, cv::Point(50,50),cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),2,false);
-            cv::imshow("LIVE", snapshot);
+// show image   
+            
+            //cv::imshow("LIVE", snapshot);
 
-//end show image
-
-
-        QThread::msleep(TIME_TO_WAIT);
-        timeReached += TIME_TO_WAIT;
+            if(timeReached % TIME_30_MS == 0) {
+                std::string str = std::to_string(timeReached);
+                cv::rectangle(g_s_lastSnapshot, cv::Rect(40, 10, 100, 50), cv::Scalar(0,0,255), cv::FILLED);
+                cv::putText(g_s_lastSnapshot, str, cv::Point(50,50),cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),2,false);
+                QByteArray img = dieklingel::Toolbox::s_mat_to_qbytearray(g_s_lastSnapshot);
+                if(img.size() < MAX_UDP_DATAGRAM_SIZE) 
+                {
+                    socket->writeDatagram(img, QHostAddress(BETA_VIDEO_IP), BETA_VIDEO_PORT);
+                }else {
+#if DEBUG
+                qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Image size is too large:" << img.size() << "bytes";
+#endif
+                }
+            }
+            
+        QThread::msleep(TIME_1_MS);
+        timeReached += TIME_1_MS;
         if(timeReached > MAX_TIME_MS) {
             timeReached = 0;
         }

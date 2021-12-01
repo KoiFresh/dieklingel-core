@@ -5,6 +5,7 @@
 #include <QWebSocketServer>
 #include <QWebSocket>
 #include <QTimer>
+#include <opencv2/opencv.hpp>
 #include "dieklingelcontext.h"
 #include "customwebsocketserver.h"
 #include "dupnotification.h"
@@ -28,7 +29,7 @@ namespace dieklingel
             void onNewNotification(Notification notification, bool responseRequested = false);
         public slots:
             void send(Notification notification);
-            void publishImage(cv::Mat mat);
+            void sendMjpegFrame(cv::Mat frame);
         private:
             void m_sendToEveryClient(QString message);
             QWebSocketServer *m_websocketserver;

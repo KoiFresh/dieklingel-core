@@ -11,7 +11,7 @@ char *dieklingel::Toolbox::QString_to_Char(QString value)
     return  val_as_ba.data();
 }
 
-QString dieklingel::Toolbox::Mat_to_b64QString(cv::Mat mat)
+QString dieklingel::Toolbox::s_mat_to_b64qstring(cv::Mat mat)
 {
     QString result = "";
     if(!mat.empty())
@@ -28,4 +28,28 @@ QString dieklingel::Toolbox::Mat_to_b64QString(cv::Mat mat)
     return  result;
 }
 
+QByteArray dieklingel::Toolbox::s_mat_to_qbytearray(cv::Mat mat) 
+{
+    // this is default working
+    /*std::vector<uchar> buf;
+    cv::imencode(".png", mat, buf);
+    char *enc = new char[buf.size()];
+    for(unsigned long i = 0; i < buf.size(); i++)
+    {
+        enc[i] = buf[i];
+    }
+    return QByteArray(reinterpret_cast<char*>(enc), buf.size()); */
+    // this is customized to compress
+    std::vector<uchar> buf;
+    std::vector<int> param(2);
+    param[0] = cv::IMWRITE_JPEG_QUALITY;
+    param[1] = 80;
+    cv::imencode(".jpg", mat, buf, param);
+    char *enc = new char[buf.size()];
+    for(unsigned long i = 0; i < buf.size(); i++)
+    {
+        enc[i] = buf[i];
+    }
+    return QByteArray(reinterpret_cast<char*>(enc), buf.size()); 
+}
 
