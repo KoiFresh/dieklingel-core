@@ -43,7 +43,8 @@ QByteArray dieklingel::Toolbox::s_mat_to_qbytearray(cv::Mat mat)
     std::vector<uchar> buf;
     std::vector<int> param(2);
     param[0] = cv::IMWRITE_JPEG_QUALITY;
-    param[1] = 80;
+    //param[0] = cv::IMWRITE_PNG_COMPRESSION;
+    param[1] = 30;
     cv::imencode(".jpg", mat, buf, param);
     char *enc = new char[buf.size()];
     for(unsigned long i = 0; i < buf.size(); i++)

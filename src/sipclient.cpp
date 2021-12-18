@@ -60,7 +60,8 @@ void sip::Client::m_initialize()
 #if DEBUG
         qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t starting to initialize the Linphone Core and the iteration timer";
 #endif
-        m_payloadType = &payload_type_vp8;
+        //m_payloadType = &payload_type_vp8;
+        m_payloadType = &payload_type_mp4v;
         m_videoPayloadTypes = bctbx_list_new(m_payloadType);
         m_vtable.call_state_changed = m_callStateChanged;
         m_vtable.call_created = m_callCreated;
@@ -260,8 +261,8 @@ void sip::Client::Register(QString username, QString password, QString domain, i
 #endif
     }
     m_linhponeCallParams = linphone_core_create_call_params(m_linphoneCore, m_linphoneCall);
-    //linphone_call_params_enable_video(m_linhponeCallParams, true);
-    linphone_call_params_enable_video(m_linhponeCallParams, false);
+    linphone_call_params_enable_video(m_linhponeCallParams, true);
+    //linphone_call_params_enable_video(m_linhponeCallParams, false);
     linphone_call_params_set_video_direction(m_linhponeCallParams, LinphoneMediaDirection::LinphoneMediaDirectionSendOnly);
     m_linphoneConferenceParams = linphone_conference_params_new(m_linphoneCore);
     linphone_conference_params_enable_video(m_linphoneConferenceParams, true);

@@ -299,14 +299,14 @@ int main(int argc, char *argv[])
     // running endless and call all Iterate functions
     int timeReached = 0;
     
-    g_s_capture.open(0);
+    //g_s_capture.open(0);
     cv::Mat raw;
-    g_s_capture.read(g_s_lastSnapshot);
-    g_s_capture.release();
-    raw = cv::imread("/home/kai/Bilder/input_.jpeg");
-    cv::resize(raw, g_s_lastSnapshot, cv::Size(640, 480));
+    //g_s_capture.read(g_s_lastSnapshot);
+    //g_s_capture.release();
+    raw = cv::imread("/home/pi/input_.jpeg");
+    cv::resize(raw, g_s_lastSnapshot, cv::Size(200, 200));
 
-    QUdpSocket* socket = new QUdpSocket();
+    //QUdpSocket* socket = new QUdpSocket();
     while(true) {
         // every millisecond
         a.processEvents();
@@ -320,7 +320,10 @@ int main(int argc, char *argv[])
             
             //cv::imshow("LIVE", snapshot);
 
-            if(timeReached % TIME_30_MS == 0) {
+//+g_s_capture.read(raw);
+
+            /*if(false && timeReached % TIME_30_MS == 0) {
+                cv::resize(raw, g_s_lastSnapshot, cv::Size(640,480));
                 std::string str = std::to_string(timeReached);
                 cv::rectangle(g_s_lastSnapshot, cv::Rect(40, 10, 100, 50), cv::Scalar(0,0,255), cv::FILLED);
                 cv::putText(g_s_lastSnapshot, str, cv::Point(50,50),cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),2,false);
@@ -333,8 +336,7 @@ int main(int argc, char *argv[])
                 qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Image size is too large:" << img.size() << "bytes";
 #endif
                 }
-            }
-            
+            }*/
         QThread::msleep(TIME_1_MS);
         timeReached += TIME_1_MS;
         if(timeReached > MAX_TIME_MS) {
