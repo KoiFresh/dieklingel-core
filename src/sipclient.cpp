@@ -72,8 +72,12 @@ void sip::Client::m_initialize()
         linphone_core_set_preferred_framerate(m_linphoneCore, 26.0);
         //linphone_core_set_video_device(m_linphoneCore, linphone_core_get_video_devices(m_linphoneCore)[2]);
         //qDebug() << linphone_core_get_video_devices(m_linphoneCore)[0];
+        linphone_core_set_video_jittcomp(m_linphoneCore, 5000);
+        linphone_core_set_audio_jittcomp(m_linphoneCore, 5000);
 #if DEBUG
         qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t " << "Linphone Core Version:" << linphone_core_get_version();
+        qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t jitter buffer in ms: " << linphone_core_get_video_jittcomp(m_linphoneCore);
+        qDebug() << "[DEBUG][sipclient.cpp, m_initialize()] \r\n\t delayed timeout: " << linphone_core_get_delayed_timeout(m_linphoneCore);
 #endif
         //qDebug() << linphone_core_get_ringback(m_linphoneCore);
         /*linphone_core_set_ringback(m_linphoneCore, NULL);

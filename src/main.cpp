@@ -3,9 +3,6 @@
 #include <QtConcurrent>
 #include <opencv2/opencv.hpp>
 #include <curl/curl.h>
-#include <QUdpSocket>
-#include <QTcpSocket>
-#include <QHostInfo>
 #include "toolbox.h"
 #include "sipclient.h"
 #include "dupserver.h"
@@ -163,7 +160,7 @@ int main(int argc, char *argv[])
                         capture.release();
                         bufferImage = dieklingel::Toolbox::s_mat_to_b64qstring(snapshot);
                     }else {
-                        bufferImage = dieklingel::Toolbox::s_mat_to_b64qstring(g_s_lastSnapshot);
+                        bufferImage = dieklingel::Toolbox::s_mat_to_b64qstring(cv::imread("/etc/dieklingel/Images/no_image.jpeg"));
                     }
 
                     QString title = "dieklingel.com " + QDateTime::currentDateTime().toString("dd.MM.yyyy HH:mm:ss");
@@ -298,15 +295,6 @@ int main(int argc, char *argv[])
     dieklingel::System::execute("boot");
     // running endless and call all Iterate functions
     int timeReached = 0;
-    
-    //g_s_capture.open(0);
-    cv::Mat raw;
-    //g_s_capture.read(g_s_lastSnapshot);
-    //g_s_capture.release();
-    raw = cv::imread("/home/pi/input_.jpeg");
-    cv::resize(raw, g_s_lastSnapshot, cv::Size(200, 200));
-
-    //QUdpSocket* socket = new QUdpSocket();
     while(true) {
         // every millisecond
         a.processEvents();
@@ -316,27 +304,7 @@ int main(int argc, char *argv[])
         {
             dieklingel::Io::s_iterate();
         }
-// show image   
-            
-            //cv::imshow("LIVE", snapshot);
 
-//+g_s_capture.read(raw);
-
-            /*if(false && timeReached % TIME_30_MS == 0) {
-                cv::resize(raw, g_s_lastSnapshot, cv::Size(640,480));
-                std::string str = std::to_string(timeReached);
-                cv::rectangle(g_s_lastSnapshot, cv::Rect(40, 10, 100, 50), cv::Scalar(0,0,255), cv::FILLED);
-                cv::putText(g_s_lastSnapshot, str, cv::Point(50,50),cv::FONT_HERSHEY_DUPLEX,1,cv::Scalar(0,255,0),2,false);
-                QByteArray img = dieklingel::Toolbox::s_mat_to_qbytearray(g_s_lastSnapshot);
-                if(img.size() < MAX_UDP_DATAGRAM_SIZE) 
-                {
-                    socket->writeDatagram(img, QHostAddress(BETA_VIDEO_IP), BETA_VIDEO_PORT);
-                }else {
-#if DEBUG
-                qDebug() << "[DEBUG][main.cpp, main()] \r\n\t Image size is too large:" << img.size() << "bytes";
-#endif
-                }
-            }*/
         QThread::msleep(TIME_1_MS);
         timeReached += TIME_1_MS;
         if(timeReached > MAX_TIME_MS) {
