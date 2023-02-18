@@ -3,7 +3,7 @@ version: '0.0.1'
 summary: Base Unit for dieKlinge
 description: Base Unit for dieKlingel
 confinement: strict
-base: core22
+base: core20
 grade: stable
 
 parts:
@@ -43,5 +43,5 @@ parts:
 apps:
   gui:
     command: bin/gui
-    extensions: [gnome]
+    extensions: [gnome-3-38]
     
