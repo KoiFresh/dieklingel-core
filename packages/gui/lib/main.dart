@@ -1,4 +1,6 @@
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -13,7 +15,11 @@ import 'models/mqtt_uri.dart';
 import 'models/sign_options.dart';
 import 'views/app_view.dart';
 
+import 'package:rtc/rtc.dart';
+
 void main() async {
+  Isolate.spawn<List<String>>(RtcPackage.main, []);
+
   WidgetsFlutterBinding.ensureInitialized();
 
   GetIt.I.registerSingleton(MqttClientBloc());
