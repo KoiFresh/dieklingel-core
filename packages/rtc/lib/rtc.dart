@@ -1,7 +1,11 @@
 library rtc;
 
+import 'package:rtc/app.dart';
+
 abstract class RtcPackage {
   static void main(List<String> args) {
-    print("rtc");
+    App app = App();
+
+    app.main();
   }
 }
