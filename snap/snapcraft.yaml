@@ -35,8 +35,7 @@ parts:
       - pkg-config
     override-build: |
       set -eux
-      flutter pub get || true
-      flutter pub run build_runner -d
+      flutter pub get
       flutter build linux --release -v
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
       cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/
