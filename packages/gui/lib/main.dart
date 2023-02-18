@@ -30,6 +30,7 @@ void main() async {
 
   await configure();
   await setup();
+  await connect();
 
   runApp(
     MultiBlocProvider(
@@ -131,6 +132,15 @@ Future<void> setup() async {
 
     await options.save();
   }
+}
+
+Future<void> connect() async {
+  Box settings = Hive.box("settings");
+  MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
+
+  bloc.usernanme.add(settings.get("mqtt.username"));
+  bloc.password.add(settings.get("mqtt.password"));
+  bloc.uri.add(settings.get("mqtt.uri"));
 }
 
 Future<YamlMap> getConfig() async {

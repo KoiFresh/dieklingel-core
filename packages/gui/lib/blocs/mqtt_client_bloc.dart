@@ -30,6 +30,8 @@ class MqttClientBloc extends Bloc {
   Sink<MqttUri?> get uri => _uri.sink;
   Stream<MqttClientState> get state => _state.stream;
   StreamSink<MapEntry<String, String>> get message => _message.sink;
+  StreamSink<String> get usernanme => _username.sink;
+  StreamSink<String> get password => _password.sink;
 
   MqttClient? _client;
 
@@ -38,13 +40,13 @@ class MqttClientBloc extends Bloc {
       _connect();
     });
 
-    _username.stream.listen((event) {
+    /* _username.stream.listen((event) {
       _connect();
-    });
+    });*/
 
-    _password.stream.listen((event) {
+    /* _password.stream.listen((event) {
       _connect();
-    });
+    });*/
 
     _message.stream.listen((event) {
       _publish(event.key, event.value);
