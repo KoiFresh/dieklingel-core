@@ -6,6 +6,9 @@ confinement: strict
 base: core20
 grade: stable
 
+environment:
+  LD_LIBRARY_PATH: ${SNAP_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}:$SNAP/usr/lib:$SNAP/usr/lib:$SNAP/bin/lib:$SNAP/bin/lib
+
 parts:
   flutter-git:
     source: https://github.com/flutter/flutter.git
