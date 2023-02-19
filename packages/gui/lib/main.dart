@@ -18,9 +18,9 @@ import 'views/app_view.dart';
 import 'package:rtc/rtc.dart';
 
 void main() async {
-  Isolate.spawn<List<String>>(RtcPackage.main, []);
-
   WidgetsFlutterBinding.ensureInitialized();
+
+  RtcPackage.main([]);
 
   GetIt.I.registerSingleton(MqttClientBloc());
 

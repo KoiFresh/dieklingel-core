@@ -162,6 +162,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.4"
+  dart_webrtc:
+    dependency: transitive
+    description:
+      name: dart_webrtc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.15"
   event_bus:
     dependency: transitive
     description:
@@ -214,6 +221,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_webrtc:
+    dependency: transitive
+    description:
+      name: flutter_webrtc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.23"
   frontend_server_client:
     dependency: transitive
     description:
@@ -424,6 +438,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
+  platform_detect:
+    dependency: transitive
+    description:
+      name: platform_detect
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.7"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -469,11 +490,9 @@ packages:
   rtc:
     dependency: "direct main"
     description:
-      path: "packages/rtc"
-      ref: "feature/rtc"
-      resolved-ref: "7d523ee89d4df63682c67ecf40d40557c8244af5"
-      url: "https://github.com/KoiFresh/dieklingel-core.git"
-    source: git
+      path: "../rtc"
+      relative: true
+    source: path
     version: "0.0.1"
   rxdart:
     dependency: "direct main"
@@ -606,6 +625,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.0"
+  webrtc_interface:
+    dependency: transitive
+    description:
+      name: webrtc_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.11"
   win32:
     dependency: transitive
     description:

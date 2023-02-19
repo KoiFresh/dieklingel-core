@@ -9,8 +9,8 @@ class SignalingMessage {
   SignalingMessage();
 
   SignalingMessage.fromJson(Map<String, dynamic> json)
-      : sender = json['sender'],
-        recipient = json['recipient'],
+      : sender = json['sender'] ?? "",
+        recipient = json['recipient'] ?? "",
         type = SignalingMessageType.fromString(json['type']),
         data = json['data'];
 

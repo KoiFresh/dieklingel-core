@@ -24,6 +24,14 @@ class IceServer {
     return "urls: $urls; username: $username; credential: $credential";
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      urls: urls,
+      username: username,
+      credential: credential,
+    };
+  }
+
   @override
   bool operator ==(Object other) {
     if (other is! IceServer) {

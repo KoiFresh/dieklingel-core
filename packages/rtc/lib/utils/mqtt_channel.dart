@@ -8,6 +8,10 @@ class MqttChannel {
     _topics = channels;
   }
 
+  factory MqttChannel.fromList(List<String> channel) {
+    return MqttChannel(channel.join("/"));
+  }
+
   MqttChannel append(String topic) {
     String channel = toString();
 
