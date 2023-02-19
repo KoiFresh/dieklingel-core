@@ -7,7 +7,11 @@ base: core20
 grade: stable
 
 environment:
-  LD_LIBRARY_PATH: ${SNAP_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}:$SNAP/usr/lib:$SNAP/usr/lib:$SNAP/bin/lib:$SNAP/bin/lib
+  LD_LIBRARY_PATH: ${SNAP_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}:$SNAP/usr/lib:$SNAP/usr/lib:$SNAP/bin/lib
+
+layout:
+  /etc/dieklingel:
+    bind: $SNAP/etc/dieklingel
 
 parts:
   flutter-git:
@@ -40,11 +44,38 @@ parts:
       set -eux
       flutter pub get
       flutter build linux --release -v
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/gui
+      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/gui/
+  rtc:
+    plugin: nil
+    source: packages/rtc
+    after: [flutter-git]
+    build-packages:
+      - pkg-config
+    override-build: |
+      set -eux
+      flutter pub get
+      flutter build linux --release -v
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/rtc
+      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/rtc/
 
 apps:
   gui:
-    command: bin/gui
+    command: bin/gui/gui
     extensions: [gnome-3-38]
-    
+    plugs:
+      - home
+      - wayland
+      - network
+  rtc:
+    command: bin/rtc/rtc
+    extensions: [gnome-3-38]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib
+    plugs:
+      - home
+      - wayland
+      - camera
+      - audio-playback
+      - audio-record
+      - network
