@@ -490,9 +490,11 @@ packages:
   rtc:
     dependency: "direct main"
     description:
-      path: "../rtc"
-      relative: true
-    source: path
+      path: "packages/rtc"
+      ref: "feature/rtc"
+      resolved-ref: "2df37a3332fe83f01be23ac4ecc9dea74c1fb170"
+      url: "https://github.com/KoiFresh/dieklingel-core.git"
+    source: git
     version: "0.0.1"
   rxdart:
     dependency: "direct main"
