@@ -1,4 +1,4 @@
-library shared;
+library dieklingel_core_shared;
 
 export 'bloc/bloc_provider.dart';
 export 'bloc/bloc.dart';
