@@ -1,18 +1,13 @@
-import 'dart:ffi';
 import 'dart:io';
-import 'dart:isolate';
 
+import 'package:dieklingel_core_shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:gui/bloc/bloc_provider.dart';
-import 'package:gui/bloc/multi_bloc_provider.dart';
 import 'package:gui/blocs/app_view_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:yaml/yaml.dart';
 
-import 'blocs/mqtt_client_bloc.dart';
-import 'models/mqtt_uri.dart';
 import 'models/sign_options.dart';
 import 'views/app_view.dart';
 
@@ -22,9 +17,7 @@ void main() async {
   GetIt.I.registerSingleton(MqttClientBloc());
 
   await Hive.initFlutter();
-  Hive
-    ..registerAdapter(MqttUriAdapter())
-    ..registerAdapter(SignOptionsAdapter());
+  Hive.registerAdapter(SignOptionsAdapter());
 
   await Future.wait([
     Hive.openBox<SignOptions>((SignOptions).toString()),

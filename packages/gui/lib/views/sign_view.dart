@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:dieklingel_core_shared/shared.dart';
+
 import '../blocs/mqtt_state_mixin.dart';
 import '../blocs/sign_view_bloc.dart';
 import '../blocs/stream_event.dart';
 import '../components/sign.dart';
 import '../models/sign_options.dart';
-import '/bloc/bloc_provider.dart';
 
 import 'package:flutter/material.dart';
 

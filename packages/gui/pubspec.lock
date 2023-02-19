@@ -162,6 +162,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.4"
+  dieklingel_core_shared:
+    dependency: "direct main"
+    description:
+      path: "packages/shared"
+      ref: "feature/shared"
+      resolved-ref: "206821444ae527201f3c07a8f02e6cb8f4dd7260"
+      url: "https://github.com/KoiFresh/dieklingel-core.git"
+    source: git
+    version: "0.0.1"
   event_bus:
     dependency: transitive
     description:

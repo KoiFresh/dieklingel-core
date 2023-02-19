@@ -1,9 +1,8 @@
 import 'dart:io';
 
+import 'package:dieklingel_core_shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import '../bloc/bloc_provider.dart';
-import '../blocs/mqtt_client_bloc.dart';
 import '../blocs/screensaver_view_bloc.dart';
 import '../models/screensaver_options.dart';
 import '../models/sign_options.dart';

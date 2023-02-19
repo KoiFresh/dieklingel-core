@@ -1,7 +1,7 @@
+import 'package:dieklingel_core_shared/shared.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../bloc/bloc_provider.dart';
 import '../blocs/app_view_bloc.dart';
 import '../utils/touch_scroll_behavior.dart';
 import 'home_view.dart';
