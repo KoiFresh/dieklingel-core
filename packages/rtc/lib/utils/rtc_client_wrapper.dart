@@ -46,12 +46,26 @@ class RtcClientWrapper {
       ..onConnectionState = wrapper._onConnectionState
       ..onTrack = wrapper._onTrack;
 
+    for (RtcTransceiver transceiver in transceivers) {
+      await wrapper.connection.addTransceiver(
+        kind: transceiver.kind,
+        init: RTCRtpTransceiverInit(direction: transceiver.direction),
+      );
+    }
+
     return wrapper;
   }
 
   void addMessage(SignalingMessage message) async {
     switch (message.type) {
       case SignalingMessageType.offer:
+        MediaStream? stream = ressource.stream;
+        if (null != stream) {
+          for (MediaStreamTrack track in stream.getTracks()) {
+            await connection.addTrack(track, stream);
+          }
+        }
+
         final remote = RTCSessionDescription(
           message.data["sdp"],
           message.data["type"],

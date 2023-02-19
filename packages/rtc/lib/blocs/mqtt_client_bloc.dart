@@ -144,6 +144,10 @@ class MqttClientBloc extends Bloc {
       () => BehaviorSubject(),
     );
 
+    controller.onCancel = () {
+      _subscribtions.remove(channel);
+    };
+
     return controller.stream;
   }
 

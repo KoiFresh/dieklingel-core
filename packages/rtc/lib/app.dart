@@ -25,6 +25,7 @@ class App {
 
   Future<void> setup() async {
     mqtt.answer("request/rtc/+", (String message) async {
+      // TODO(KoiFresh): setup from yaml
       List<IceServer> ice = [
         IceServer(urls: "stun:stun1.l.google.com:19302"),
         IceServer(urls: "stun:relay.metered.ca:80"),
