@@ -1,115 +1,161 @@
+import 'dart:ffi';
+import 'dart:io';
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:gui/bloc/bloc_provider.dart';
+import 'package:gui/bloc/multi_bloc_provider.dart';
+import 'package:gui/blocs/app_view_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:yaml/yaml.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'blocs/mqtt_client_bloc.dart';
+import 'models/mqtt_uri.dart';
+import 'models/sign_options.dart';
+import 'views/app_view.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  GetIt.I.registerSingleton(MqttClientBloc());
+
+  await Hive.initFlutter();
+  Hive
+    ..registerAdapter(MqttUriAdapter())
+    ..registerAdapter(SignOptionsAdapter());
+
+  await Future.wait([
+    Hive.openBox<SignOptions>((SignOptions).toString()),
+    Hive.openBox("settings"),
+  ]);
+
+  await configure();
+  await setup();
+  await connect();
+
+  runApp(
+    MultiBlocProvider(
+      blocs: [
+        BlocProvider(bloc: GetIt.I<MqttClientBloc>()),
+        BlocProvider(bloc: AppViewBloc()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+Future<void> configure() async {
+  MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+  bloc.answer("request/test/+", (message) async {
+    return "Ok";
+  });
+
+  Box settings = Hive.box("settings");
+
+  bloc.filter("display/state", (String message) {
+    if (settings.get("screensaver.enabled") as bool) {
+      if (message.toLowerCase().trim() == "off") {
+        return "off";
+      } else if (message.toLowerCase().trim() == "on") {
+        return "on";
+      }
+    }
+
+    return null;
+  });
+}
+
+Future<void> setup() async {
+  YamlMap config = await getConfig();
+  Box settings = Hive.box("settings");
+
+  settings.put(
+    "mqtt.uri",
+    MqttUri.fromUri(
+      Uri.parse(
+        config["mqtt"]?["uri"] ?? "mqtt://127.0.0.1:1883/com.dieklingel/",
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    ),
+  );
+
+  settings.put("mqtt.username", config["mqtt"]?["username"] ?? "");
+  settings.put("mqtt.password", config["mqtt"]?["password"] ?? "");
+
+  settings.put(
+    "viewport.clip.left",
+    double.parse(
+      config["viewport"]?["clip"]?["left"]?.toString() ?? "0",
+    ),
+  );
+
+  settings.put(
+    "viewport.clip.top",
+    double.parse(
+      config["viewport"]?["clip"]?["top"]?.toString() ?? "0",
+    ),
+  );
+
+  settings.put(
+    "viewport.clip.right",
+    double.parse(
+      config["viewport"]?["clip"]?["right"]?.toString() ?? "0",
+    ),
+  );
+
+  settings.put(
+    "viewport.clip.bottom",
+    double.parse(
+      config["viewport"]?["clip"]?["bottom"]?.toString() ?? "0",
+    ),
+  );
+
+  settings.put(
+    "screensaver.enabled",
+    config["screensaver"]?["enabled"] as bool? ?? true,
+  );
+
+  settings.put(
+    "screensaver.file",
+    config["screensaver"]?["file"] as String? ?? "",
+  );
+
+  await SignOptions.boxx.clear();
+  for (YamlMap sign in config["signs"] ?? []) {
+    SignOptions options;
+
+    try {
+      options = SignOptions.fromYaml(sign);
+    } catch (exception) {
+      stdout.writeln("Skip Sign: $exception");
+      continue;
+    }
+
+    await options.save();
+  }
+}
+
+Future<void> connect() async {
+  Box settings = Hive.box("settings");
+  MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
+
+  bloc.usernanme.add(settings.get("mqtt.username"));
+  bloc.password.add(settings.get("mqtt.password"));
+  bloc.uri.add(settings.get("mqtt.uri"));
+}
+
+Future<YamlMap> getConfig() async {
+  YamlMap result = YamlMap();
+  try {
+    final dir = await getApplicationDocumentsDirectory();
+    final configFile = File("${dir.path}/config.yaml");
+    result = await loadYaml(
+      await configFile.readAsString(),
     );
+  } catch (exception) {
+    stderr.writeln(exception);
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
+  return result;
 }
