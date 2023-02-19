@@ -50,6 +50,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.15"
+  dieklingel_core_shared:
+    dependency: "direct main"
+    description:
+      path: "packages/shared"
+      ref: "feature/shared"
+      resolved-ref: "206821444ae527201f3c07a8f02e6cb8f4dd7260"
+      url: "https://github.com/KoiFresh/dieklingel-core.git"
+    source: git
+    version: "0.0.1"
   event_bus:
     dependency: transitive
     description:
@@ -144,6 +153,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "9.7.4"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:
