@@ -90,7 +90,6 @@ class RtcClientWrapper {
         connection.setRemoteDescription(description);
         break;
       case SignalingMessageType.candidate:
-        print("candiddate");
         final candidate = RTCIceCandidate(
           message.data["candidate"],
           message.data["sdpMid"],
@@ -125,7 +124,6 @@ class RtcClientWrapper {
   }
 
   void _onIceCandidate(RTCIceCandidate candidate) {
-    print("candidate-");
     SignalingMessage message = SignalingMessage()
       ..type = SignalingMessageType.candidate
       ..data = candidate.toMap();
@@ -134,7 +132,14 @@ class RtcClientWrapper {
   }
 
   void _onConnectionState(RTCPeerConnectionState state) {
-    print(state);
+    switch (state) {
+      case RTCPeerConnectionState.RTCPeerConnectionStateFailed:
+      case RTCPeerConnectionState.RTCPeerConnectionStateDisconnected:
+        close();
+        break;
+      default:
+        break;
+    }
   }
 
   void _onTrack(RTCTrackEvent event) {
