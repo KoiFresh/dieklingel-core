@@ -44,12 +44,7 @@ dependencies:
   get_it: ^7.2.0
   yaml: ^3.1.1
   lottie: ^2.2.0
-  rtc:
-    #path: ../rtc 
-    git:
-      url: https://github.com/KoiFresh/dieklingel-core.git
-      ref: feature/rtc
-      path: packages/rtc
+  path_provider: ^2.0.12
 
 dev_dependencies:
   flutter_test:

@@ -8,6 +8,7 @@ import 'package:gui/bloc/bloc_provider.dart';
 import 'package:gui/bloc/multi_bloc_provider.dart';
 import 'package:gui/blocs/app_view_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:yaml/yaml.dart';
 
 import 'blocs/mqtt_client_bloc.dart';
@@ -15,12 +16,8 @@ import 'models/mqtt_uri.dart';
 import 'models/sign_options.dart';
 import 'views/app_view.dart';
 
-import 'package:rtc/rtc.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  RtcPackage.main([]);
 
   GetIt.I.registerSingleton(MqttClientBloc());
 
@@ -152,12 +149,13 @@ Future<void> connect() async {
 Future<YamlMap> getConfig() async {
   YamlMap result = YamlMap();
   try {
-    final configFile = File("/etc/dieklingel/config.yaml");
+    final dir = await getApplicationDocumentsDirectory();
+    final configFile = File("${dir.path}/config.yaml");
     result = await loadYaml(
       await configFile.readAsString(),
     );
   } catch (exception) {
-    // could not load, do nothing
+    stderr.writeln(exception);
   }
   return result;
 }
