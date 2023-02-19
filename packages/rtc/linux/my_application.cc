@@ -59,9 +59,8 @@ static void my_application_activate(GApplication* application) {
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
 
+  gtk_window_iconify(window);
   //gtk_widget_grab_focus(GTK_WIDGET(view));
-  // hide window, so the flutter lifecyle is running, but do not show any window 
-  gtk_widget_hide(GTK_WIDGET(window));
 }
 
 // Implements GApplication::local_command_line.
