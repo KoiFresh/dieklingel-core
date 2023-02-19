@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:rtc/rtc.dart';
 
 void main() {
   RtcPackage.main([]);
-  stdout.writeln("main--");
   runApp(const MyApp());
 }
 

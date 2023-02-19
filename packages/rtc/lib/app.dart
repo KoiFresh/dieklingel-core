@@ -80,7 +80,8 @@ class App {
         },
       );
 
-      await wrapper.ressource.open(true, true);
+      // TODO(KoiFresh): open audio in snap crashes, so we disable audio for now
+      await wrapper.ressource.open(false, true);
 
       connections[subscription] = wrapper;
       return "OK";

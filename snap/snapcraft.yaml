@@ -2,7 +2,7 @@ name: dieklingel-core
 version: '0.0.1'
 summary: Base Unit for dieKlinge
 description: Base Unit for dieKlingel
-confinement: strict
+confinement: devmode
 base: core20
 grade: stable
 
@@ -71,8 +71,7 @@ apps:
       - camera
       - audio-playback
       - audio-record
-      - system-observe
-      - process-control
+      - pulseaudio
     extensions: [gnome-3-38]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib

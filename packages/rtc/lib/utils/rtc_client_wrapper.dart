@@ -13,6 +13,7 @@ class RtcClientWrapper {
   final List<IceServer> servers;
   final List<RtcTransceiver> transceivers;
   late final RTCPeerConnection connection;
+  bool _isDisposed = false;
 
   void Function(SignalingMessage)? _onMessage;
 
@@ -62,7 +63,7 @@ class RtcClientWrapper {
         MediaStream? stream = ressource.stream;
         if (null != stream) {
           for (MediaStreamTrack track in stream.getTracks()) {
-            await connection.addTrack(track, stream);
+            connection.addTrack(track, stream);
           }
         }
 
@@ -87,7 +88,7 @@ class RtcClientWrapper {
           message.data["type"],
         );
 
-        connection.setRemoteDescription(description);
+        await connection.setRemoteDescription(description);
         break;
       case SignalingMessageType.candidate:
         final candidate = RTCIceCandidate(
@@ -96,7 +97,7 @@ class RtcClientWrapper {
           message.data["sdpMLineIndex"],
         );
 
-        connection.addCandidate(candidate);
+        await connection.addCandidate(candidate);
         break;
       case SignalingMessageType.leave:
       case SignalingMessageType.busy:
@@ -114,13 +115,17 @@ class RtcClientWrapper {
     SignalingMessage message = SignalingMessage()
       ..type = SignalingMessageType.leave;
 
-    _onMessage?.call(message);
     await dispose();
+    _onMessage?.call(message);
   }
 
   Future<void> dispose() async {
-    await connection.close();
+    if (_isDisposed) {
+      return;
+    }
+    _isDisposed = true;
     ressource.close();
+    await connection.close();
   }
 
   void _onIceCandidate(RTCIceCandidate candidate) {
