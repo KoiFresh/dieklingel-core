@@ -9,10 +9,6 @@ grade: stable
 environment:
   LD_LIBRARY_PATH: ${SNAP_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}:$SNAP/usr/lib:$SNAP/usr/lib:$SNAP/bin/lib
 
-layout:
-  /etc/dieklingel:
-    bind: $SNAP/etc/dieklingel
-
 parts:
   flutter-git:
     source: https://github.com/flutter/flutter.git
@@ -62,20 +58,21 @@ parts:
 apps:
   gui:
     command: bin/gui/gui
-    extensions: [gnome-3-38]
     plugs:
       - home
-      - wayland
       - network
+    extensions: [gnome-3-38]
+
   rtc:
     command: bin/rtc/rtc
-    extensions: [gnome-3-38]
-    environment:
-      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib
     plugs:
       - home
-      - wayland
+      - network
       - camera
       - audio-playback
       - audio-record
-      - network
+      - system-observe
+      - process-control
+    extensions: [gnome-3-38]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib
