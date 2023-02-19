@@ -58,6 +58,7 @@ parts:
 apps:
   gui:
     command: bin/gui/gui
+    daemon: simple
     plugs:
       - home
       - network
@@ -65,6 +66,7 @@ apps:
 
   rtc:
     command: bin/rtc/rtc
+    daemon: simple
     plugs:
       - home
       - network
