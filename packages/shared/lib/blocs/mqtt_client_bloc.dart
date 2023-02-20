@@ -144,11 +144,15 @@ class MqttClientBloc extends Bloc {
       () => BehaviorSubject(),
     );
 
+    controller.onCancel = () {
+      _subscribtions.remove(channel);
+    };
+
     return controller.stream;
   }
 
   void _publish(String topic, String message) {
-    if (_state.value != MqttClientState.connected) {
+    if (_state.valueOrNull != MqttClientState.connected) {
       throw "the mclient has to be connected, before publish";
     }
 
@@ -195,5 +199,25 @@ extension Handle on MqttClientBloc {
         message.add(ChannelMessage("${event.key}/response", result));
       },
     );
+  }
+
+  Future<String?> request(
+    String channel,
+    String message, {
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    Completer<String?> completer = Completer<String?>();
+    StreamSubscription subscription = watch(channel).listen((event) {
+      completer.complete(event.value);
+    });
+
+    this.message.add(ChannelMessage(channel, message));
+    String? result = await completer.future.timeout(
+      timeout,
+      onTimeout: () => null,
+    );
+
+    await subscription.cancel();
+    return result;
   }
 }

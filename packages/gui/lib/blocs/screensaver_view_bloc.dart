@@ -1,7 +1,7 @@
+import 'package:dieklingel_core_shared/shared.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../bloc/bloc.dart';
 import '../models/screensaver_options.dart';
 
 class ScreensaverViewBloc extends Bloc {

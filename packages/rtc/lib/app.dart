@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:rtc/blocs/mqtt_client_bloc.dart';
-import 'package:rtc/models/ice_server.dart';
-import 'package:rtc/models/mqtt_uri.dart';
+import 'package:dieklingel_core_shared/shared.dart';
 import 'package:rtc/signaling/signaling_message.dart';
 import 'package:rtc/signaling/signaling_message_type.dart';
 import 'package:rtc/utils/mqtt_channel.dart';

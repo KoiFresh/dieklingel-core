@@ -1,6 +1,6 @@
+import 'package:dieklingel_core_shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:rtc/models/ice_server.dart';
 import 'package:rtc/signaling/signaling_message.dart';
 import 'package:rtc/utils/media_ressource.dart';
 
