@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dieklingel_core_shared/shared.dart';
+import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 

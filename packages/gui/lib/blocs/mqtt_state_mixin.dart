@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dieklingel_core_shared/shared.dart';
+import 'package:dieklingel_core_shared/flutter_shared.dart';
 
 import 'stream_event.dart';
 import '../utils/mqtt_channel_constants.dart';

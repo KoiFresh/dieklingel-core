@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dieklingel_core_shared/shared.dart';
+import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/cupertino.dart';
 import '../blocs/mqtt_state_mixin.dart';
 import '../blocs/screensaver_view_bloc.dart';

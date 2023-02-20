@@ -1,4 +1,4 @@
-import 'package:dieklingel_core_shared/shared.dart';
+import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:rtc/signaling/signaling_message.dart';

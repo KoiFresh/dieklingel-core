@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dieklingel_core_shared/shared.dart';
+import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../blocs/screensaver_view_bloc.dart';

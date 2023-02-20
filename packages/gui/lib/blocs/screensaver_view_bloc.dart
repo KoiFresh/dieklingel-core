@@ -1,4 +1,4 @@
-import 'package:dieklingel_core_shared/shared.dart';
+import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 

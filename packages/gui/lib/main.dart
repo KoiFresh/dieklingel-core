@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dieklingel_core_shared/shared.dart';
+import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gui/blocs/app_view_bloc.dart';
