@@ -152,7 +152,7 @@ class MqttClientBloc extends Bloc {
   }
 
   void _publish(String topic, String message) {
-    if (_state.value != MqttClientState.connected) {
+    if (_state.valueOrNull != MqttClientState.connected) {
       throw "the mclient has to be connected, before publish";
     }
 
@@ -199,5 +199,10 @@ extension Handle on MqttClientBloc {
         message.add(ChannelMessage("${event.key}/response", result));
       },
     );
+  }
+
+  Future<String> request(String channel, String message) {
+    // TODO(KoiFresh): implement request method
+    throw UnimplementedError("Request is not implemented yet.");
   }
 }
