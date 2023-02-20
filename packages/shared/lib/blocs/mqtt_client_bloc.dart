@@ -201,8 +201,23 @@ extension Handle on MqttClientBloc {
     );
   }
 
-  Future<String> request(String channel, String message) {
-    // TODO(KoiFresh): implement request method
-    throw UnimplementedError("Request is not implemented yet.");
+  Future<String?> request(
+    String channel,
+    String message, {
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    Completer<String?> completer = Completer<String?>();
+    StreamSubscription subscription = watch(channel).listen((event) {
+      completer.complete(event.value);
+    });
+
+    this.message.add(ChannelMessage(channel, message));
+    String? result = await completer.future.timeout(
+      timeout,
+      onTimeout: () => null,
+    );
+
+    await subscription.cancel();
+    return result;
   }
 }
