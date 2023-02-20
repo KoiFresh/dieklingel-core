@@ -1,5 +1,7 @@
-import 'package:apn/apn.dart' as apn;
+import 'package:apn/apn.dart';
 
 void main(List<String> arguments) {
-  print('Hello world: ${apn.calculate()}!');
+  Apn apn = Apn();
+
+  apn.main();
 }

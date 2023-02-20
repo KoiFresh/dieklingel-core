@@ -1,8 +1,6 @@
 library dieklingel_core_shared;
 
-export 'bloc/bloc_provider.dart';
 export 'bloc/bloc.dart';
-export 'bloc/multi_bloc_provider.dart';
 
 export 'blocs/mqtt_client_bloc.dart';
 
