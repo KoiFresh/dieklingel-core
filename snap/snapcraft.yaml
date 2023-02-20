@@ -19,6 +19,7 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/libexec
       cp -r $SNAPCRAFT_PART_SRC $SNAPCRAFT_PART_INSTALL/usr/libexec/flutter
       ln -sf $SNAPCRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $SNAPCRAFT_PART_INSTALL/usr/bin/flutter
+      ln -sf $SNAPCRAFT_PART_INSTALL/usr/libexec/flutter/bin/dart $SNAPCRAFT_PART_INSTALL/usr/bin/dart
       export PATH="$SNAPCRAFT_PART_INSTALL/usr/bin:$PATH"
       flutter doctor
       flutter precache
@@ -54,19 +55,28 @@ parts:
       flutter build linux --release -v
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin/rtc
       cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/rtc/
+  apn:
+    plugin: nil
+    source: packages/apn
+    after: [flutter-git]
+    override-build: |
+      set -eux
+      dart pub get
+      dart compile exe bin/apn.dart -o apn
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/apn
+      cp apn $SNAPCRAFT_PART_INSTALL/bin/apn/apn
 
 apps:
   gui:
     command: bin/gui/gui
-    daemon: simple
+#    daemon: simple
     plugs:
       - home
       - network
     extensions: [gnome-3-38]
-
   rtc:
     command: bin/rtc/rtc
-    daemon: simple
+#    daemon: simple
     plugs:
       - home
       - network
@@ -77,3 +87,9 @@ apps:
     extensions: [gnome-3-38]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib
+  apn:
+    command: bin/apn/apn
+#    daemon: simple
+    plugs:
+      - home
+      - network
