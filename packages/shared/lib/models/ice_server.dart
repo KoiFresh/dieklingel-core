@@ -11,6 +11,14 @@ class IceServer {
     this.credential = "",
   });
 
+  factory IceServer.fromMap(Map<String, dynamic> map) {
+    return IceServer(
+      urls: map["urls"] ?? "",
+      username: map["username"] ?? "",
+      credential: map["credential"] ?? "",
+    );
+  }
+
   factory IceServer.fromYaml(YamlMap yaml) {
     return IceServer(
       urls: yaml["urls"] ?? "",
