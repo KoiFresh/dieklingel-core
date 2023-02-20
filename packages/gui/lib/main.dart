@@ -13,6 +13,7 @@ import 'models/sign_options.dart';
 import 'views/app_view.dart';
 
 void main() async {
+  stdout.writeln("GUI: Graphical User Interface");
   WidgetsFlutterBinding.ensureInitialized();
 
   GetIt.I.registerSingleton(MqttClientBloc());

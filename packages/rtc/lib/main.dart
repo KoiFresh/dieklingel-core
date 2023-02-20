@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rtc/rtc.dart';
 
 void main() {
+  stdout.writeln("RTC: Real Time Connection");
   RtcPackage.main([]);
   runApp(const MyApp());
 }
