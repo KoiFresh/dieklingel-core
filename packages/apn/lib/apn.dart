@@ -55,7 +55,7 @@ class Apn {
       sendPushNotification(registries);
     });
 
-    mqtt.answer("request/apn/register", (String message) async {
+    mqtt.answer("request/apn/register/+", (String message) async {
       Box<RegistryEntry> box = Hive.box<RegistryEntry>("apn");
 
       RegistryEntry entry;
