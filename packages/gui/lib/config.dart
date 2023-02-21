@@ -18,7 +18,9 @@ const String kSettingsGuiScreensaverFile = "gui.screensaver.file";
 Future<YamlMap> getConfig() async {
   YamlMap result = YamlMap();
   String path = p.join(
-    Platform.environment["HOME"] ?? "",
+    Platform.environment["SNAP_REAL_HOME"] ??
+        Platform.environment["HOME"] ??
+        "",
     "dieklingel",
     "config.yaml",
   );

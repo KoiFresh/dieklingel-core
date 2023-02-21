@@ -84,39 +84,39 @@ Future<void> setupConfigFile() async {
   settings.put(
     kSettingsGuiViewportClipLeft,
     double.parse(
-      config["viewport"]?["clip"]?["left"]?.toString() ?? "0",
+      config["gui"]?["viewport"]?["clip"]?["left"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
     kSettingsGuiViewportClipTop,
     double.parse(
-      config["viewport"]?["clip"]?["top"]?.toString() ?? "0",
+      config["gui"]?["viewport"]?["clip"]?["top"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
     kSettingsGuiViewportClipRight,
     double.parse(
-      config["viewport"]?["clip"]?["right"]?.toString() ?? "0",
+      config["gui"]?["viewport"]?["clip"]?["right"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
     kSettingsGuiViewportClipBottom,
     double.parse(
-      config["viewport"]?["clip"]?["bottom"]?.toString() ?? "0",
+      config["gui"]?["viewport"]?["clip"]?["bottom"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
     kSettingsGuiScreensaverEnabled,
-    config["screensaver"]?["enabled"] as bool? ?? true,
+    config["gui"]?["screensaver"]?["enabled"] as bool? ?? true,
   );
 
   settings.put(
     kSettingsGuiScreensaverFile,
-    config["screensaver"]?["file"] as String? ?? "",
+    config["gui"]?["screensaver"]?["file"] as String? ?? "",
   );
 
   await SignOptions.boxx.clear();

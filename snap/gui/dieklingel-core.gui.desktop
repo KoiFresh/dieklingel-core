@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=dieKlinge GUI
+Comment=Super Cool App that does everything
+Exec=dieklingel-core.gui
+Icon=/snap/dieklingel-core/current/meta/gui/dieklingel-core.png
+Terminal=false
+Type=Application
+Categories=Education;

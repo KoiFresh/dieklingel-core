@@ -24,7 +24,9 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
 
   Widget _lottie(BuildContext context) {
     String path = p.join(
-      Platform.environment["HOME"] ?? "",
+      Platform.environment["SNAP_REAL_HOME"] ??
+          Platform.environment["HOME"] ??
+          "",
       "dieklingel",
       widget.options.file,
     );
@@ -42,7 +44,9 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
 
   Widget _html(BuildContext context) {
     String path = p.join(
-      Platform.environment["HOME"] ?? "",
+      Platform.environment["SNAP_REAL_HOME"] ??
+          Platform.environment["HOME"] ??
+          "",
       "dieklingel",
       widget.options.file,
     );
@@ -64,7 +68,9 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
 
   Widget _image(BuildContext context) {
     String path = p.join(
-      Platform.environment["HOME"] ?? "",
+      Platform.environment["SNAP_REAL_HOME"] ??
+          Platform.environment["HOME"] ??
+          "",
       "dieklingel",
       widget.options.file,
     );
