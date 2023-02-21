@@ -120,13 +120,16 @@ class MqttClientBloc extends Bloc {
         String channel = channels.join("/");
 
         RegExp regExp = RegExp(
-            "^${channel.replaceAll("/+", "/[^/]+").replaceAll("#", ".+")}\$");
+          "^${channel.replaceAll("/+", "/[^/]+").replaceAll("#", ".+")}\$",
+        );
 
         if (regExp.hasMatch(topic)) {
-          if (!value.hasValue || value.value.value != message) {
-            value.add(ChannelMessage(
-                topic.replaceFirst(_uri.value?.channel ?? "", ""), message));
-          }
+          value.add(
+            ChannelMessage(
+              topic.replaceFirst(_uri.value?.channel ?? "", ""),
+              message,
+            ),
+          );
         }
       });
     });
