@@ -207,9 +207,11 @@ extension Handle on MqttClientBloc {
     Duration timeout = const Duration(seconds: 30),
   }) async {
     Completer<String?> completer = Completer<String?>();
-    StreamSubscription subscription = watch(channel).listen((event) {
-      completer.complete(event.value);
-    });
+    StreamSubscription subscription = watch("$channel/response").listen(
+      (event) {
+        completer.complete(event.value);
+      },
+    );
 
     this.message.add(ChannelMessage(channel, message));
     String? result = await completer.future.timeout(

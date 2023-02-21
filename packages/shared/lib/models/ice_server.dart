@@ -34,9 +34,9 @@ class IceServer {
 
   Map<String, dynamic> toMap() {
     return {
-      urls: urls,
-      username: username,
-      credential: credential,
+      "urls": urls,
+      "username": username,
+      "credential": credential,
     };
   }
 

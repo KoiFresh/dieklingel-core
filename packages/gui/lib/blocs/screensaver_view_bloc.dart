@@ -1,4 +1,5 @@
 import 'package:dieklingel_core_shared/flutter_shared.dart';
+import 'package:gui/config.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -14,8 +15,8 @@ class ScreensaverViewBloc extends Bloc {
   ScreensaverViewBloc() {
     Box settings = Hive.box("settings");
 
-    _file.add(settings.get("screensaver.file"));
-    settings.watch(key: "screensaver.file").listen((event) {
+    _file.add(settings.get(kSettingsGuiScreensaverFile));
+    settings.watch(key: kSettingsGuiScreensaverFile).listen((event) {
       _file.add(event.value);
     });
   }

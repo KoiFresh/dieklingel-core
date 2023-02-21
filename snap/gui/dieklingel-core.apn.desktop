@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=dieKlinge APN
+Comment=Super Cool App that does everything
+Exec=dieklingel-core.apn
+Icon=/snap/dieklingel-core/current/meta/gui/dieklingel-core.png
+Terminal=true
+Type=Application
+Categories=Education;

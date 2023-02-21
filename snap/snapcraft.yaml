@@ -69,14 +69,12 @@ parts:
 apps:
   gui:
     command: bin/gui/gui
-#    daemon: simple
     plugs:
       - home
       - network
     extensions: [gnome-3-38]
   rtc:
     command: bin/rtc/rtc
-#    daemon: simple
     plugs:
       - home
       - network
@@ -89,7 +87,6 @@ apps:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib
   apn:
     command: bin/apn/apn
-#    daemon: simple
     plugs:
       - home
       - network
