@@ -33,3 +33,8 @@ rtc:
       username: adsa
       credentials: ada
 
+apn:
+  url: https://fcm-worker.dieklingel.workers.dev/fcm/send
+  title: 'Jemand steht vor deiner Tuer!' 
+  body: '{DAY}-{MONTH}-{YEAR} {HOUR}:{MINUTE}:{SECOND}'
+
