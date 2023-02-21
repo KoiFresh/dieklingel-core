@@ -1,45 +1,59 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dieklingel_core_shared/flutter_shared.dart';
+import 'package:get_it/get_it.dart';
 import 'package:rtc/signaling/signaling_message.dart';
 import 'package:rtc/signaling/signaling_message_type.dart';
 import 'package:rtc/utils/mqtt_channel.dart';
 import 'package:rtc/utils/rtc_client_wrapper.dart';
+import 'package:yaml/yaml.dart';
+
+import 'config.dart';
 
 class App {
-  MqttUri uri = MqttUri(
-    host: "server.dieklingel.com",
-    port: 1883,
-    channel: "com.dieklingel/mayer/kai/",
-  );
-  MqttClientBloc mqtt = MqttClientBloc();
-  Map<StreamSubscription, RtcClientWrapper> connections = {};
+  late final MqttUri uri;
+  late final String username;
+  late final String password;
+  late final List<IceServer> servers = [];
 
-  Future<void> main() async {
-    mqtt.uri.add(uri);
-    await setup();
+  App() {
+    Future(() {});
   }
 
-  Future<void> setup() async {
-    mqtt.answer("request/rtc/+", (String message) async {
-      // TODO(KoiFresh): setup from yaml
-      List<IceServer> ice = [
-        IceServer(urls: "stun:stun1.l.google.com:19302"),
-        IceServer(urls: "stun:relay.metered.ca:80"),
-        IceServer(
-          urls: "turn:relay.metered.ca:80",
-          username: "b2d44a5253ab2ddd58522b34",
-          credential: "zeFyJa3y04YHpYs6",
-        ),
-        IceServer(
-          urls: "turn:relay.metered.ca:443",
-          username: "b2d44a5253ab2ddd58522b34",
-          credential: "zeFyJa3y04YHpYs6",
-        ),
-      ];
+  Future<void> setupConfigFile() async {
+    YamlMap config = await getConfig();
 
-      RtcClientWrapper wrapper = await RtcClientWrapper.create(iceServers: ice);
+    uri = MqttUri.fromUri(
+      Uri.parse(
+        config["mqtt"]?["uri"] ?? "mqtt://127.0.0.1:1883/com.dieklingel/",
+      ),
+    );
+
+    username = config["mqtt"]?["username"] ?? "";
+    password = config["mqtt"]?["password"] ?? "";
+
+    for (YamlMap ice in config["rtc"]?["ice-servers"] ?? []) {
+      IceServer server;
+
+      try {
+        server = IceServer.fromYaml(ice);
+      } catch (exception) {
+        stdout.writeln("Skip Server: $exception");
+        continue;
+      }
+
+      servers.add(server);
+    }
+  }
+
+  Future<void> setupMqttChannels() async {
+    MqttClientBloc mqtt = GetIt.I<MqttClientBloc>();
+    mqtt.answer("request/rtc/+", (String message) async {
+      RtcClientWrapper wrapper = await RtcClientWrapper.create(
+        iceServers: servers,
+      );
       MqttUri connUri = MqttUri.fromMap(jsonDecode(message));
 
       MqttChannel channel = MqttChannel(connUri.channel.toString()).remove(
@@ -85,4 +99,11 @@ class App {
       return "OK";
     });
   }
+
+  Future<void> connect() async {
+    MqttClientBloc mqtt = GetIt.I<MqttClientBloc>();
+    mqtt.uri.add(uri);
+  }
+
+  Map<StreamSubscription, RtcClientWrapper> connections = {};
 }
