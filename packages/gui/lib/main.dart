@@ -4,9 +4,9 @@ import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gui/blocs/app_view_bloc.dart';
+import 'package:gui/config.dart';
 import 'package:gui/hive/mqtt_uri_adapter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:yaml/yaml.dart';
 
 import 'models/sign_options.dart';
@@ -28,8 +28,8 @@ void main() async {
     Hive.openBox("settings"),
   ]);
 
-  await configure();
-  await setup();
+  await setupMqttChannels();
+  await setupConfigFile();
   await connect();
 
   runApp(
@@ -43,7 +43,7 @@ void main() async {
   );
 }
 
-Future<void> configure() async {
+Future<void> setupMqttChannels() async {
   MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
   bloc.answer("request/test/+", (message) async {
@@ -53,7 +53,7 @@ Future<void> configure() async {
   Box settings = Hive.box("settings");
 
   bloc.filter("display/state", (String message) {
-    if (settings.get("screensaver.enabled") as bool) {
+    if (settings.get(kSettingsGuiScreensaverEnabled) as bool) {
       if (message.toLowerCase().trim() == "off") {
         return "off";
       } else if (message.toLowerCase().trim() == "on") {
@@ -65,12 +65,12 @@ Future<void> configure() async {
   });
 }
 
-Future<void> setup() async {
+Future<void> setupConfigFile() async {
   YamlMap config = await getConfig();
   Box settings = Hive.box("settings");
 
   settings.put(
-    "mqtt.uri",
+    kSettingsMqttUri,
     MqttUri.fromUri(
       Uri.parse(
         config["mqtt"]?["uri"] ?? "mqtt://127.0.0.1:1883/com.dieklingel/",
@@ -78,49 +78,49 @@ Future<void> setup() async {
     ),
   );
 
-  settings.put("mqtt.username", config["mqtt"]?["username"] ?? "");
-  settings.put("mqtt.password", config["mqtt"]?["password"] ?? "");
+  settings.put(kSettingsMqttUsername, config["mqtt"]?["username"] ?? "");
+  settings.put(kSettingsMqttPassword, config["mqtt"]?["password"] ?? "");
 
   settings.put(
-    "viewport.clip.left",
+    kSettingsGuiViewportClipLeft,
     double.parse(
       config["viewport"]?["clip"]?["left"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
-    "viewport.clip.top",
+    kSettingsGuiViewportClipTop,
     double.parse(
       config["viewport"]?["clip"]?["top"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
-    "viewport.clip.right",
+    kSettingsGuiViewportClipRight,
     double.parse(
       config["viewport"]?["clip"]?["right"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
-    "viewport.clip.bottom",
+    kSettingsGuiViewportClipBottom,
     double.parse(
       config["viewport"]?["clip"]?["bottom"]?.toString() ?? "0",
     ),
   );
 
   settings.put(
-    "screensaver.enabled",
+    kSettingsGuiScreensaverEnabled,
     config["screensaver"]?["enabled"] as bool? ?? true,
   );
 
   settings.put(
-    "screensaver.file",
+    kSettingsGuiScreensaverFile,
     config["screensaver"]?["file"] as String? ?? "",
   );
 
   await SignOptions.boxx.clear();
-  for (YamlMap sign in config["signs"] ?? []) {
+  for (YamlMap sign in config["gui"]?["signs"] ?? []) {
     SignOptions options;
 
     try {
@@ -138,21 +138,7 @@ Future<void> connect() async {
   Box settings = Hive.box("settings");
   MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
-  bloc.usernanme.add(settings.get("mqtt.username"));
-  bloc.password.add(settings.get("mqtt.password"));
-  bloc.uri.add(settings.get("mqtt.uri"));
-}
-
-Future<YamlMap> getConfig() async {
-  YamlMap result = YamlMap();
-  try {
-    final dir = await getApplicationDocumentsDirectory();
-    final configFile = File("${dir.path}/config.yaml");
-    result = await loadYaml(
-      await configFile.readAsString(),
-    );
-  } catch (exception) {
-    stderr.writeln(exception);
-  }
-  return result;
+  bloc.usernanme.add(settings.get(kSettingsMqttUsername));
+  bloc.password.add(settings.get(kSettingsMqttPassword));
+  bloc.uri.add(settings.get(kSettingsMqttUri));
 }
