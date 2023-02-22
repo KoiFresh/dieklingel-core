@@ -81,7 +81,6 @@ apps:
       - camera
       - audio-playback
       - audio-record
-      - pulseaudio
     extensions: [gnome-3-38]
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib
