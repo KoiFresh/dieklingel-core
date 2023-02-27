@@ -6,7 +6,8 @@ enum SignType {
   none,
   lottie,
   html,
-  image;
+  image,
+  native;
 }
 
 @HiveType(typeId: 1)
@@ -53,6 +54,8 @@ class SignOptions extends HiveObject {
         file.endsWith(".jpeg") ||
         file.endsWith(".jpg")) {
       _type = SignType.image.index;
+    } else if (file.endsWith(".dart")) {
+      _type = SignType.native.index;
     } else {
       _type = SignType.none.index;
       throw "Cannot create Sign $identifier with file $file, extension is not supportet. Supportet extionses are: .lottie, .json, .html, .png, .jpeg, .jpg";

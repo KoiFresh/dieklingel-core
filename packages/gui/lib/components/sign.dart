@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:gui/components/rfw_library/rfw_library.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:path/path.dart' as p;
+import 'package:rfw/formats.dart';
+import 'package:rfw/rfw.dart';
 import '../models/sign_options.dart';
 
 class Sign extends StatefulWidget {
@@ -21,6 +24,8 @@ class Sign extends StatefulWidget {
 
 class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(vsync: this);
+  final Runtime _runtime = Runtime();
+  final DynamicContent _content = DynamicContent();
 
   Widget _lottie(BuildContext context) {
     String path = p.join(
@@ -39,6 +44,59 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
       onLoaded: (composition) {
         _controller.duration = composition.duration;
       },
+    );
+  }
+
+  Widget _native(BuildContext context) {
+    String path = p.join(
+      Platform.environment["SNAP_REAL_HOME"] ??
+          Platform.environment["HOME"] ??
+          "",
+      "dieklingel",
+      widget.options.file,
+    );
+    File dartfile = File(path);
+
+    return FutureBuilder(
+      future: dartfile.readAsString(),
+      builder: ((context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        String dart = snapshot.data!;
+
+        RemoteWidgetLibrary rwidget;
+        try {
+          rwidget = parseLibraryFile(dart);
+        } on ParserException catch (exception) {
+          stdout.writeln(
+            "Error on creating Sing: ${widget.options.identifier}: ${exception.toString()}",
+          );
+          return Text(exception.toString());
+        }
+        _runtime.update(
+          const LibraryName(<String>['core', 'widgets']),
+          createCoreWidgets(),
+        );
+        _runtime.update(
+          const LibraryName(<String>['dieKlingel']),
+          createDieklingelWidgets(),
+        );
+        _runtime.update(
+          const LibraryName(<String>['main']),
+          rwidget,
+        );
+
+        return RemoteWidget(
+            runtime: _runtime,
+            widget: const FullyQualifiedWidgetName(
+              LibraryName(['main']),
+              'root',
+            ),
+            data: _content);
+      }),
     );
   }
 
@@ -100,6 +158,9 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
         break;
       case SignType.image:
         child = _image(context);
+        break;
+      case SignType.native:
+        child = _native(context);
         break;
       default:
         child = _text(context);
