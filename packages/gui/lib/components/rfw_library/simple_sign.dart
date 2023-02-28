@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gui/components/tap_detector.dart';
 
 class SimpleSign extends StatefulWidget {
   final String text;
@@ -25,8 +26,8 @@ class _SimpleSign extends State<SimpleSign>
 
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: (PointerDownEvent event) async {
+    return TapDetector(
+      onTap: () async {
         await _controller.forward();
         await _controller.reverse();
       },

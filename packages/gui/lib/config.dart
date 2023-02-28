@@ -12,6 +12,7 @@ const String kSettingsGuiViewportClipRight = "gui.viewport.clip.right";
 const String kSettingsGuiViewportClipBottom = "gui.viewport.clip.bottom";
 const String kSettingsGuiViewportClipLeft = "gui.viewport.clip.left";
 
+const String kSettingsGuiScreensaverTimeout = "gui.screensaver.timeout";
 const String kSettingsGuiScreensaverEnabled = "gui.screensaver.enabled";
 const String kSettingsGuiScreensaverFile = "gui.screensaver.file";
 

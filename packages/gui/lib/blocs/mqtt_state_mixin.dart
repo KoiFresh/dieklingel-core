@@ -17,6 +17,15 @@ mixin MqttStateMixin {
     );
   }
 
+  void setActivityState(ActivityState state) {
+    GetIt.I<MqttClientBloc>().message.add(
+          ChannelMessage(
+            kIoActivityState,
+            state.toString(),
+          ),
+        );
+  }
+
   Stream<DisplayState> get display {
     return GetIt.I<MqttClientBloc>().watch(kIoDisplayState).map(
       (event) {
@@ -25,5 +34,14 @@ mixin MqttStateMixin {
             : DisplayOnState();
       },
     );
+  }
+
+  void setDisplayState(DisplayState state) {
+    GetIt.I<MqttClientBloc>().message.add(
+          ChannelMessage(
+            kIoDisplayState,
+            state.toString(),
+          ),
+        );
   }
 }

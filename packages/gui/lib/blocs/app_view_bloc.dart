@@ -1,15 +1,19 @@
 import 'dart:async';
 
 import 'package:dieklingel_core_shared/flutter_shared.dart';
+import 'package:gui/blocs/mqtt_state_mixin.dart';
 import 'package:gui/config.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/painting.dart';
 
-class AppViewBloc extends Bloc {
+class AppViewBloc extends Bloc with MqttStateMixin {
   final _clip = BehaviorSubject<EdgeInsets>();
+  final _timeout = BehaviorSubject<Duration>();
 
   Stream<EdgeInsets> get clip => _clip.stream;
+
+  Stream<Duration> get timeout => _timeout.stream;
 
   AppViewBloc() {
     Box settings = Hive.box("settings");
@@ -21,21 +25,35 @@ class AppViewBloc extends Bloc {
       settings.get(kSettingsGuiViewportClipBottom, defaultValue: 0.0),
     ));
 
-    settings.watch(key: "viewport.clip.left").listen((event) {
+    settings.watch(key: kSettingsGuiViewportClipLeft).listen((event) {
       EdgeInsets insets = _clip.value.copyWith(left: event.value);
       _clip.add(insets);
     });
-    settings.watch(key: "viewport.clip.top").listen((event) {
+    settings.watch(key: kSettingsGuiViewportClipTop).listen((event) {
       EdgeInsets insets = _clip.value.copyWith(top: event.value);
       _clip.add(insets);
     });
-    settings.watch(key: "viewport.clip.right").listen((event) {
+    settings.watch(key: kSettingsGuiViewportClipRight).listen((event) {
       EdgeInsets insets = _clip.value.copyWith(right: event.value);
       _clip.add(insets);
     });
-    settings.watch(key: "viewport.clip.bottom").listen((event) {
+    settings.watch(key: kSettingsGuiViewportClipBottom).listen((event) {
       EdgeInsets insets = _clip.value.copyWith(bottom: event.value);
       _clip.add(insets);
+    });
+
+    _timeout.add(
+      Duration(
+        seconds: settings.get(
+          kSettingsGuiScreensaverTimeout,
+          defaultValue: 30,
+        ),
+      ),
+    );
+
+    settings.watch(key: kSettingsGuiScreensaverTimeout).listen((event) {
+      Duration duration = Duration(seconds: event.value);
+      _timeout.add(duration);
     });
   }
 
