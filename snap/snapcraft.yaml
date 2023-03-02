@@ -39,9 +39,6 @@ parts:
       - pkg-config
       - libgstreamer1.0-dev
       - libgstreamer-plugins-base1.0-dev
-    stage-packages:
-      - libgstreamer1.0-dev
-      - libgstreamer-plugins-base1.0-dev
     override-build: |
       set -eux
       flutter pub get
