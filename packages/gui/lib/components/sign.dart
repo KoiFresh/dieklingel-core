@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:gui/components/rfw_library/rfw_library.dart';
 import 'package:lottie/lottie.dart';
@@ -6,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:path/path.dart' as p;
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
+import 'package:rxdart/streams.dart';
 import '../models/sign_options.dart';
 
 class Sign extends StatefulWidget {
@@ -24,6 +26,7 @@ class Sign extends StatefulWidget {
 
 class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(vsync: this);
+  final AudioPlayer _player = AudioPlayer();
   final Runtime _runtime = Runtime();
   final DynamicContent _content = DynamicContent();
 
@@ -167,9 +170,28 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
         break;
     }
 
+    Future<void> play() async {
+      String? sound = widget.options.sound;
+      if (sound == null || sound.isEmpty) {
+        return;
+      }
+      String path = p.join(
+        Platform.environment["SNAP_REAL_HOME"] ??
+            Platform.environment["HOME"] ??
+            "",
+        "dieklingel",
+        sound,
+      );
+      await _player.setSourceDeviceFile(path);
+      await _player.stop();
+      await _player.resume();
+    }
+
     return GestureDetector(
       onTap: () async {
         widget.onTap?.call(widget.options.identifier);
+
+        play();
 
         if (widget.options.type == SignType.lottie) {
           await _controller.forward(from: 0);
