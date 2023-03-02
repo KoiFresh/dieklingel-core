@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path/path.dart' as p;
+
 import '../blocs/screensaver_view_bloc.dart';
 import '../models/screensaver_options.dart';
 import '../models/sign_options.dart';
@@ -37,11 +39,19 @@ class ScreensaverView extends StatelessWidget {
   }
 
   Widget _image(BuildContext context, String path) {
+    String fullPath = p.join(
+      Platform.environment["SNAP_REAL_HOME"] ??
+          Platform.environment["HOME"] ??
+          "",
+      "dieklingel",
+      path,
+    );
+
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Image.file(
-        File(path),
+        File(fullPath),
         fit: BoxFit.cover,
       ),
     );
