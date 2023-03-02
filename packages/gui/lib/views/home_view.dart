@@ -28,7 +28,7 @@ class _HomeView extends State<HomeView> with MqttStateMixin {
   @override
   void initState() {
     _activity = activity.listen((event) {
-      if (event is InactiveState) {
+      if (event is InactiveState && _controller.hasClients) {
         _controller.jumpToPage(0);
       }
     });

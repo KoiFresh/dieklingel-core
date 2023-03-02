@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:gui/blocs/app_state_bloc.dart';
 import 'package:gui/blocs/app_view_bloc.dart';
 import 'package:gui/blocs/stream_event.dart';
 import 'package:gui/config.dart';
@@ -18,8 +19,6 @@ void main() async {
   stdout.writeln("GUI: Graphical User Interface");
   WidgetsFlutterBinding.ensureInitialized();
 
-  GetIt.I.registerSingleton(MqttClientBloc());
-
   await Hive.initFlutter();
   Hive
     ..registerAdapter(SignOptionsAdapter())
@@ -29,6 +28,9 @@ void main() async {
     Hive.openBox<SignOptions>((SignOptions).toString()),
     Hive.openBox("settings"),
   ]);
+
+  GetIt.I.registerSingleton(MqttClientBloc());
+  GetIt.I.registerSingleton(AppStateBloc());
 
   await setupMqttChannels();
   await setupConfigFile();
