@@ -30,8 +30,8 @@ class _SimpleSign extends State<SimpleSign>
     return GestureDetector(
       onTap: () async {
         widget.onTap?.call();
-        await _controller.forward();
-        await _controller.reverse();
+        await _controller.forward(from: 0);
+        //await _controller.reverse();
       },
       child: Container(
         width: double.infinity,
@@ -54,9 +54,28 @@ class _SimpleSign extends State<SimpleSign>
                     top: widget.height / 35,
                     child: RotationTransition(
                       alignment: Alignment.topCenter,
-                      turns: Tween(begin: 0.0, end: -0.02)
-                          .chain(CurveTween(curve: Curves.elasticIn))
-                          .animate(_controller),
+                      turns: TweenSequence([
+                        TweenSequenceItem(
+                          tween: Tween(begin: 0.0, end: -0.02),
+                          weight: 1.0,
+                        ),
+                        TweenSequenceItem(
+                          tween: Tween(begin: -0.02, end: 0.02),
+                          weight: 1.2,
+                        ),
+                        TweenSequenceItem(
+                          tween: Tween(begin: 0.02, end: -0.02),
+                          weight: 1.2,
+                        ),
+                        TweenSequenceItem(
+                          tween: Tween(begin: -0.02, end: 0.02),
+                          weight: 0.6,
+                        ),
+                        TweenSequenceItem(
+                          tween: Tween(begin: 0.01, end: 0.0),
+                          weight: 0.2,
+                        )
+                      ]).animate(_controller),
                       child: Image.asset(
                         "assets/images/clapper.png",
                         fit: BoxFit.fitHeight,
@@ -67,9 +86,24 @@ class _SimpleSign extends State<SimpleSign>
                   Positioned(
                     child: RotationTransition(
                       alignment: Alignment.topCenter,
-                      turns: Tween(begin: 0.0, end: 0.03)
-                          .chain(CurveTween(curve: Curves.elasticIn))
-                          .animate(_controller),
+                      turns: TweenSequence([
+                        TweenSequenceItem(
+                          tween: Tween(begin: 0.0, end: 0.04),
+                          weight: 1.0,
+                        ),
+                        TweenSequenceItem(
+                          tween: Tween(begin: 0.04, end: -0.03),
+                          weight: 1.2,
+                        ),
+                        TweenSequenceItem(
+                          tween: Tween(begin: -0.03, end: 0.03),
+                          weight: 1.2,
+                        ),
+                        TweenSequenceItem(
+                          tween: Tween(begin: 0.02, end: 0.0),
+                          weight: 0.8,
+                        )
+                      ]).animate(_controller),
                       child: Image.asset(
                         "assets/images/bell.png",
                         fit: BoxFit.fitHeight,
