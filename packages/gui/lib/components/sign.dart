@@ -93,12 +93,18 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
         );
 
         return RemoteWidget(
-            runtime: _runtime,
-            widget: const FullyQualifiedWidgetName(
-              LibraryName(['main']),
-              'root',
-            ),
-            data: _content);
+          runtime: _runtime,
+          widget: const FullyQualifiedWidgetName(
+            LibraryName(['main']),
+            'root',
+          ),
+          data: _content,
+          onEvent: (eventName, eventArguments) {
+            if (eventName == "ring") {
+              _onClick();
+            }
+          },
+        );
       }),
     );
   }
@@ -148,6 +154,33 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
     );
   }
 
+  Future<void> _onClick() async {
+    widget.onTap?.call(widget.options.identifier);
+
+    _play();
+
+    if (widget.options.type == SignType.lottie) {
+      await _controller.forward(from: 0);
+    }
+  }
+
+  Future<void> _play() async {
+    String? sound = widget.options.sound;
+    if (sound == null || sound.isEmpty) {
+      return;
+    }
+    String path = p.join(
+      Platform.environment["SNAP_REAL_HOME"] ??
+          Platform.environment["HOME"] ??
+          "",
+      "dieklingel",
+      sound,
+    );
+    await _player.setSourceDeviceFile(path);
+    await _player.stop();
+    await _player.resume();
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget child;
@@ -170,33 +203,8 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
         break;
     }
 
-    Future<void> play() async {
-      String? sound = widget.options.sound;
-      if (sound == null || sound.isEmpty) {
-        return;
-      }
-      String path = p.join(
-        Platform.environment["SNAP_REAL_HOME"] ??
-            Platform.environment["HOME"] ??
-            "",
-        "dieklingel",
-        sound,
-      );
-      await _player.setSourceDeviceFile(path);
-      await _player.stop();
-      await _player.resume();
-    }
-
     return GestureDetector(
-      onTap: () async {
-        widget.onTap?.call(widget.options.identifier);
-
-        play();
-
-        if (widget.options.type == SignType.lottie) {
-          await _controller.forward(from: 0);
-        }
-      },
+      onTap: () => _onClick(),
       child: Container(
         color: Colors.red,
         child: child,

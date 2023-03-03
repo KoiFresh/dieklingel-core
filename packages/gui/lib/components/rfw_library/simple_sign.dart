@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:gui/components/tap_detector.dart';
 
 class SimpleSign extends StatefulWidget {
   final String text;
   final double height;
   final Color backgroundColor;
+  final void Function()? onTap;
 
   const SimpleSign({
     required this.text,
     required this.height,
     required this.backgroundColor,
+    this.onTap,
     super.key,
   });
 
@@ -26,8 +27,9 @@ class _SimpleSign extends State<SimpleSign>
 
   @override
   Widget build(BuildContext context) {
-    return TapDetector(
+    return GestureDetector(
       onTap: () async {
+        widget.onTap?.call();
         await _controller.forward();
         await _controller.reverse();
       },

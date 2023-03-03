@@ -17,6 +17,7 @@ WidgetLibrary createDieklingelWidgets() {
           text: text,
           height: height,
           backgroundColor: color,
+          onTap: source.voidHandler(['onTap']),
         );
       }
     },
