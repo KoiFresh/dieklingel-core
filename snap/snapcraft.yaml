@@ -37,6 +37,13 @@ parts:
     after: [flutter-git]
     build-packages:
       - pkg-config
+      - libgstreamer1.0-dev
+      - libgstreamer-plugins-base1.0-dev
+    stage-packages:
+      # add stage-packages in order to be able to create a gstreamer playbin used by gui/audioplayers
+      - libgtk-3-0
+      - gstreamer1.0-plugins-bad
+      - gstreamer1.0-plugins-good
     override-build: |
       set -eux
       flutter pub get
@@ -76,6 +83,8 @@ apps:
       - home
       - network
     extensions: [gnome-3-38]
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/gui/lib
   rtc:
     command: bin/rtc/rtc
     daemon: simple
