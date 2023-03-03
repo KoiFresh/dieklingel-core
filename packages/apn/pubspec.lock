@@ -75,8 +75,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/shared"
-      ref: "feature/shared"
-      resolved-ref: "64cbcdd6e9027a5b06f272908249442c5c443220"
+      ref: develop
+      resolved-ref: "6d9deaebb324fcc53de9e7bd22ce72640049ceea"
       url: "https://github.com/KoiFresh/dieklingel-core.git"
     source: git
     version: "0.0.1"

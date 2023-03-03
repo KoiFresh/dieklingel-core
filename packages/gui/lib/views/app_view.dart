@@ -1,6 +1,10 @@
 import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:gui/blocs/app_state_bloc.dart';
+import 'package:gui/blocs/stream_event.dart';
+import 'package:gui/components/activity_listener.dart';
 
 import '../blocs/app_view_bloc.dart';
 import '../utils/touch_scroll_behavior.dart';
@@ -8,6 +12,18 @@ import 'home_view.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  Widget _app(BuildContext context) {
+    return CupertinoApp(
+      scrollBehavior: TouchScrollBehavior(),
+      home: ActivityListener(
+        onActivity: () {
+          GetIt.I<AppStateBloc>().activity.add(ActiveState());
+        },
+        child: const HomeView(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +39,7 @@ class MyApp extends StatelessWidget {
           child: ClipRRect(
             clipBehavior: Clip.antiAliasWithSaveLayer,
             borderRadius: BorderRadius.circular(20),
-            child: CupertinoApp(
-              scrollBehavior: TouchScrollBehavior(),
-              home: const HomeView(),
-            ),
+            child: _app(context),
           ),
         );
       },

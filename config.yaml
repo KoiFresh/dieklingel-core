@@ -23,6 +23,8 @@ gui:
       file: /abs/path/file.<lottie>|<.json>|<.html>|<.png>|<.jpeg>|<.jpg>
       sound: /abs/path/file<.wav>|<.mp3>
   screensaver:
+    # timeout in seconds when the screen will switch to inactive state
+    timeout: 10
     enabled: true
     file: /abs/path/file.<lottie>|<.json>|<.html>|<.png>|<.jpeg>|<.jpg>
 

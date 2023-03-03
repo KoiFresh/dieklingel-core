@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:gui/blocs/app_state_bloc.dart';
 import 'package:gui/blocs/app_view_bloc.dart';
+import 'package:gui/blocs/stream_event.dart';
 import 'package:gui/config.dart';
 import 'package:gui/hive/mqtt_uri_adapter.dart';
+import 'package:gui/utils/mqtt_channel_constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:yaml/yaml.dart';
 
@@ -16,8 +19,6 @@ void main() async {
   stdout.writeln("GUI: Graphical User Interface");
   WidgetsFlutterBinding.ensureInitialized();
 
-  GetIt.I.registerSingleton(MqttClientBloc());
-
   await Hive.initFlutter();
   Hive
     ..registerAdapter(SignOptionsAdapter())
@@ -27,6 +28,9 @@ void main() async {
     Hive.openBox<SignOptions>((SignOptions).toString()),
     Hive.openBox("settings"),
   ]);
+
+  GetIt.I.registerSingleton(MqttClientBloc());
+  GetIt.I.registerSingleton(AppStateBloc());
 
   await setupMqttChannels();
   await setupConfigFile();
@@ -52,7 +56,31 @@ Future<void> setupMqttChannels() async {
 
   Box settings = Hive.box("settings");
 
-  bloc.filter("display/state", (String message) {
+  bloc.watch(kIoActivityState).listen((event) {
+    if (!(settings.get(kSettingsGuiScreensaverEnabled) as bool)) {
+      return;
+    }
+
+    String message = event.value;
+
+    if (message.toLowerCase().trim() == ActiveState().toString()) {
+      bloc.message.add(
+        ChannelMessage(
+          kIoDisplayState,
+          DisplayOnState().toString(),
+        ),
+      );
+    } else if (message.toLowerCase().trim() == InactiveState().toString()) {
+      bloc.message.add(
+        ChannelMessage(
+          kIoDisplayState,
+          DisplayOffState().toString(),
+        ),
+      );
+    }
+  });
+
+  bloc.filter(kIoDisplayState, (String message) {
     if (settings.get(kSettingsGuiScreensaverEnabled) as bool) {
       if (message.toLowerCase().trim() == "off") {
         return "off";
@@ -107,6 +135,11 @@ Future<void> setupConfigFile() async {
     double.parse(
       config["gui"]?["viewport"]?["clip"]?["bottom"]?.toString() ?? "0",
     ),
+  );
+
+  settings.put(
+    kSettingsGuiScreensaverTimeout,
+    config["gui"]?["screensaver"]?["timeout"] as int? ?? 30,
   );
 
   settings.put(

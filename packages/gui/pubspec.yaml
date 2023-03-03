@@ -52,6 +52,7 @@ dependencies:
       path: packages/shared
   path: ^1.8.2
   rfw: ^1.0.8
+  audioplayers: ^3.0.1
 
 dev_dependencies:
   flutter_test:
