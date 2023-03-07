@@ -2,6 +2,7 @@ class MqttUri {
   final String host;
   final int port;
   final String channel;
+  final String section;
   final bool ssl;
   final bool websocket;
 
@@ -9,6 +10,7 @@ class MqttUri {
     required this.host,
     required this.port,
     this.channel = "",
+    this.section = "",
     this.ssl = true,
     this.websocket = false,
   });
@@ -18,6 +20,7 @@ class MqttUri {
       host: json["host"],
       port: json["port"],
       channel: json["channel"],
+      section: json["section"],
       ssl: json["ssl"].toString() != "false",
       websocket: json["websocket"].toString() == "true",
     );
@@ -28,6 +31,7 @@ class MqttUri {
       host: uri.host,
       port: uri.port,
       channel: uri.path.substring(1),
+      section: uri.fragment,
       ssl: uri.scheme == "mqtts" || uri.scheme == "wss",
       websocket: uri.scheme == "ws" || uri.scheme == "wss",
     );
@@ -38,6 +42,7 @@ class MqttUri {
       "host": host,
       "port": port,
       "channel": channel,
+      "section": section,
       "ssl": ssl,
       "websocket": websocket,
     };
@@ -55,6 +60,7 @@ class MqttUri {
       host: host,
       port: port,
       path: channel,
+      fragment: section,
       scheme: scheme,
     );
   }
@@ -67,6 +73,7 @@ class MqttUri {
     return host == other.host &&
         port == other.port &&
         channel == other.channel &&
+        section == other.section &&
         ssl == other.ssl &&
         websocket == other.websocket;
   }
@@ -79,6 +86,7 @@ class MqttUri {
     String? host,
     int? port,
     String? channel,
+    String? section,
     bool? ssl,
     bool? websocket,
   }) {
@@ -86,6 +94,7 @@ class MqttUri {
       host: host ?? this.host,
       port: port ?? this.port,
       channel: channel ?? this.channel,
+      section: section ?? this.section,
       ssl: ssl ?? this.ssl,
       websocket: websocket ?? this.websocket,
     );
@@ -93,9 +102,9 @@ class MqttUri {
 
   @override
   String toString() {
-    return "host: $host; port: $port; channel: $channel; ssl: $ssl; websocket: $websocket";
+    return "host: $host; port: $port; channel: $channel; section: $section; ssl: $ssl; websocket: $websocket";
   }
 
   @override
-  int get hashCode => Object.hash(host, port, channel, ssl, websocket);
+  int get hashCode => Object.hash(host, port, channel, section, ssl, websocket);
 }
