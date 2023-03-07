@@ -3,11 +3,8 @@ version: '0.0.1'
 summary: Base Unit for dieKlinge
 description: Base Unit for dieKlingel
 confinement: devmode
-base: core20
+base: core22
 grade: stable
-
-environment:
-  LD_LIBRARY_PATH: ${SNAP_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}:$SNAP/usr/lib:$SNAP/usr/lib:$SNAP/bin/lib
 
 parts:
   flutter-git:
@@ -39,11 +36,6 @@ parts:
       - pkg-config
       - libgstreamer1.0-dev
       - libgstreamer-plugins-base1.0-dev
-    stage-packages:
-      # add stage-packages in order to be able to create a gstreamer playbin used by gui/audioplayers
-      - libgtk-3-0
-      - gstreamer1.0-plugins-bad
-      - gstreamer1.0-plugins-good
     override-build: |
       set -eux
       flutter pub get
@@ -82,9 +74,7 @@ apps:
     plugs:
       - home
       - network
-    extensions: [gnome-3-38]
-    environment:
-      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/gui/lib
+    extensions: [gnome]
   rtc:
     command: bin/rtc/rtc
     daemon: simple
@@ -96,9 +86,9 @@ apps:
       - camera
       - audio-playback
       - audio-record
-    extensions: [gnome-3-38]
+    extensions: [gnome]
     environment:
-      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/bin/rtc/lib
+      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/rtc/lib"
   apn:
     command: bin/apn/apn
     daemon: simple
