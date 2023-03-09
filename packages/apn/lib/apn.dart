@@ -117,23 +117,21 @@ class Apn {
     // TODO(KoiFresh): opional update push notification
     await http.post(worker, body: jsonEncode(payload));
 
-    String? result = await mqtt.request("request/rtc/snapshot/$id", id);
-    if (result == null) {
+    MqttResponse result = await mqtt.request("request/rtc/snapshot/$id", id);
+    if (result.status == 200) {
       return;
     }
-    Map<String, dynamic> response = jsonDecode(result);
-    print(response);
-    if (response["status"] != 200) {
+    if (result.body is! String) {
+      // body is not an image
       return;
     }
-    String base64 = response["message"];
 
     payload = {
       "tokens": entries.map((e) => e.token).toList(),
       "id": id,
       "title": title,
       "body": body,
-      "image": base64,
+      "image": result.body,
     };
 
     await http.post(worker, body: jsonEncode(payload));
