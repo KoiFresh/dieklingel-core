@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dieklingel_core_shared/flutter_shared.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rtc/signaling/signaling_message.dart';
 import 'package:rtc/signaling/signaling_message_type.dart';
+import 'package:rtc/utils/media_ressource.dart';
 import 'package:rtc/utils/mqtt_channel.dart';
 import 'package:rtc/utils/rtc_client_wrapper.dart';
 import 'package:yaml/yaml.dart';
@@ -96,6 +98,34 @@ class App {
 
       connections[subscription] = wrapper;
       return "OK";
+      // TODO: return json instead of string
+      /* return jsonEncode({
+        "status": 200,
+        "message": "Ok",
+      });*/
+    });
+
+    mqtt.answer("request/rtc/snapshot/+", (message) async {
+      MediaRessource ressource = MediaRessource();
+      MediaStream? stream = await ressource.open(false, true);
+      if (stream == null || stream.getVideoTracks().isEmpty) {
+        return jsonEncode({
+          "status": 503,
+          "message": "Could not open any camera!",
+        });
+      }
+
+      MediaStreamTrack track = stream.getVideoTracks().first;
+
+      // TODO: capture frame from track and send as response
+      // ByteBuffer buffer = await track.captureFrame();
+
+      ressource.close();
+
+      return jsonEncode({
+        "status": 501,
+        "message": "Snapshot is currently not implemented!",
+      });
     });
   }
 

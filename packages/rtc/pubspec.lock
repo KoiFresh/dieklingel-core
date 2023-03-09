@@ -55,7 +55,7 @@ packages:
     description:
       path: "packages/shared"
       ref: develop
-      resolved-ref: "3deae9526a57a6806822c2392f10ad716623a314"
+      resolved-ref: dc208c66f77087f704e347a0b48013b49924fa51
       url: "https://github.com/KoiFresh/dieklingel-core.git"
     source: git
     version: "0.0.1"
@@ -110,7 +110,7 @@ packages:
       name: flutter_webrtc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.23"
+    version: "0.9.24"
   get_it:
     dependency: "direct main"
     description:
