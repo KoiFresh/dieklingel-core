@@ -16,7 +16,7 @@ import '../models/mqtt_uri.dart';
 
 typedef ChannelMessage = MapEntry<String, String>;
 typedef FilterFunction = String? Function(String);
-typedef HandlerFunction = Future<String> Function(String);
+typedef HandlerFunction = Future<MqttResponse> Function(String);
 
 class MqttClientBloc extends Bloc {
   final Map<String, BehaviorSubject<ChannelMessage>> _subscribtions = {};
@@ -199,8 +199,15 @@ extension Handle on MqttClientBloc {
   ) {
     return watch(channel).listen(
       (event) async {
-        String result = await handler(event.value);
-        message.add(ChannelMessage("${event.key}/response", result));
+        MqttResponse response = await handler(event.value);
+        message.add(
+          ChannelMessage(
+            "${event.key}/response",
+            jsonEncode(
+              response.toMap(),
+            ),
+          ),
+        );
       },
     );
   }
