@@ -110,7 +110,7 @@ packages:
       name: flutter_webrtc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.23"
+    version: "0.9.24"
   get_it:
     dependency: "direct main"
     description:
