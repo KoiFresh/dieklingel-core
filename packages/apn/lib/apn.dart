@@ -70,7 +70,8 @@ class Apn {
           )
           .toList();
 
-      sendPushNotification(registries);
+      MqttUri reqUri = uri.copyWith(section: message);
+      sendPushNotification(registries, reqUri);
     });
 
     mqtt.answer("request/apn/register/+", registerToken);
@@ -78,7 +79,8 @@ class Apn {
     mqtt.answer("request/apn/list/+", listTokens);
   }
 
-  Future<void> sendPushNotification(List<RegistryEntry> entries) async {
+  Future<void> sendPushNotification(
+      List<RegistryEntry> entries, MqttUri reqUri) async {
     if (entries.isEmpty) {
       return;
     }
@@ -111,6 +113,7 @@ class Apn {
       "title": title,
       "body": body,
       "image": "",
+      "uri": reqUri.toUri().toString(),
     };
 
     // TODO(KoiFresh): delete entries, if response is not ok
@@ -126,13 +129,7 @@ class Apn {
       return;
     }
 
-    payload = {
-      "tokens": entries.map((e) => e.token).toList(),
-      "id": id,
-      "title": title,
-      "body": body,
-      "image": result.body,
-    };
+    payload["image"] = result.body;
 
     await http.post(worker, body: jsonEncode(payload));
     // TODO: log response
