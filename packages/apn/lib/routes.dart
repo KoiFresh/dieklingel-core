@@ -27,15 +27,28 @@ Future<MqttResponse> registerToken(String message) async {
 }
 
 Future<MqttResponse> deleteToken(String message) async {
-  return MqttResponse(
-    status: 501,
-    message: "Deleting Tokens is not implemented yet.",
-  );
+  Box<RegistryEntry> box = Hive.box<RegistryEntry>("apn");
+
+  RegistryEntry entry;
+  try {
+    entry = RegistryEntry.fromMap(jsonDecode(message));
+  } catch (exception) {
+    return MqttResponse(status: 400, message: exception.toString());
+  }
+
+  for (dynamic key in box.keys) {
+    if (entry == box.get(key)) {
+      box.delete(key);
+      break;
+    }
+  }
+
+  return MqttResponse.ok;
 }
 
 Future<MqttResponse> listTokens(String message) async {
-  return MqttResponse(
-    status: 501,
-    message: "Listing Tokens is not implemented yet.",
-  );
+  Box<RegistryEntry> box = Hive.box<RegistryEntry>("apn");
+  List<RegistryEntry> entries = box.values.toList();
+
+  return MqttResponse.ok.copyWith(body: entries.map((e) => e.toMap()));
 }
