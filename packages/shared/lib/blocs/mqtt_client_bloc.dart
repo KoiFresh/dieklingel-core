@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dieklingel_core_shared/mqtt/mqtt_response.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
@@ -204,7 +205,7 @@ extension Handle on MqttClientBloc {
     );
   }
 
-  Future<String?> request(
+  Future<MqttResponse> request(
     String channel,
     String message, {
     Duration timeout = const Duration(seconds: 30),
@@ -223,6 +224,19 @@ extension Handle on MqttClientBloc {
     );
 
     await subscription.cancel();
-    return result;
+
+    MqttResponse response;
+
+    if (result == null) {
+      return const MqttResponse(status: -1, message: "timeout");
+    }
+
+    try {
+      response = MqttResponse.fromMap(jsonDecode(result));
+    } catch (exception) {
+      return MqttResponse(status: -1, message: exception.toString());
+    }
+
+    return response;
   }
 }
