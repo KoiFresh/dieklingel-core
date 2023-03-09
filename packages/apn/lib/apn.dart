@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:apn/config.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 import 'package:yaml/yaml.dart';
 import 'package:interpolation/interpolation.dart';
 
-// TODO(KoiFresh): import dart_shared
 import 'hive/registry_entry_adapter.dart';
 import 'models/registry_entry.dart';
-import 'package:dieklingel_core_shared/blocs/mqtt_client_bloc.dart';
-import 'package:dieklingel_core_shared/models/mqtt_uri.dart';
+import 'package:dieklingel_core_shared/dart_shared.dart';
 import 'package:hive/hive.dart';
 import 'package:path/path.dart' as p;
 
@@ -25,7 +24,6 @@ class Apn {
   void main() async {
     stdout.writeln("APN: App Push Notification");
 
-    //Directory directory = await getApplicationDocumentsDirectory();
     String path = p.join(
       Platform.environment["HOME"] ?? "",
       "dieklingel",
@@ -120,14 +118,39 @@ class Apn {
       "SECOND": time.second.toString().padLeft(2, "0"),
     });
 
+    String id = const Uuid().v4();
+
     Map<String, dynamic> payload = {
       "tokens": entries.map((e) => e.token).toList(),
+      "id": id,
       "title": title,
       "body": body,
       "image": "",
     };
 
     // TODO(KoiFresh): delete entries, if response is not ok
+    // TODO(KoiFresh): opional update push notification
+    await http.post(worker, body: jsonEncode(payload));
+
+    String? result = await mqtt.request("request/rtc/snapshot/$id", id);
+    if (result == null) {
+      return;
+    }
+    Map<String, dynamic> response = jsonDecode(result);
+    print(response);
+    if (response["status"] != 200) {
+      return;
+    }
+    String base64 = response["message"];
+
+    payload = {
+      "tokens": entries.map((e) => e.token).toList(),
+      "id": id,
+      "title": title,
+      "body": body,
+      "image": base64,
+    };
+
     await http.post(worker, body: jsonEncode(payload));
     // TODO: log response
   }
