@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dieklingel_core_shared/flutter_shared.dart';
+import 'package:dieklingel_core_shared/mqtt/mqtt_response.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rtc/signaling/signaling_message.dart';
 import 'package:rtc/signaling/signaling_message_type.dart';
@@ -50,7 +51,7 @@ class App {
 
   Future<void> setupMqttChannels() async {
     MqttClientBloc mqtt = GetIt.I<MqttClientBloc>();
-    mqtt.answer("request/rtc/+", (String message) async {
+    mqtt.answer("request/rtc/connect/+", (String message) async {
       RtcClientWrapper wrapper = await RtcClientWrapper.create(
         iceServers: servers,
       );
@@ -95,7 +96,7 @@ class App {
       await wrapper.ressource.open(true, true);
 
       connections[subscription] = wrapper;
-      return "OK";
+      return MqttResponse.ok;
     });
   }
 
