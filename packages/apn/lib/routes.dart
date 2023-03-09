@@ -48,7 +48,8 @@ Future<MqttResponse> deleteToken(String message) async {
 
 Future<MqttResponse> listTokens(String message) async {
   Box<RegistryEntry> box = Hive.box<RegistryEntry>("apn");
-  List<RegistryEntry> entries = box.values.toList();
+  List<Map<String, dynamic>> entries =
+      box.values.map((e) => e.toMap()).toList();
 
-  return MqttResponse.ok.copyWith(body: entries.map((e) => e.toMap()));
+  return MqttResponse.ok.copyWith(body: entries);
 }
