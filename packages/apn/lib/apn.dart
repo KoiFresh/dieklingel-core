@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:apn/config.dart';
+import 'package:apn/routes.dart';
+import 'package:dieklingel_core_shared/mqtt/mqtt_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:yaml/yaml.dart';
 import 'package:interpolation/interpolation.dart';
@@ -73,26 +75,9 @@ class Apn {
       sendPushNotification(registries);
     });
 
-    mqtt.answer("request/apn/register/+", (String message) async {
-      Box<RegistryEntry> box = Hive.box<RegistryEntry>("apn");
-
-      RegistryEntry entry;
-      try {
-        entry = RegistryEntry.fromMap(jsonDecode(message));
-      } catch (exception) {
-        return "ERROR";
-      }
-
-      for (dynamic key in box.keys) {
-        if (entry == box.get(key)) {
-          box.delete(key);
-          break;
-        }
-      }
-      box.add(entry);
-
-      return "OK";
-    });
+    mqtt.answer("request/apn/register/+", registerToken);
+    mqtt.answer("request/apn/delete/+", deleteToken);
+    mqtt.answer("request/apn/list/+", listTokens);
   }
 
   Future<void> sendPushNotification(List<RegistryEntry> entries) async {
