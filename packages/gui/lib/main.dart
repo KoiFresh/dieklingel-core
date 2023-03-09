@@ -50,10 +50,6 @@ void main() async {
 Future<void> setupMqttChannels() async {
   MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
-  bloc.answer("request/test/+", (message) async {
-    return "Ok";
-  });
-
   Box settings = Hive.box("settings");
 
   bloc.watch(kIoActivityState).listen((event) {

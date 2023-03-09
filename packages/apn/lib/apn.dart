@@ -2,15 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:apn/config.dart';
+import 'package:apn/routes.dart';
+import 'package:dieklingel_core_shared/mqtt/mqtt_response.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 import 'package:yaml/yaml.dart';
 import 'package:interpolation/interpolation.dart';
 
-// TODO(KoiFresh): import dart_shared
 import 'hive/registry_entry_adapter.dart';
 import 'models/registry_entry.dart';
-import 'package:dieklingel_core_shared/blocs/mqtt_client_bloc.dart';
-import 'package:dieklingel_core_shared/models/mqtt_uri.dart';
+import 'package:dieklingel_core_shared/dart_shared.dart';
 import 'package:hive/hive.dart';
 import 'package:path/path.dart' as p;
 
@@ -25,7 +26,6 @@ class Apn {
   void main() async {
     stdout.writeln("APN: App Push Notification");
 
-    //Directory directory = await getApplicationDocumentsDirectory();
     String path = p.join(
       Platform.environment["HOME"] ?? "",
       "dieklingel",
@@ -70,32 +70,17 @@ class Apn {
           )
           .toList();
 
-      sendPushNotification(registries);
+      MqttUri reqUri = uri.copyWith(section: message);
+      sendPushNotification(registries, reqUri);
     });
 
-    mqtt.answer("request/apn/register/+", (String message) async {
-      Box<RegistryEntry> box = Hive.box<RegistryEntry>("apn");
-
-      RegistryEntry entry;
-      try {
-        entry = RegistryEntry.fromMap(jsonDecode(message));
-      } catch (exception) {
-        return "ERROR";
-      }
-
-      for (dynamic key in box.keys) {
-        if (entry == box.get(key)) {
-          box.delete(key);
-          break;
-        }
-      }
-      box.add(entry);
-
-      return "OK";
-    });
+    mqtt.answer("request/apn/register/+", registerToken);
+    mqtt.answer("request/apn/delete/+", deleteToken);
+    mqtt.answer("request/apn/list/+", listTokens);
   }
 
-  Future<void> sendPushNotification(List<RegistryEntry> entries) async {
+  Future<void> sendPushNotification(
+      List<RegistryEntry> entries, MqttUri reqUri) async {
     if (entries.isEmpty) {
       return;
     }
@@ -120,14 +105,32 @@ class Apn {
       "SECOND": time.second.toString().padLeft(2, "0"),
     });
 
+    String id = const Uuid().v4();
+
     Map<String, dynamic> payload = {
       "tokens": entries.map((e) => e.token).toList(),
+      "id": id,
       "title": title,
       "body": body,
       "image": "",
+      "uri": reqUri.toUri().toString(),
     };
 
     // TODO(KoiFresh): delete entries, if response is not ok
+    // TODO(KoiFresh): opional update push notification
+    await http.post(worker, body: jsonEncode(payload));
+
+    MqttResponse result = await mqtt.request("request/rtc/snapshot/$id", id);
+    if (result.status == 200) {
+      return;
+    }
+    if (result.body is! String) {
+      // body is not an image
+      return;
+    }
+
+    payload["image"] = result.body;
+
     await http.post(worker, body: jsonEncode(payload));
     // TODO: log response
   }
