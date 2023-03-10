@@ -18,10 +18,10 @@ class AppViewBloc extends Bloc with MqttStateMixin {
 
   AppViewBloc() {
     _clip.add(EdgeInsets.fromLTRB(
-      Config.get<double>(kSettingsGuiViewportClipLeft) ?? 0.0,
-      Config.get<double>(kSettingsGuiViewportClipTop) ?? 0.0,
-      Config.get<double>(kSettingsGuiViewportClipRight) ?? 0.0,
-      Config.get<double>(kSettingsGuiViewportClipBottom) ?? 0.0,
+      (Config.get<int>(kSettingsGuiViewportClipLeft) ?? 0).toDouble(),
+      (Config.get<int>(kSettingsGuiViewportClipTop) ?? 0).toDouble(),
+      (Config.get<int>(kSettingsGuiViewportClipRight) ?? 0).toDouble(),
+      (Config.get<int>(kSettingsGuiViewportClipBottom) ?? 0).toDouble(),
     ));
 
     _timeout.add(

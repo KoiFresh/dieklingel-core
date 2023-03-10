@@ -16,51 +16,41 @@ import 'package:yaml/yaml.dart';
 import 'config.dart';
 
 class App {
-  late final MqttUri uri;
-  late final String username;
-  late final String password;
-  late final List<IceServer> servers = [];
+  MqttUri? uri;
+  Map<StreamSubscription, RtcClientWrapper> connections = {};
 
   App() {
-    Future(() {});
+    String? uri = Config.get<String>(kSettingsMqttUri);
+    if (uri == null) {
+      stderr.writeln(
+        "$kSettingsMqttUri is not specified in config.yaml! The rtc package will not work like expected!",
+      );
+      return;
+    }
+
+    try {
+      this.uri = MqttUri.fromUri(Uri.parse(uri));
+    } catch (exception) {
+      stderr.writeln(exception.toString());
+    }
   }
 
-  Future<void> setupConfigFile() async {
-    YamlMap config = await getConfig();
-
-    uri = MqttUri.fromUri(
-      Uri.parse(
-        config["mqtt"]?["uri"] ?? "mqtt://127.0.0.1:1883/com.dieklingel/",
-      ),
-    );
-
-    username = config["mqtt"]?["username"] ?? "";
-    password = config["mqtt"]?["password"] ?? "";
-
-    for (YamlMap ice in config["rtc"]?["ice-servers"] ?? []) {
-      IceServer server;
-
-      try {
-        server = IceServer.fromYaml(ice);
-      } catch (exception) {
-        stdout.writeln("Skip Server: $exception");
-        continue;
-      }
-
-      servers.add(server);
-    }
+  List<IceServer> iceServers() {
+    return (Config.get<YamlList>(kSettingsRtcIceServersList) ?? [])
+        .map((map) => IceServer.fromYaml(map))
+        .toList();
   }
 
   Future<void> setupMqttChannels() async {
     MqttClientBloc mqtt = GetIt.I<MqttClientBloc>();
     mqtt.answer("request/rtc/connect/+", (String message) async {
       RtcClientWrapper wrapper = await RtcClientWrapper.create(
-        iceServers: servers,
+        iceServers: iceServers(),
       );
       MqttUri connUri = MqttUri.fromMap(jsonDecode(message));
 
       MqttChannel channel = MqttChannel(connUri.channel.toString()).remove(
-        MqttChannel(uri.channel.toString()),
+        MqttChannel(uri?.channel.toString() ?? ""),
       );
 
       String invite = channel.append("invite").toString();
@@ -126,9 +116,18 @@ class App {
   }
 
   Future<void> connect() async {
-    MqttClientBloc mqtt = GetIt.I<MqttClientBloc>();
-    mqtt.uri.add(uri);
-  }
+    MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
-  Map<StreamSubscription, RtcClientWrapper> connections = {};
+    String? username = Config.get<String>(kSettingsMqttUsername);
+    if (username != null) {
+      bloc.usernanme.add(username);
+    }
+
+    String? password = Config.get<String>(kSettingsMqttPassword);
+    if (password != null) {
+      bloc.password.add(password);
+    }
+
+    bloc.uri.add(uri);
+  }
 }

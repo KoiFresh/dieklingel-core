@@ -4,15 +4,16 @@ import 'package:dieklingel_core_shared/dart_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rtc/app.dart';
+import 'package:rtc/config.dart';
 
 void main() async {
   stdout.writeln("RTC: Real Time Connection");
+  await Config.read();
 
   GetIt.I.registerSingleton(MqttClientBloc());
   GetIt.I.registerSingleton(App());
 
   await GetIt.I<App>().setupMqttChannels();
-  await GetIt.I<App>().setupConfigFile();
   await GetIt.I<App>().connect();
 
   runApp(const MyApp());
