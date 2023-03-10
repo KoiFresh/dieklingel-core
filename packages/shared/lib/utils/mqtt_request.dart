@@ -38,6 +38,7 @@ class MqttRequest {
     }
 
     Duration remaining = timeout - stopwatch.elapsed;
+    await mqtt.disconnect();
     return mqtt.request(channel, message, timeout: remaining);
   }
 }
