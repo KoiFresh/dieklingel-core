@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: check current version
         run: |
-            VERSION_TAG=v$(cat pubspec.yaml | grep -Po '(?<=version:\s)(.*)')
+            VERSION_TAG=v$(cat snap/snapcraft.yaml | grep -Po '(?<=version:\s)(.*)')
             echo "VERSION_TAG=$VERSION_TAG" >> $GITHUB_ENV
       - uses: rickstaa/action-create-tag@v1
         with:
