@@ -7,5 +7,7 @@ export 'blocs/mqtt_client_bloc.dart';
 export 'models/ice_server.dart';
 export 'models/mqtt_uri.dart';
 
+export 'utils/mqtt_request.dart';
+
 export 'mqtt/mqtt_client_factory.dart';
 export 'mqtt/mqtt_client_state.dart';

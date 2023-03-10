@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:gui/config.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/screensaver_options.dart';
@@ -13,12 +14,19 @@ class ScreensaverViewBloc extends Bloc {
       );
 
   ScreensaverViewBloc() {
-    Box settings = Hive.box("gui_settings");
+    String? file = Config.get<String>(kSettingsGuiScreensaverFile);
+    bool enabled = Config.get<bool>(kSettingsGuiScreensaverEnabled) ?? false;
+    if (!enabled) {
+      return;
+    }
+    if (file == null) {
+      stderr.writeln(
+        "The Screensaver wil not work as excpected, because $kSettingsGuiScreensaverFile is not specified, but $kSettingsGuiScreensaverEnabled is true",
+      );
+      return;
+    }
 
-    _file.add(settings.get(kSettingsGuiScreensaverFile));
-    settings.watch(key: kSettingsGuiScreensaverFile).listen((event) {
-      _file.add(event.value);
-    });
+    _file.add(file);
   }
 
   @override
