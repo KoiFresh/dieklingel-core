@@ -50,6 +50,12 @@ class _SignView extends State<SignView>
 
         List<SignOptions> options = snapshot.data!;
 
+        if (options.isEmpty) {
+          return const Center(
+            child: Text("Nothing to display here."),
+          );
+        }
+
         return ListView.builder(
           controller: _controller,
           itemCount: options.length,
