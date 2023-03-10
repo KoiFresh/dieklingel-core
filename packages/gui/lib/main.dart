@@ -8,6 +8,7 @@ import 'package:gui/blocs/app_view_bloc.dart';
 import 'package:gui/blocs/stream_event.dart';
 import 'package:gui/config.dart';
 import 'package:gui/hive/mqtt_uri_adapter.dart';
+import 'package:gui/hive/sign_options_adapter.dart';
 import 'package:gui/utils/mqtt_channel_constants.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:yaml/yaml.dart';
@@ -21,12 +22,12 @@ void main() async {
 
   await Hive.initFlutter();
   Hive
-    ..registerAdapter(SignOptionsAdapter())
-    ..registerAdapter(MqttUriAdapter());
+    ..registerAdapter(MqttUriAdapter())
+    ..registerAdapter(SignOptionsAdapter());
 
   await Future.wait([
     Hive.openBox<SignOptions>((SignOptions).toString()),
-    Hive.openBox("settings"),
+    Hive.openBox("gui_settings"),
   ]);
 
   GetIt.I.registerSingleton(MqttClientBloc());
@@ -50,11 +51,7 @@ void main() async {
 Future<void> setupMqttChannels() async {
   MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
-  bloc.answer("request/test/+", (message) async {
-    return "Ok";
-  });
-
-  Box settings = Hive.box("settings");
+  Box settings = Hive.box("gui_settings");
 
   bloc.watch(kIoActivityState).listen((event) {
     if (!(settings.get(kSettingsGuiScreensaverEnabled) as bool)) {
@@ -95,7 +92,7 @@ Future<void> setupMqttChannels() async {
 
 Future<void> setupConfigFile() async {
   YamlMap config = await getConfig();
-  Box settings = Hive.box("settings");
+  Box settings = Hive.box("gui_settings");
 
   settings.put(
     kSettingsMqttUri,
@@ -168,7 +165,7 @@ Future<void> setupConfigFile() async {
 }
 
 Future<void> connect() async {
-  Box settings = Hive.box("settings");
+  Box settings = Hive.box("gui_settings");
   MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
   bloc.usernanme.add(settings.get(kSettingsMqttUsername));

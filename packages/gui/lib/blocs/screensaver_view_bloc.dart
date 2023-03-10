@@ -13,7 +13,7 @@ class ScreensaverViewBloc extends Bloc {
       );
 
   ScreensaverViewBloc() {
-    Box settings = Hive.box("settings");
+    Box settings = Hive.box("gui_settings");
 
     _file.add(settings.get(kSettingsGuiScreensaverFile));
     settings.watch(key: kSettingsGuiScreensaverFile).listen((event) {
