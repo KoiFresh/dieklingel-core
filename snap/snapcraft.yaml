@@ -12,8 +12,8 @@ base: core22
 grade: stable
 
 architectures:
-  - amd64
-  - arm64
+  - build-on: amd64
+  - build-on: arm64
 
 parts:
   flutter-git:

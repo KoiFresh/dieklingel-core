@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:gui/components/rfw_library/rfw_library.dart';
+import 'package:gui/config.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:path/path.dart' as p;
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
-import 'package:rxdart/streams.dart';
 import '../models/sign_options.dart';
 
 class Sign extends StatefulWidget {
@@ -32,10 +32,7 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
 
   Widget _lottie(BuildContext context) {
     String path = p.join(
-      Platform.environment["SNAP_REAL_HOME"] ??
-          Platform.environment["HOME"] ??
-          "",
-      "dieklingel",
+      kConfigDirectory,
       widget.options.file,
     );
     File lottiefile = File(path);
@@ -52,10 +49,7 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
 
   Widget _native(BuildContext context) {
     String path = p.join(
-      Platform.environment["SNAP_REAL_HOME"] ??
-          Platform.environment["HOME"] ??
-          "",
-      "dieklingel",
+      kConfigDirectory,
       widget.options.file,
     );
     File dartfile = File(path);
@@ -111,10 +105,7 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
 
   Widget _html(BuildContext context) {
     String path = p.join(
-      Platform.environment["SNAP_REAL_HOME"] ??
-          Platform.environment["HOME"] ??
-          "",
-      "dieklingel",
+      kConfigDirectory,
       widget.options.file,
     );
     File htmlfile = File(path);
@@ -135,10 +126,7 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
 
   Widget _image(BuildContext context) {
     String path = p.join(
-      Platform.environment["SNAP_REAL_HOME"] ??
-          Platform.environment["HOME"] ??
-          "",
-      "dieklingel",
+      kConfigDirectory,
       widget.options.file,
     );
 
@@ -170,10 +158,7 @@ class _Sign extends State<Sign> with SingleTickerProviderStateMixin {
       return;
     }
     String path = p.join(
-      Platform.environment["SNAP_REAL_HOME"] ??
-          Platform.environment["HOME"] ??
-          "",
-      "dieklingel",
+      kConfigDirectory,
       sound,
     );
     await _player.setSourceDeviceFile(path);

@@ -3,6 +3,11 @@ import 'dart:io';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
+final String kConfigDirectory = p.join(
+  Platform.environment["SNAP_REAL_HOME"] ?? Platform.environment["HOME"] ?? "",
+  "dieklingel",
+);
+
 const String kSettingsMqttUri = "mqtt.uri";
 const String kSettingsMqttUsername = "mqtt.username";
 const String kSettingsMqttPassword = "mqtt.password";
@@ -21,10 +26,7 @@ const String kSettingsGuiScreensaverFile = "gui.screensaver.file";
 Future<YamlMap> getConfig() async {
   YamlMap result = YamlMap();
   String path = p.join(
-    Platform.environment["SNAP_REAL_HOME"] ??
-        Platform.environment["HOME"] ??
-        "",
-    "dieklingel",
+    kConfigDirectory,
     "config.yaml",
   );
   final configFile = File(path);
@@ -43,10 +45,7 @@ class Config {
 
   static Future<void> read() async {
     String path = p.join(
-      Platform.environment["SNAP_REAL_HOME"] ??
-          Platform.environment["HOME"] ??
-          "",
-      "dieklingel",
+      kConfigDirectory,
       "config.yaml",
     );
     final configFile = File(path);
