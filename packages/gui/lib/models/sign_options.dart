@@ -1,4 +1,3 @@
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:yaml/yaml.dart';
 
 enum SignType {
@@ -9,12 +8,7 @@ enum SignType {
   native;
 }
 
-class SignOptions extends HiveObject {
-  static Box<SignOptions> get boxx {
-    Box<SignOptions> box = Hive.box((SignOptions).toString());
-    return box;
-  }
-
+class SignOptions {
   final String identifier;
   final String file;
   final String? sound;
@@ -67,15 +61,6 @@ class SignOptions extends HiveObject {
       file: map["file"] ?? "",
       sound: map["sound"] ?? "",
     );
-  }
-
-  @override
-  Future<void> save() async {
-    if (isInBox) {
-      super.save();
-      return;
-    }
-    await boxx.add(this);
   }
 
   Map<String, dynamic> toMap() {

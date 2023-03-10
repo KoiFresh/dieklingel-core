@@ -5,7 +5,6 @@ import 'package:get_it/get_it.dart';
 import 'package:gui/blocs/stream_event.dart';
 import 'package:gui/config.dart';
 import 'package:gui/utils/mqtt_channel_constants.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/subjects.dart';
 
 class AppStateBloc extends Bloc {
@@ -52,11 +51,7 @@ class AppStateBloc extends Bloc {
   }
 
   Duration get _duration {
-    Box settings = Hive.box("gui_settings");
-    int seconds = settings.get(
-      kSettingsGuiScreensaverTimeout,
-      defaultValue: 30,
-    );
+    int seconds = Config.get<int>(kSettingsGuiScreensaverTimeout) ?? 30;
     return Duration(seconds: seconds);
   }
 
