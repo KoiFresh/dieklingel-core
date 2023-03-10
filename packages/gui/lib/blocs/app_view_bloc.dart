@@ -18,7 +18,7 @@ class AppViewBloc extends Bloc with MqttStateMixin {
   Stream<Duration> get timeout => _timeout.stream;
 
   AppViewBloc() {
-    Box settings = Hive.box("settings");
+    Box settings = Hive.box("gui_settings");
 
     _clip.add(EdgeInsets.fromLTRB(
       settings.get(kSettingsGuiViewportClipLeft, defaultValue: 0.0),

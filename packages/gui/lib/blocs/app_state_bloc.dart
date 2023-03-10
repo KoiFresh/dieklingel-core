@@ -52,7 +52,7 @@ class AppStateBloc extends Bloc {
   }
 
   Duration get _duration {
-    Box settings = Hive.box("settings");
+    Box settings = Hive.box("gui_settings");
     int seconds = settings.get(
       kSettingsGuiScreensaverTimeout,
       defaultValue: 30,

@@ -1,6 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:yaml/yaml.dart';
-part 'sign_options.g.dart';
 
 enum SignType {
   none,
@@ -10,23 +9,15 @@ enum SignType {
   native;
 }
 
-@HiveType(typeId: 1)
 class SignOptions extends HiveObject {
   static Box<SignOptions> get boxx {
     Box<SignOptions> box = Hive.box((SignOptions).toString());
     return box;
   }
 
-  @HiveField(0)
   final String identifier;
-
-  @HiveField(1)
   final String file;
-
-  @HiveField(2)
   final String? sound;
-
-  @HiveField(3)
   int _type = SignType.none.index;
 
   SignType get type => SignType.values.firstWhere(
@@ -70,6 +61,14 @@ class SignOptions extends HiveObject {
     );
   }
 
+  factory SignOptions.fromMap(Map<String, dynamic> map) {
+    return SignOptions(
+      identifier: map["identifier"] ?? "",
+      file: map["file"] ?? "",
+      sound: map["sound"] ?? "",
+    );
+  }
+
   @override
   Future<void> save() async {
     if (isInBox) {
@@ -77,6 +76,14 @@ class SignOptions extends HiveObject {
       return;
     }
     await boxx.add(this);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "identifier": identifier,
+      "file": file,
+      "sound": sound,
+    };
   }
 
   @override
