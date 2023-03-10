@@ -4,7 +4,6 @@ import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:gui/blocs/mqtt_state_mixin.dart';
 import 'package:gui/blocs/stream_event.dart';
 import 'package:gui/config.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/painting.dart';
 
@@ -18,45 +17,16 @@ class AppViewBloc extends Bloc with MqttStateMixin {
   Stream<Duration> get timeout => _timeout.stream;
 
   AppViewBloc() {
-    Box settings = Hive.box("gui_settings");
-
     _clip.add(EdgeInsets.fromLTRB(
-      settings.get(kSettingsGuiViewportClipLeft, defaultValue: 0.0),
-      settings.get(kSettingsGuiViewportClipTop, defaultValue: 0.0),
-      settings.get(kSettingsGuiViewportClipRight, defaultValue: 0.0),
-      settings.get(kSettingsGuiViewportClipBottom, defaultValue: 0.0),
+      Config.get<double>(kSettingsGuiViewportClipLeft) ?? 0.0,
+      Config.get<double>(kSettingsGuiViewportClipTop) ?? 0.0,
+      Config.get<double>(kSettingsGuiViewportClipRight) ?? 0.0,
+      Config.get<double>(kSettingsGuiViewportClipBottom) ?? 0.0,
     ));
 
-    settings.watch(key: kSettingsGuiViewportClipLeft).listen((event) {
-      EdgeInsets insets = _clip.value.copyWith(left: event.value);
-      _clip.add(insets);
-    });
-    settings.watch(key: kSettingsGuiViewportClipTop).listen((event) {
-      EdgeInsets insets = _clip.value.copyWith(top: event.value);
-      _clip.add(insets);
-    });
-    settings.watch(key: kSettingsGuiViewportClipRight).listen((event) {
-      EdgeInsets insets = _clip.value.copyWith(right: event.value);
-      _clip.add(insets);
-    });
-    settings.watch(key: kSettingsGuiViewportClipBottom).listen((event) {
-      EdgeInsets insets = _clip.value.copyWith(bottom: event.value);
-      _clip.add(insets);
-    });
-
     _timeout.add(
-      Duration(
-        seconds: settings.get(
-          kSettingsGuiScreensaverTimeout,
-          defaultValue: 30,
-        ),
-      ),
+      Duration(seconds: Config.get<int>(kSettingsGuiScreensaverTimeout) ?? 30),
     );
-
-    settings.watch(key: kSettingsGuiScreensaverTimeout).listen((event) {
-      Duration duration = Duration(seconds: event.value);
-      _timeout.add(duration);
-    });
   }
 
   @override

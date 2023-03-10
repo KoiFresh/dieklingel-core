@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dieklingel_core_shared/flutter_shared.dart';
 import 'package:flutter/material.dart';
+import 'package:gui/config.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path/path.dart' as p;
 
@@ -40,10 +41,7 @@ class ScreensaverView extends StatelessWidget {
 
   Widget _image(BuildContext context, String path) {
     String fullPath = p.join(
-      Platform.environment["SNAP_REAL_HOME"] ??
-          Platform.environment["HOME"] ??
-          "",
-      "dieklingel",
+      kConfigDirectory,
       path,
     );
 

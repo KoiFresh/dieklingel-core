@@ -7,34 +7,18 @@ import 'package:gui/blocs/app_state_bloc.dart';
 import 'package:gui/blocs/app_view_bloc.dart';
 import 'package:gui/blocs/stream_event.dart';
 import 'package:gui/config.dart';
-import 'package:gui/hive/mqtt_uri_adapter.dart';
-import 'package:gui/hive/sign_options_adapter.dart';
 import 'package:gui/utils/mqtt_channel_constants.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:yaml/yaml.dart';
-
-import 'models/sign_options.dart';
 import 'views/app_view.dart';
 
 void main() async {
   stdout.writeln("GUI: Graphical User Interface");
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Hive.initFlutter();
-  Hive
-    ..registerAdapter(MqttUriAdapter())
-    ..registerAdapter(SignOptionsAdapter());
-
-  await Future.wait([
-    Hive.openBox<SignOptions>((SignOptions).toString()),
-    Hive.openBox("gui_settings"),
-  ]);
+  await Config.read();
 
   GetIt.I.registerSingleton(MqttClientBloc());
   GetIt.I.registerSingleton(AppStateBloc());
 
   await setupMqttChannels();
-  await setupConfigFile();
   await connect();
 
   runApp(
@@ -51,10 +35,8 @@ void main() async {
 Future<void> setupMqttChannels() async {
   MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
-  Box settings = Hive.box("gui_settings");
-
   bloc.watch(kIoActivityState).listen((event) {
-    if (!(settings.get(kSettingsGuiScreensaverEnabled) as bool)) {
+    if (Config.get<bool>(kSettingsGuiScreensaverEnabled) ?? false) {
       return;
     }
 
@@ -78,7 +60,7 @@ Future<void> setupMqttChannels() async {
   });
 
   bloc.filter(kIoDisplayState, (String message) {
-    if (settings.get(kSettingsGuiScreensaverEnabled) as bool) {
+    if (Config.get<bool>(kSettingsGuiScreensaverEnabled) ?? false) {
       if (message.toLowerCase().trim() == "off") {
         return "off";
       } else if (message.toLowerCase().trim() == "on") {
@@ -90,85 +72,30 @@ Future<void> setupMqttChannels() async {
   });
 }
 
-Future<void> setupConfigFile() async {
-  YamlMap config = await getConfig();
-  Box settings = Hive.box("gui_settings");
-
-  settings.put(
-    kSettingsMqttUri,
-    MqttUri.fromUri(
-      Uri.parse(
-        config["mqtt"]?["uri"] ?? "mqtt://127.0.0.1:1883/com.dieklingel/",
-      ),
-    ),
-  );
-
-  settings.put(kSettingsMqttUsername, config["mqtt"]?["username"] ?? "");
-  settings.put(kSettingsMqttPassword, config["mqtt"]?["password"] ?? "");
-
-  settings.put(
-    kSettingsGuiViewportClipLeft,
-    double.parse(
-      config["gui"]?["viewport"]?["clip"]?["left"]?.toString() ?? "0",
-    ),
-  );
-
-  settings.put(
-    kSettingsGuiViewportClipTop,
-    double.parse(
-      config["gui"]?["viewport"]?["clip"]?["top"]?.toString() ?? "0",
-    ),
-  );
-
-  settings.put(
-    kSettingsGuiViewportClipRight,
-    double.parse(
-      config["gui"]?["viewport"]?["clip"]?["right"]?.toString() ?? "0",
-    ),
-  );
-
-  settings.put(
-    kSettingsGuiViewportClipBottom,
-    double.parse(
-      config["gui"]?["viewport"]?["clip"]?["bottom"]?.toString() ?? "0",
-    ),
-  );
-
-  settings.put(
-    kSettingsGuiScreensaverTimeout,
-    config["gui"]?["screensaver"]?["timeout"] as int? ?? 30,
-  );
-
-  settings.put(
-    kSettingsGuiScreensaverEnabled,
-    config["gui"]?["screensaver"]?["enabled"] as bool? ?? true,
-  );
-
-  settings.put(
-    kSettingsGuiScreensaverFile,
-    config["gui"]?["screensaver"]?["file"] as String? ?? "",
-  );
-
-  await SignOptions.boxx.clear();
-  for (YamlMap sign in config["gui"]?["signs"] ?? []) {
-    SignOptions options;
-
-    try {
-      options = SignOptions.fromYaml(sign);
-    } catch (exception) {
-      stdout.writeln("Skip Sign: $exception");
-      continue;
-    }
-
-    await options.save();
-  }
-}
-
 Future<void> connect() async {
-  Box settings = Hive.box("gui_settings");
   MqttClientBloc bloc = GetIt.I<MqttClientBloc>();
 
-  bloc.usernanme.add(settings.get(kSettingsMqttUsername));
-  bloc.password.add(settings.get(kSettingsMqttPassword));
-  bloc.uri.add(settings.get(kSettingsMqttUri));
+  String? username = Config.get<String>(kSettingsMqttUsername);
+  if (username != null) {
+    bloc.usernanme.add(username);
+  }
+
+  String? password = Config.get<String>(kSettingsMqttPassword);
+  if (password != null) {
+    bloc.password.add(password);
+  }
+
+  String? uri = Config.get<String>(kSettingsMqttUri);
+  if (uri == null) {
+    stderr.writeln(
+      "$kSettingsMqttUri is not specified in config.yaml! The gui package will not work like expected!",
+    );
+    return;
+  }
+
+  try {
+    bloc.uri.add(MqttUri.fromUri(Uri.parse(uri)));
+  } catch (exception) {
+    stderr.writeln(exception.toString());
+  }
 }
