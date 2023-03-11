@@ -15,14 +15,56 @@ class MqttUri {
     this.websocket = false,
   });
 
-  factory MqttUri.fromMap(Map<String, dynamic> json) {
+  factory MqttUri.fromMap(Map<String, dynamic> map) {
+    if (map["host"] is! String) {
+      throw FormatException(
+        "The key 'host' with a value of type String does not exist.",
+        map,
+      );
+    }
+
+    if (map["port"] is! int) {
+      throw FormatException(
+        "The key 'port' with a value of type int does not exist.",
+        map,
+      );
+    }
+
+    if (map["channel"] != null && map["channel"] is! String) {
+      throw FormatException(
+        "The key 'channel' has either to be of null, of type String or not existing.",
+        map,
+      );
+    }
+
+    if (map["section"] != null && map["section"] is! String) {
+      throw FormatException(
+        "The key 'section' has either to be of null, of type String or not existing.",
+        map,
+      );
+    }
+
+    if (map["ssl"] != null && map["ssl"] is! bool) {
+      throw FormatException(
+        "The key 'ssl' has either to be of null, of type bool or not existing.",
+        map,
+      );
+    }
+
+    if (map["websocket"] != null && map["websocket"] is! bool) {
+      throw FormatException(
+        "The key 'websocket' has either to be of null, of type bool or not existing.",
+        map,
+      );
+    }
+
     return MqttUri(
-      host: json["host"],
-      port: json["port"],
-      channel: json["channel"],
-      section: json["section"],
-      ssl: json["ssl"].toString() != "false",
-      websocket: json["websocket"].toString() == "true",
+      host: map["host"],
+      port: map["port"],
+      channel: map["channel"] ?? "",
+      section: map["section"] ?? "",
+      ssl: map["ssl"] ?? true,
+      websocket: map["websocket"] ?? false,
     );
   }
 
@@ -30,7 +72,7 @@ class MqttUri {
     return MqttUri(
       host: uri.host,
       port: uri.port,
-      channel: uri.path.substring(1),
+      channel: uri.path.isEmpty ? uri.path : uri.path.substring(1),
       section: uri.fragment,
       ssl: uri.scheme == "mqtts" || uri.scheme == "wss",
       websocket: uri.scheme == "ws" || uri.scheme == "wss",
