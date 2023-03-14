@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:dieklingel_core_shared/flutter_shared.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:gui/blocs/passcode_view_bloc.dart';
 import '../blocs/mqtt_state_mixin.dart';
 import '../blocs/screensaver_view_bloc.dart';
 import '../blocs/sign_view_bloc.dart';
@@ -38,11 +39,12 @@ class _HomeView extends State<HomeView> with MqttStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: MultiBlocProvider(
+    return Scaffold(
+      body: MultiBlocProvider(
         blocs: [
           BlocProvider(bloc: SignViewBloc()),
           BlocProvider(bloc: ScreensaverViewBloc()),
+          BlocProvider(bloc: PasscodeViewBloc()),
         ],
         child: StreamBuilder(
           stream: display,

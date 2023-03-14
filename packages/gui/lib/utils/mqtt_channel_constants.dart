@@ -30,3 +30,8 @@ const String kIoActivityState = "io/activity/state";
 /// Possibility to implement a Health-Checker, and or get the systems time
 /// distance. The payload is the current syste date time.
 const String kSystemPing = "system/ping";
+
+/// Mqtt-channel used to emit the entered passcode. The system provides the raw
+/// enterd passcode, everytime the unlock is clicked and anything is entered.
+/// The system will not emit emty passcodes.
+const String kIoActionUnlockPasscode = "io/action/unlock/passcode";

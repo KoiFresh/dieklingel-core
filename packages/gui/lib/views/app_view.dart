@@ -1,5 +1,4 @@
 import 'package:dieklingel_core_shared/flutter_shared.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gui/blocs/app_state_bloc.dart';
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   Widget _app(BuildContext context) {
-    return CupertinoApp(
+    return MaterialApp(
       scrollBehavior: TouchScrollBehavior(),
       home: ActivityListener(
         onActivity: () {
