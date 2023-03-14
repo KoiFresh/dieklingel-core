@@ -4,7 +4,7 @@ icon: snap/gui/logo_512x512_rounded_corners.png
 contact: kai.mayer@dieklingel.com
 website: https://dieklingel.de/
 license: GPL-3.0
-version: 0.0.2+2
+version: 0.0.2+3
 summary: The core of the dieKlingel project.
 description: The core project containing the most important services to run the door unit.
 confinement: strict
