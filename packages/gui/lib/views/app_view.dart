@@ -12,8 +12,16 @@ import 'home_view.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  ThemeData _darkTheme(BuildContext context) {
+    ThemeData themeData = ThemeData.dark();
+
+    return themeData;
+  }
+
   Widget _app(BuildContext context) {
     return MaterialApp(
+      themeMode: ThemeMode.dark,
+      darkTheme: _darkTheme(context),
       scrollBehavior: TouchScrollBehavior(),
       home: ActivityListener(
         onActivity: () {
