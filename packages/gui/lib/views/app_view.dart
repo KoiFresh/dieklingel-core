@@ -1,5 +1,4 @@
 import 'package:dieklingel_core_shared/flutter_shared.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:gui/blocs/app_state_bloc.dart';
@@ -13,8 +12,16 @@ import 'home_view.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  ThemeData _darkTheme(BuildContext context) {
+    ThemeData themeData = ThemeData.dark();
+
+    return themeData;
+  }
+
   Widget _app(BuildContext context) {
-    return CupertinoApp(
+    return MaterialApp(
+      themeMode: ThemeMode.dark,
+      darkTheme: _darkTheme(context),
       scrollBehavior: TouchScrollBehavior(),
       home: ActivityListener(
         onActivity: () {
