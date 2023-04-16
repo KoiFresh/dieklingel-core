@@ -1,7 +1,4 @@
-import 'dart:html';
-
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class MediaRessource {
   MediaStream? _stream;
@@ -13,8 +10,8 @@ class MediaRessource {
   Future<MediaStream?> open(bool audio, bool video) async {
     if (null != _stream) return _stream;
 
-    audio = audio && (await Permission.microphone.request().isGranted);
-    video = video && (await Permission.camera.request().isGranted);
+    //audio = audio && (await Permission.microphone.request().isGranted);
+    //video = video && (await Permission.camera.request().isGranted);
 
     Map<String, bool> constraints = {
       'audio': audio,
