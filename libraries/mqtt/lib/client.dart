@@ -60,7 +60,11 @@ class Client implements ClientInterface {
           "^${channel.replaceAll("/+", "/[^/]+").replaceAll("#", ".+")}\$",
         );
 
-        if (!regex.hasMatch(topic)) {
+        String localTopic = MqttUri(
+          channel: topic.replaceFirst(_channel ?? "", ""),
+        ).channel;
+
+        if (!regex.hasMatch(localTopic)) {
           continue;
         }
 
