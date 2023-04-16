@@ -54,7 +54,7 @@ class Client implements ClientInterface {
       String message = utf8.decode(messageAsBytes);
 
       for (final subscription in _subscribtions.entries) {
-        String channel = uri.channel;
+        String channel = subscription.key;
 
         RegExp regex = RegExp(
           "^${channel.replaceAll("/+", "/[^/]+").replaceAll("#", ".+")}\$",
