@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:mqtt/exceptions/illegal_uri_exception.dart';
+import 'package:mqtt/models/mqtt_uri.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 import 'factories/mqtt_client_factory.dart';
@@ -30,17 +30,12 @@ class Client implements ClientInterface {
 
   @override
   Future<void> connect(
-    Uri uri, {
+    MqttUri uri, {
     String? username,
     String? password,
     String? identifier,
   }) async {
     await disconnect();
-
-    List<String> allowedSchemes = ["mqtt", "mqtts", "ws", "wss"];
-    if (!allowedSchemes.contains(uri.scheme)) {
-      throw IllegalUriException(uri, "The scheme of the uri is not allowed!");
-    }
 
     _client = factory.create(uri.toHost(), identifier ?? "")
       ..port = uri.port
@@ -48,7 +43,7 @@ class Client implements ClientInterface {
       ..setProtocolV311()
       ..autoReconnect = true;
 
-    _channel = uri.path;
+    _channel = uri.channel;
 
     await _client?.connect(username, password);
 
@@ -59,9 +54,7 @@ class Client implements ClientInterface {
       String message = utf8.decode(messageAsBytes);
 
       for (final subscription in _subscribtions.entries) {
-        String channel = Uri(
-          path: "$_channel/${subscription.key}",
-        ).toMqttChannel();
+        String channel = uri.channel;
 
         RegExp regex = RegExp(
           "^${channel.replaceAll("/+", "/[^/]+").replaceAll("#", ".+")}\$",
@@ -81,7 +74,7 @@ class Client implements ClientInterface {
     });
 
     _client?.subscribe(
-      Uri(path: "$_channel/#").toMqttChannel(),
+      MqttUri(channel: "$_channel/#").channel,
       MqttQos.exactlyOnce,
     );
   }
@@ -159,28 +152,27 @@ class Client implements ClientInterface {
     MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addUTF8String(message.payload);
 
+    String? channel = _channel;
+    if (channel == null) {
+      return;
+    }
+
     _client?.publishMessage(
-      Uri(path: "$_channel/${message.topic}").toMqttChannel(),
+      channel,
       MqttQos.exactlyOnce,
       builder.payload!,
     );
   }
 }
 
-extension _ToHost on Uri {
+extension _ToHost on MqttUri {
   String toHost() {
     String protocol = "";
-    if (scheme == "wss") {
-      protocol = "wss://";
-    } else if (scheme == "ws") {
-      protocol = "ws://";
-    }
-    return "$protocol$host";
-  }
 
-  String toMqttChannel() {
-    List<String> channels = path.split("/");
-    channels.removeWhere((element) => element.isEmpty);
-    return channels.join("/");
+    if (websocket) {
+      protocol = ssl ? "wss://" : "ws://";
+    }
+
+    return "$protocol$host";
   }
 }

@@ -1,4 +1,5 @@
 import 'models/message.dart';
+import 'models/mqtt_uri.dart';
 import 'models/response.dart';
 import 'models/connection_state.dart';
 
@@ -15,7 +16,7 @@ abstract class ClientInterface {
   );
 
   Future<void> connect(
-    Uri uri, {
+    MqttUri uri, {
     String? username,
     String? password,
     String? identifier,

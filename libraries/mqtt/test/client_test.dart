@@ -2,10 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mqtt/client.dart';
-import 'package:mqtt/exceptions/illegal_uri_exception.dart';
 import 'package:mqtt/factories/mqtt_client_factory.dart';
 import 'package:mqtt/models/connection_state.dart';
 import 'package:mqtt/models/message.dart';
+import 'package:mqtt/models/mqtt_uri.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 import 'client_test.mocks.dart';
@@ -47,19 +47,9 @@ void main() {
       expect(client.state, equals(ConnectionState.disconnected));
     });
 
-    test("connect with http uri", () {
-      final client = Client(factory: factory);
-      final uri = Uri.parse("http://server.dieklingel.com");
-
-      expect(
-        () async => await client.connect(uri),
-        throwsA(isA<IllegalUriException>()),
-      );
-    });
-
     test("client connects", () async {
       final client = Client(factory: factory);
-      final uri = Uri.parse("mqtt://server.dieklingel.com:1883/");
+      final uri = MqttUri(host: "server.dieklingel.com");
 
       await client.connect(uri, identifier: "ident");
 
@@ -68,7 +58,7 @@ void main() {
 
     test("client connects and disconnects", () async {
       final client = Client(factory: factory);
-      final uri = Uri.parse("mqtt://server.dieklingel.com:1883/");
+      final uri = MqttUri(host: "server.dieklingel.com");
 
       await client.connect(uri, identifier: "ident");
 
@@ -120,7 +110,7 @@ void main() {
 
       client = Client(factory: factory);
       await client.connect(
-        Uri.parse("mqtt://server.dieklingel.com:1883/test"),
+        MqttUri(host: "server.dieklingel.com"),
         identifier: "ident",
       );
     });
