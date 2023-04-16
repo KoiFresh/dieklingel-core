@@ -156,10 +156,7 @@ class Client implements ClientInterface {
     MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     builder.addUTF8String(message.payload);
 
-    String? channel = _channel;
-    if (channel == null) {
-      return;
-    }
+    String channel = MqttUri(channel: "$_channel/${message.topic}").channel;
 
     _client?.publishMessage(
       channel,
