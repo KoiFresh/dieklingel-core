@@ -42,7 +42,7 @@ dependencies:
     git:
       url: https://github.com/KoiFresh/dart-sip-ua.git
       ref: fix/logger
-  flutter_webrtc: ^0.9.26
+  flutter_webrtc: ^0.9.25
  
 dev_dependencies:
   flutter_test:

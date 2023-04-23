@@ -1,23 +1,21 @@
 import 'package:dieklingel_core/utils/media_ressource.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:mqtt/mqtt.dart' as mqtt;
 import 'package:sip_ua/sip_ua.dart';
 
 import 'handler.dart';
 
 class RtcHandler extends Handler implements SipUaHelperListener {
-  final mqtt.Client client;
   final MediaRessource _ressource = MediaRessource();
 
   final _sipua = SIPUAHelper();
 
-  RtcHandler(this.client) {
+  RtcHandler() {
     _sipua.addSipUaHelperListener(this);
   }
 
   @override
   void run() {
-    UaSettings settings = UaSettings()
+    /* UaSettings settings = UaSettings()
       ..webSocketUrl = "ws://192.168.64.1:8088/ws"
       ..uri = "400@192.168.64.1"
       ..password = "400"
@@ -30,29 +28,77 @@ class RtcHandler extends Handler implements SipUaHelperListener {
           "urls": "stun:stun.l.google.com:19302",
           "username": "",
           "credential": "",
-        }
-      ];
-    /* UaSettings settings = UaSettings()
-      ..webSocketUrl = "ws://server.dieklingel.com:8088/ws"
-      ..uri = "400@server.dieklingel.com"
+        },
+        {
+          "urls": "stun:a.relay.metered.ca:80",
+        },
+        {
+          "urls": "turn:a.relay.metered.ca:80",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+        {
+          "urls": "turn:a.relay.metered.ca:80?transport=tcp",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+        {
+          "urls": "turn:a.relay.metered.ca:443",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+        {
+          "urls": "turn:a.relay.metered.ca:443?transport=tcp",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+      ];*/
+    UaSettings settings = UaSettings()
+      ..webSocketUrl = "ws://85.214.41.43:8088/ws"
+      ..uri = "400@85.214.41.43"
       ..password = "400"
       ..authorizationUser = "400"
-      ..displayName = "Core"
+      ..displayName = "Core kj"
       ..dtmfMode = DtmfMode.RFC2833
       ..userAgent = "Dart SIP Client v1.0.0"
       ..iceServers = [
         {
-          "urls": "stun:stun.l.google.com:19302",
+          "url": "stun:stun.l.google.com:19302",
           "username": "",
           "credential": "",
-        }
-      ];*/
+        },
+        {
+          "url": "stun:a.relay.metered.ca:80",
+        },
+        {
+          "url": "turn:a.relay.metered.ca:80",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+        {
+          "url": "turn:a.relay.metered.ca:80?transport=tcp",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+        {
+          "url": "turn:a.relay.metered.ca:443",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+        {
+          "url": "turn:a.relay.metered.ca:443?transport=tcp",
+          "username": "b2d44a5253ab2ddd58522b34",
+          "credential": "zeFyJa3y04YHpYs6",
+        },
+      ];
 
     _sipua.start(settings);
+    //_sipua.register();
   }
 
   @override
   void callStateChanged(Call call, CallState state) async {
+    print(state.state);
     switch (state.state) {
       case CallStateEnum.NONE:
         // TODO: Handle this case.
@@ -81,8 +127,8 @@ class RtcHandler extends Handler implements SipUaHelperListener {
         break;
       case CallStateEnum.FAILED:
       case CallStateEnum.ENDED:
+        call.hangup();
         _ressource.close();
-        // TODO: Handle this case.
         break;
       case CallStateEnum.ACCEPTED:
         // TODO: Handle this case.

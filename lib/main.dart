@@ -4,10 +4,12 @@ import 'package:dieklingel_core/handlers/runner.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  MqttHandler mqtt = MqttHandler();
-  RtcHandler rtc = RtcHandler(mqtt.client);
+  WidgetsFlutterBinding.ensureInitialized();
 
-  run(mqtt).and(rtc).and().app(const MyApp());
+  //MqttHandler mqtt = MqttHandler();
+
+  runApp(const MyApp());
+  //run(rtc).and().app(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -55,6 +57,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final RtcHandler rtc = RtcHandler();
+
+  @override
+  void initState() {
+    rtc.run();
+    super.initState();
+  }
 
   void _incrementCounter() {
     setState(() {
