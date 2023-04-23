@@ -1,7 +1,7 @@
 import 'package:mqtt/mqtt.dart';
 
-class DisplayService {
+class PasscodeService {
   final Client client;
 
-  DisplayService(this.client);
+  PasscodeService(this.client);
 }

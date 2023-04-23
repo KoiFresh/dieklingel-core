@@ -3,8 +3,9 @@ object MqttClient
 
 'Service
 class RtcService
-class IoService
+class IoService 
 class PasscodeService
+class SignService
 class EventService
 class RegisterService
 class DisplayService
@@ -30,7 +31,8 @@ HomeViewBloc --> IoService
 SignView --> SignViewBloc
 PasscodeView --> PasscodeViewBloc
 
-SignViewBloc --> SignRepository
+SignViewBloc --> SignService
+SignService --> SignRepository
 PasscodeService --> MqttClient
 PasscodeViewBloc --> PasscodeService
 SignViewBloc --> EventService

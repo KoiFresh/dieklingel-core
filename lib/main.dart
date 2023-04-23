@@ -1,15 +1,34 @@
-import 'package:dieklingel_core/handlers/mqtt_handler.dart';
 import 'package:dieklingel_core/handlers/rtc_handler.dart';
-import 'package:dieklingel_core/handlers/runner.dart';
+import 'package:dieklingel_core/repositories/event_repository.dart';
+import 'package:dieklingel_core/repositories/register_repository.dart';
+import 'package:dieklingel_core/repositories/sign_repository.dart';
+import 'package:dieklingel_core/services/display_service.dart';
+import 'package:dieklingel_core/services/event_service.dart';
+import 'package:dieklingel_core/services/io_service.dart';
+import 'package:dieklingel_core/services/passcode_service.dart';
+import 'package:dieklingel_core/services/register_service.dart';
+import 'package:dieklingel_core/services/rtc_service.dart';
+import 'package:dieklingel_core/services/sign_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mqtt/mqtt.dart' as mqtt;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  //MqttHandler mqtt = MqttHandler();
+  mqtt.Client client = mqtt.Client();
+
+  // Services
+  GetIt.I
+    ..registerSingleton(() => DisplayService(client))
+    ..registerSingleton(() => IoService(client))
+    ..registerSingleton(() => PasscodeService(client))
+    ..registerSingleton(() => RtcService(client))
+    ..registerSingleton(() => ReigsterService(client, RegisterRepository()))
+    ..registerSingleton(() => EventService(client, EventRepository()))
+    ..registerSingleton(() => SignService(SignRepository()));
 
   runApp(const MyApp());
-  //run(rtc).and().app(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
