@@ -29,4 +29,12 @@ class Response {
       body: map["body"],
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "status": status,
+      "message": message,
+      "body": body,
+    };
+  }
 }

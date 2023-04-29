@@ -1,3 +1,5 @@
+import 'package:yaml/yaml.dart';
+
 class MqttUri {
   final String host;
   final int port;
@@ -78,6 +80,10 @@ class MqttUri {
       ssl: uri.scheme == "mqtts" || uri.scheme == "wss",
       websocket: uri.scheme == "ws" || uri.scheme == "wss",
     );
+  }
+
+  factory MqttUri.parse(String uri) {
+    return MqttUri.fromUri(Uri.parse(uri));
   }
 
   Map<String, dynamic> toMap() {

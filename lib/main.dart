@@ -1,34 +1,43 @@
-import 'package:dieklingel_core/handlers/rtc_handler.dart';
-import 'package:dieklingel_core/repositories/event_repository.dart';
-import 'package:dieklingel_core/repositories/register_repository.dart';
-import 'package:dieklingel_core/repositories/sign_repository.dart';
-import 'package:dieklingel_core/services/display_service.dart';
-import 'package:dieklingel_core/services/event_service.dart';
-import 'package:dieklingel_core/services/io_service.dart';
-import 'package:dieklingel_core/services/passcode_service.dart';
-import 'package:dieklingel_core/services/register_service.dart';
-import 'package:dieklingel_core/services/rtc_service.dart';
-import 'package:dieklingel_core/services/sign_service.dart';
-import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mqtt/mqtt.dart' as mqtt;
+import 'dart:io';
 
-void main() {
+import 'package:dieklingel_core/models/ice_server.dart';
+import 'package:dieklingel_core/services/rtc_service.dart';
+import 'package:flutter/material.dart';
+import 'package:mqtt/models/mqtt_uri.dart';
+import 'package:provider/provider.dart';
+import 'package:yaml/yaml.dart';
+import 'package:mqtt/mqtt.dart' as mqtt;
+import 'package:path/path.dart' as p;
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  String path = p.relative("/usr/share/dieklingel/core.yaml");
+  String raw = await File(path).readAsString();
+  YamlMap config = await loadYaml(raw);
+
   mqtt.Client client = mqtt.Client();
+  client.connect(
+    MqttUri.parse(config["mqtt"]["uri"]),
+    username: config["mqtt"]["username"],
+    password: config["mqtt"]["password"],
+  );
 
-  // Services
-  GetIt.I
-    ..registerSingleton(() => DisplayService(client))
-    ..registerSingleton(() => IoService(client))
-    ..registerSingleton(() => PasscodeService(client))
-    ..registerSingleton(() => RtcService(client))
-    ..registerSingleton(() => ReigsterService(client, RegisterRepository()))
-    ..registerSingleton(() => EventService(client, EventRepository()))
-    ..registerSingleton(() => SignService(SignRepository()));
+  List<IceServer> servers = (config["rtc"]["ice-servers"] as YamlList)
+      .map((e) => IceServer.fromYaml(e))
+      .toList();
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => RTCService(client, servers),
+          lazy: false,
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -76,11 +85,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  final RtcHandler rtc = RtcHandler();
 
   @override
   void initState() {
-    rtc.run();
     super.initState();
   }
 
