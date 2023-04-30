@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dieklingel_core/models/ice_server.dart';
+import 'package:dieklingel_core/models/trigger.dart';
+import 'package:dieklingel_core/services/event_service.dart';
 import 'package:dieklingel_core/services/rtc_service.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
@@ -8,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'package:yaml/yaml.dart';
 import 'package:mqtt/mqtt.dart' as mqtt;
 import 'package:path/path.dart' as p;
+
+import 'models/event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,11 +31,18 @@ void main() async {
       .map((e) => IceServer.fromYaml(e))
       .toList();
 
+  List<Event> events =
+      (config["events"] as YamlList).map((e) => Event.fromYaml(e)).toList();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
+        Provider(
           create: (_) => RTCService(client, servers),
+          lazy: false,
+        ),
+        Provider(
+          create: (_) => EventService(events: events),
           lazy: false,
         ),
       ],
@@ -99,6 +110,12 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+      context.read<EventService>().trigger(
+        Trigger.ring,
+        environment: {
+          "SIGN": "Defaul",
+        },
+      );
     });
   }
 

@@ -1,18 +1,20 @@
+import 'package:mqtt/models/request.dart';
+
 import 'models/message.dart';
 import 'models/mqtt_uri.dart';
 import 'models/response.dart';
 import 'models/connection_state.dart';
 
-abstract class ClientInterface {
+abstract class IClient {
   ConnectionState get state;
 
   /// Creates a mqtt request with the given [request] parameters.
-  Future<Response> request(Message request);
+  Future<Response> request(Request request);
 
   /// Registers a listener wich handles all requests for the given channel.
   void answer(
     String channel,
-    Future<Message> Function(Message request) handler,
+    Future<Response> Function(Request request) handler,
   );
 
   Future<void> connect(

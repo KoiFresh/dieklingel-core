@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
+import 'package:mqtt/models/request.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 import 'factories/mqtt_client_factory.dart';
@@ -11,7 +12,7 @@ import 'models/connection_state.dart';
 import 'models/message.dart';
 import 'models/response.dart';
 
-class Client implements ClientInterface {
+class Client implements IClient {
   final MqttClientFactory factory;
   final Map<String, StreamController<Message>> _subscribtions = {};
   MqttClient? _client;
@@ -21,10 +22,21 @@ class Client implements ClientInterface {
 
   @override
   void answer(
-      String channel, Future<Message> Function(Message request) handler) {
+    String channel,
+    Future<Response> Function(Request request) handler,
+  ) {
     watch(channel).listen((event) async {
-      Message response = await handler(event);
-      publish(response);
+      Request req = Request(
+        location: Uri(path: event.topic),
+        body: jsonDecode(event.payload),
+      );
+      Response response = await handler(req);
+      Message message = Message(
+        event.topic,
+        jsonEncode(response.toMap()),
+      );
+
+      publish(message);
     });
   }
 
@@ -91,17 +103,23 @@ class Client implements ClientInterface {
 
   @override
   Future<Response> request(
-    Message request, {
+    Request request, {
     Duration timeout = const Duration(seconds: 30),
   }) async {
     Completer<String?> completer = Completer<String?>();
-    StreamSubscription subscription = watch("${request.topic}/response").listen(
+
+    StreamSubscription subscription = watch(request.location.path).listen(
       (event) {
         completer.complete(event.payload);
       },
     );
 
-    publish(request);
+    Message message = Message(
+      request.location.path,
+      jsonEncode(request.body),
+    );
+
+    publish(message);
     String? result = await completer.future.timeout(
       timeout,
       onTimeout: () => null,

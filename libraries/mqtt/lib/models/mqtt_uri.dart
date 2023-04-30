@@ -1,5 +1,3 @@
-import 'package:yaml/yaml.dart';
-
 class MqttUri {
   final String host;
   final int port;

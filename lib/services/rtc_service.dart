@@ -2,30 +2,30 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dieklingel_core/models/ice_server.dart';
-import 'package:flutter/material.dart';
-import 'package:mqtt/models/mqtt_uri.dart';
+import 'package:mqtt/models/request.dart';
 import 'package:mqtt/mqtt.dart';
+import 'package:path/path.dart' as p;
 
 import '../signaling/signaling_message.dart';
 import '../signaling/signaling_message_type.dart';
 import '../utils/rtc_client_wrapper.dart';
 
-class RTCService extends ChangeNotifier {
+class RTCService {
   final Client client;
   final List<IceServer> iceServers;
   final Map<StreamSubscription, RtcClientWrapper> connections = {};
 
   RTCService(this.client, this.iceServers) {
-    client.answer("request/rtc/connect/+", _onRtcConnectionRequest);
+    client.answer("request/rtc/connect", _onRtcConnectionRequest);
   }
 
-  Future<Message> _onRtcConnectionRequest(Message message) async {
+  Future<Response> _onRtcConnectionRequest(Request request) async {
     final wrapper = await RtcClientWrapper.create(iceServers: iceServers);
 
-    MqttUri uri = MqttUri.fromMap(jsonDecode(message.payload));
+    Uri uri = Uri.parse(request.body);
 
-    String invite = MqttUri(channel: "${uri.channel}/invite").channel;
-    String answer = MqttUri(channel: "${uri.channel}/answer").channel;
+    String invite = p.normalize("${uri.path}/invite");
+    String answer = p.normalize("${uri.path}/answer");
 
     StreamSubscription subscription = client.watch(invite).listen(
       (event) {
@@ -51,9 +51,6 @@ class RTCService extends ChangeNotifier {
     await wrapper.ressource.open(true, true);
 
     connections[subscription] = wrapper;
-    return Message(
-      MqttUri(channel: "${message.topic}/response").channel,
-      jsonEncode(Response.ok.toMap()),
-    );
+    return Response.ok;
   }
 }

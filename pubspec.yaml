@@ -47,6 +47,9 @@ dependencies:
   provider: ^6.0.5
   yaml: ^3.1.1
   path: ^1.8.2
+  flutter_js: ^0.6.0
+  args: ^2.4.0
+  process_run: ^0.13.0
  
 dev_dependencies:
   flutter_test:
