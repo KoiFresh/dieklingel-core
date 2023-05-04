@@ -1,9 +1,16 @@
 class Response {
-  static const Response ok = Response(status: 200, message: "Ok");
+  static const Response ok = Response(
+    status: 200,
+    message: "Ok",
+  );
+  static const Response notImplemented = Response(
+    status: 501,
+    message: "The requested Method is not implemented!",
+  );
 
   final int status;
   final String message;
-  final dynamic body;
+  final String? body;
 
   const Response({
     required this.status,

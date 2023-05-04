@@ -1,17 +1,17 @@
 import 'dart:io';
 
-import 'package:dieklingel_core/models/ice_server.dart';
-import 'package:dieklingel_core/models/trigger.dart';
-import 'package:dieklingel_core/services/event_service.dart';
-import 'package:dieklingel_core/services/rtc_service.dart';
+import 'controllers/rest_controller.dart';
+import 'models/ice_server.dart';
+import 'models/trigger.dart';
+import 'repositories/action_repository.dart';
+import 'repositories/ice_server_repository.dart';
+import 'services/event_service.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
 import 'package:provider/provider.dart';
 import 'package:yaml/yaml.dart';
 import 'package:mqtt/mqtt.dart' as mqtt;
 import 'package:path/path.dart' as p;
-
-import 'models/event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,22 +27,18 @@ void main() async {
     password: config["mqtt"]["password"],
   );
 
-  List<IceServer> servers = (config["rtc"]["ice-servers"] as YamlList)
-      .map((e) => IceServer.fromYaml(e))
-      .toList();
-
-  List<Event> events =
-      (config["events"] as YamlList).map((e) => Event.fromYaml(e)).toList();
+  IceServerRepository iceServerRepository = IceServerRepository();
+  ActionRepository actionRepository = ActionRepository();
 
   runApp(
     MultiProvider(
       providers: [
         Provider(
-          create: (_) => RTCService(client, servers),
-          lazy: false,
-        ),
-        Provider(
-          create: (_) => EventService(events: events),
+          create: (_) => RestController(
+            client,
+            iceServerRepository,
+            actionRepository,
+          ),
           lazy: false,
         ),
       ],

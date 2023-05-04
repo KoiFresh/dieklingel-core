@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dieklingel_core/models/trigger.dart';
 import 'package:process_run/shell.dart';
 
@@ -16,9 +18,14 @@ class EventService {
   }) async {
     final filterd = events.where((e) => e.trigger == trigger);
 
+    List<Future<List<ProcessResult>>> processes = [];
+
     for (Event action in filterd) {
       Shell shell = Shell(environment: environment);
-      shell.run(action.command);
+      Future<List<ProcessResult>> result = shell.run(action.command);
+      processes.add(result);
     }
+
+    await Future.wait(processes);
   }
 }
