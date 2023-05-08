@@ -12,6 +12,7 @@ import 'package:yaml/yaml.dart';
 import 'package:mqtt/mqtt.dart' as mqtt;
 import 'package:path/path.dart' as p;
 
+import 'repositories/sign_repository.dart';
 import 'views/app_view.dart';
 
 void main() async {
@@ -28,8 +29,9 @@ void main() async {
     password: config["mqtt"]["password"],
   );
 
-  IceServerRepository iceServerRepository = IceServerRepository();
   ActionRepository actionRepository = ActionRepository();
+  IceServerRepository iceServerRepository = IceServerRepository();
+  SignRepository signRepository = SignRepository();
 
   runApp(
     MultiProvider(
@@ -42,7 +44,8 @@ void main() async {
           ),
           lazy: false,
         ),
-        RepositoryProvider(create: (_) => actionRepository)
+        RepositoryProvider(create: (_) => actionRepository),
+        RepositoryProvider(create: (_) => signRepository)
       ],
       child: const App(),
     ),

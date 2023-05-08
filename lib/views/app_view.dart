@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/passcode_view_bloc.dart';
+import '../blocs/sign_list_view_bloc.dart';
 import '../repositories/action_repository.dart';
+import '../repositories/sign_repository.dart';
 import '../utils/touch_scroll_behavior.dart';
 import 'passcode_view.dart';
 import 'sign_list_view.dart';
@@ -40,6 +42,12 @@ class _Viewport extends StatelessWidget {
                 context.read<ActionRepository>(),
               ),
             ),
+            BlocProvider(
+              create: (_) => SignListViewBloc(
+                context.read<SignRepository>(),
+                context.read<ActionRepository>(),
+              ),
+            )
           ],
           child: PageView(
             children: const [

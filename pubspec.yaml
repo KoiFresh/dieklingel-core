@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   mqtt:
     path: ./libraries/mqtt
+  ui:
+    path: ./libraries/ui
   sip_ua:
     git:
       url: https://github.com/KoiFresh/dart-sip-ua.git
@@ -51,6 +53,8 @@ dependencies:
   logger: ^1.3.0
   flutter_bloc: ^8.1.2
   shell: ^2.0.0
+  rfw: ^1.0.8
+  audioplayers: ^4.0.1
 
 dev_dependencies:
   flutter_test:
