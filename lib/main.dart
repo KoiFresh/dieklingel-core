@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'blocs/app_view_bloc.dart';
 import 'controllers/rest_controller.dart';
 import 'repositories/action_repository.dart';
+import 'repositories/app_repository.dart';
 import 'repositories/ice_server_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
@@ -30,6 +32,7 @@ void main() async {
   );
 
   ActionRepository actionRepository = ActionRepository();
+  AppRepository appRepository = AppRepository();
   IceServerRepository iceServerRepository = IceServerRepository();
   SignRepository signRepository = SignRepository();
 
@@ -44,8 +47,13 @@ void main() async {
           ),
           lazy: false,
         ),
+        RepositoryProvider(create: (_) => appRepository),
         RepositoryProvider(create: (_) => actionRepository),
-        RepositoryProvider(create: (_) => signRepository)
+        RepositoryProvider(create: (_) => signRepository),
+        BlocProvider(
+          create: (_) => AppViewBloc(appRepository, client),
+          lazy: false,
+        )
       ],
       child: const App(),
     ),
