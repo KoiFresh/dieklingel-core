@@ -35,16 +35,47 @@ class AppRepository extends YamlFileBaseRepository {
     return clip;
   }
 
-  Future<Uri> fetchMqttUri() {
-    throw UnimplementedError();
+  Future<Uri> fetchMqttUri({bool useCache = true}) async {
+    Uri? uri = _mqttUri;
+
+    if (uri != null && useCache) {
+      return uri;
+    }
+
+    YamlMap config = await readYamlConfig();
+    String rawUri = config.get<YamlMap>("mqtt").get<String>("uri");
+    uri = Uri.parse(rawUri);
+
+    _mqttUri = uri;
+    return uri;
   }
 
-  Future<String> fetchMqttUsername() {
-    throw UnimplementedError();
+  Future<String> fetchMqttUsername({bool useCache = true}) async {
+    String? username = _mqttUsername;
+
+    if (username != null && useCache) {
+      return username;
+    }
+
+    YamlMap config = await readYamlConfig();
+    username = config.get<YamlMap>("mqtt").get<String>("username");
+
+    _mqttUsername = username;
+    return username;
   }
 
-  Future<String> fetchMqttPassword() {
-    throw UnimplementedError();
+  Future<String> fetchMqttPassword({bool useCache = true}) async {
+    String? password = _mqttPassword;
+
+    if (password != null && useCache) {
+      return password;
+    }
+
+    YamlMap config = await readYamlConfig();
+    password = config.get<YamlMap>("mqtt").get<String>("password");
+
+    _mqttPassword = password;
+    return password;
   }
 
   Future<Duration> fetchScreenTimeout({bool useCache = true}) async {

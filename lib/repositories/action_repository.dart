@@ -1,19 +1,12 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';
 import '../models/action.dart';
+import 'file_base_repository.dart';
 
-class ActionRepository {
-  final String configFilePath =
-      path.normalize("/usr/share/dieklingel/core.yaml");
-
+class ActionRepository extends YamlFileBaseRepository {
   Future<List<Action>> fetchAllActions() async {
-    File configFile = File(configFilePath);
-    String rawConfig = await configFile.readAsString();
-    YamlMap config = loadYaml(rawConfig);
+    YamlMap config = await readYamlConfig();
 
     List<Action> actions = config
         .get<YamlList>("actions")

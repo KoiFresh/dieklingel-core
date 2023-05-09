@@ -1,19 +1,12 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';
 import '../models/sign.dart';
+import 'file_base_repository.dart';
 
-class SignRepository {
-  final String configFilePath =
-      path.normalize("/usr/share/dieklingel/core.yaml");
-
+class SignRepository extends YamlFileBaseRepository {
   Future<List<Sign>> fetchAllSigns() async {
-    File configFile = File(configFilePath);
-    String rawConfig = await configFile.readAsString();
-    YamlMap config = loadYaml(rawConfig);
+    YamlMap config = await readYamlConfig();
 
     List<Sign> signs = config
         .get<YamlMap>("gui")

@@ -18,7 +18,7 @@ architectures:
 parts:
   flutter-git:
     source: https://github.com/flutter/flutter.git
-    source-branch: '3.3.10'
+    source-branch: "3.3.10"
     plugin: nil
     override-build: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/bin
@@ -35,25 +35,11 @@ parts:
       - curl
       - ninja-build
       - unzip
-    override-prime: ''
+    override-prime: ""
 
-  gui:
+  core:
     plugin: nil
-    source: packages/gui
-    after: [flutter-git]
-    build-packages:
-      - pkg-config
-      - libgstreamer1.0-dev
-      - libgstreamer-plugins-base1.0-dev
-    override-build: |
-      set -eux
-      flutter pub get
-      flutter build linux --release -v
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/gui
-      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/gui/
-  rtc:
-    plugin: nil
-    source: packages/rtc
+    source: .
     after: [flutter-git]
     build-packages:
       - pkg-config
@@ -61,8 +47,8 @@ parts:
       set -eux
       flutter pub get
       flutter build linux --release -v
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/rtc
-      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/rtc/
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/dieklingel_core
+      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/dieklingel_core/
   apn:
     plugin: nil
     source: packages/apn
@@ -75,17 +61,8 @@ parts:
       cp apn $SNAPCRAFT_PART_INSTALL/bin/apn/apn
 
 apps:
-  gui:
-    command: bin/gui/gui
-    daemon: simple
-    passthrough:
-      daemon-scope: user
-    plugs:
-      - home
-      - network
-    extensions: [gnome]
-  rtc:
-    command: bin/rtc/rtc
+  core:
+    command: bin/dieklingel_core/dieklingel_core
     daemon: simple
     passthrough:
       daemon-scope: user
@@ -97,7 +74,7 @@ apps:
       - audio-record
     extensions: [gnome]
     environment:
-      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/rtc/lib"
+      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/dieklingel_core/lib"
   apn:
     command: bin/apn/apn
     daemon: simple

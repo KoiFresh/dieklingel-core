@@ -10,7 +10,6 @@ import 'repositories/ice_server_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
 import 'package:provider/provider.dart';
-import 'package:yaml/yaml.dart';
 import 'package:mqtt/mqtt.dart' as mqtt;
 import 'package:path/path.dart' as p;
 
@@ -19,22 +18,23 @@ import 'views/app_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  String path = p.relative("/usr/share/dieklingel/core.yaml");
-  String raw = await File(path).readAsString();
-  YamlMap config = await loadYaml(raw);
-
-  mqtt.Client client = mqtt.Client();
-  client.connect(
-    MqttUri.parse(config["mqtt"]["uri"]),
-    username: config["mqtt"]["username"],
-    password: config["mqtt"]["password"],
-  );
+  String homeDirectory = Platform.environment["SNAP_REAL_HOME"] ??
+      Platform.environment["HOME"] ??
+      "";
+  Directory.current = p.join(homeDirectory, "dieklingel");
 
   ActionRepository actionRepository = ActionRepository();
   AppRepository appRepository = AppRepository();
   IceServerRepository iceServerRepository = IceServerRepository();
   SignRepository signRepository = SignRepository();
+
+  mqtt.Client client = mqtt.Client();
+
+  client.connect(
+    MqttUri.fromUri(await appRepository.fetchMqttUri()),
+    username: await appRepository.fetchMqttUsername(),
+    password: await appRepository.fetchMqttPassword(),
+  );
 
   runApp(
     MultiProvider(

@@ -5,15 +5,11 @@ import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';
 import '../models/ice_server.dart';
+import 'file_base_repository.dart';
 
-class IceServerRepository {
-  final String configFilePath =
-      path.normalize("/usr/share/dieklingel/core.yaml");
-
+class IceServerRepository extends YamlFileBaseRepository {
   Future<List<IceServer>> fetchAllIceServers() async {
-    File configFile = File(configFilePath);
-    String rawConfig = await configFile.readAsString();
-    YamlMap config = loadYaml(rawConfig);
+    YamlMap config = await readYamlConfig();
 
     List<IceServer> iceServers = config
         .get<YamlMap>("rtc")

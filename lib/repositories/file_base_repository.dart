@@ -4,6 +4,11 @@ import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 abstract class FileBaseRepository {
+  String get homePath =>
+      Platform.environment["SNAP_REAL_HOME"] ??
+      Platform.environment["HOME"] ??
+      "";
+
   String get configFilePath;
 
   Future<String> readConfigFile() async {
@@ -15,8 +20,12 @@ abstract class FileBaseRepository {
 }
 
 abstract class YamlFileBaseRepository extends FileBaseRepository {
-  String get configFilePath =>
-      path.normalize("/usr/share/dieklingel/core.yaml");
+  @override
+  String get configFilePath => path.join(
+        homePath,
+        "dieklingel",
+        "core.yaml",
+      );
 
   Future<YamlMap> readYamlConfig() async {
     String rawConfig = await readConfigFile();
