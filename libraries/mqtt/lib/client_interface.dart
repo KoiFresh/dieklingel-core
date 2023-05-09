@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:mqtt/models/request.dart';
 
+import 'models/legacy_mqtt_response.dart';
 import 'models/message.dart';
 import 'models/mqtt_uri.dart';
 import 'models/response.dart';
@@ -15,6 +18,11 @@ abstract class IClient {
   void answer(
     String channel,
     Future<Response> Function(Request request) handler,
+  );
+
+  void legacyAnswer(
+    String channel,
+    Future<LegacyMqttResponse> Function(String request) handler,
   );
 
   Future<void> connect(

@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'factories/mqtt_client_factory.dart';
 import 'client_interface.dart';
 import 'models/connection_state.dart';
+import 'models/legacy_mqtt_response.dart';
 import 'models/message.dart';
 import 'models/response.dart';
 
@@ -20,6 +21,8 @@ class Client implements IClient {
   String? _channel;
 
   Client({@visibleForTesting this.factory = const MqttClientFactory()});
+
+  String? get prefix => _channel;
 
   @override
   void answer(
@@ -36,6 +39,24 @@ class Client implements IClient {
 
       publish(message);
     });
+  }
+
+  @override
+  void legacyAnswer(
+    String channel,
+    Future<LegacyMqttResponse> Function(String request) handler,
+  ) {
+    watch(channel).listen(
+      (event) async {
+        LegacyMqttResponse response = await handler(event.payload);
+        publish(
+          Message(
+            "${event.topic}/response",
+            jsonEncode(response.toMap()),
+          ),
+        );
+      },
+    );
   }
 
   @override
