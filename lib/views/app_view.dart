@@ -10,8 +10,6 @@ import '../repositories/sign_repository.dart';
 import '../states/app_state.dart';
 import '../utils/touch_scroll_behavior.dart';
 import 'home_view.dart';
-import 'passcode_view.dart';
-import 'sign_list_view.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

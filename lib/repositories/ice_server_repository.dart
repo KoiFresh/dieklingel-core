@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';

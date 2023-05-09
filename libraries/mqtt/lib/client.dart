@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
 import 'package:mqtt/models/request.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 import 'factories/mqtt_client_factory.dart';
 import 'client_interface.dart';
@@ -33,7 +33,7 @@ class Client implements IClient {
       Request req = Request.fromMap(jsonDecode(event.payload));
       Response response = await handler(req);
       Message message = Message(
-        p.normalize("${event.topic}/${req.location.path}"),
+        path.normalize("${event.topic}/${req.location.path}"),
         jsonEncode(response.toMap()),
       );
 
