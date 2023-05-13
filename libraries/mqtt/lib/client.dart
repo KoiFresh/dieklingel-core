@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
 import 'package:mqtt/models/request.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -20,7 +19,7 @@ class Client implements IClient {
   MqttClient? _client;
   String? _channel;
 
-  Client({@visibleForTesting this.factory = const MqttClientFactory()});
+  Client({this.factory = const MqttClientFactory()});
 
   String? get prefix => _channel;
 
@@ -33,7 +32,7 @@ class Client implements IClient {
       Request req = Request.fromMap(jsonDecode(event.payload));
       Response response = await handler(req);
       Message message = Message(
-        path.normalize("${event.topic}/${req.location.path}"),
+        path.normalize("${event.topic}/${req.response.path}"),
         jsonEncode(response.toMap()),
       );
 
@@ -127,15 +126,15 @@ class Client implements IClient {
   }) async {
     Completer<String?> completer = Completer<String?>();
 
-    StreamSubscription subscription = watch(request.location.path).listen(
+    StreamSubscription subscription = watch(request.response.path).listen(
       (event) {
         completer.complete(event.payload);
       },
     );
 
     Message message = Message(
-      request.location.path,
-      jsonEncode(request.body),
+      request.request.path,
+      jsonEncode(request.toMap()),
     );
 
     publish(message);

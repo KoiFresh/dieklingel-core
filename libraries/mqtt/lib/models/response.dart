@@ -10,7 +10,7 @@ class Response {
 
   final int status;
   final String message;
-  final String? body;
+  final dynamic body;
 
   const Response({
     required this.status,

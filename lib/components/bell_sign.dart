@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rfw/formats.dart';
 import 'package:rfw/rfw.dart';
 import 'package:ui/ui.dart';
+import 'package:path/path.dart' as path;
 
 import '../models/sign.dart';
 
@@ -92,7 +93,7 @@ class _Sign extends State<BellSign> {
   }
 
   Future<void> _play() async {
-    await _player.setSourceDeviceFile(widget.sign.audio.path);
+    await _player.setSourceDeviceFile(path.absolute(widget.sign.audio.path));
     await _player.stop();
     await _player.resume();
   }

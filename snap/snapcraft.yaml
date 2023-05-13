@@ -1,4 +1,4 @@
-name: dieklingel-core
+name: dieklingel
 title: dieKlingel Core
 icon: snap/gui/logo_512x512_rounded_corners.png
 contact: kai.mayer@dieklingel.com
@@ -12,7 +12,7 @@ base: core22
 grade: stable
 
 architectures:
-  - build-on: amd64
+  # - build-on: amd64
   - build-on: arm64
 
 parts:

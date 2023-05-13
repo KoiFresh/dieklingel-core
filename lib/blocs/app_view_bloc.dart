@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mqtt/mqtt.dart';
 
+import '../models/viewport_clip.dart';
 import '../repositories/app_repository.dart';
 import '../states/app_state.dart';
 
@@ -19,7 +20,13 @@ class AppViewBloc extends Cubit<AppState> {
   }
 
   Future<void> init() async {
-    EdgeInsets clip = await appRepository.fetchViewportClip();
+    ViewportClip viewportClip = await appRepository.fetchViewportClip();
+    EdgeInsets clip = EdgeInsets.fromLTRB(
+      viewportClip.left,
+      viewportClip.top,
+      viewportClip.right,
+      viewportClip.bottom,
+    );
     emit(state.copyWith(clip: clip));
   }
 
