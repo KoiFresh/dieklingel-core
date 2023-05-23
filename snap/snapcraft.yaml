@@ -75,9 +75,9 @@ parts:
 apps:
   core:
     command: bin/dieklingel_core/dieklingel_core
-    daemon: simple
-    passthrough:
-      daemon-scope: user
+#    daemon: simple
+#    passthrough:
+#      daemon-scope: user
     plugs:
       - home
       - network
@@ -95,8 +95,9 @@ apps:
   apn:
     command: bin/apn/apn
     daemon: simple
-    passthrough:
-      daemon-scope: user
+#    passthrough:
+#      daemon-scope: user
     plugs:
       - home
       - network
+
