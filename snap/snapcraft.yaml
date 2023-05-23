@@ -75,6 +75,7 @@ parts:
 apps:
   core:
     command: bin/dieklingel_core/dieklingel_core
+    autostart: dieklingel.core.desktop
 #    daemon: simple
 #    passthrough:
 #      daemon-scope: user
