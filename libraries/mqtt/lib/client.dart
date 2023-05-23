@@ -126,7 +126,9 @@ class Client implements IClient {
   }) async {
     Completer<String?> completer = Completer<String?>();
 
-    StreamSubscription subscription = watch(request.response.path).listen(
+    StreamSubscription subscription = watch(
+      path.join(request.request.path, request.response.path),
+    ).listen(
       (event) {
         completer.complete(event.payload);
       },
