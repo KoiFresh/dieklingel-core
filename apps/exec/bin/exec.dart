@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:dieklingel_core/apps/snapshot_command.dart';
+import 'package:exec/snapshot_command.dart';
 
 void main(List<String> args) {
   CommandRunner runner = CommandRunner(
