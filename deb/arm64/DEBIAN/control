@@ -1,0 +1,6 @@
+Package: dieklingel
+Version: 0.0.2
+Maintainer: Kai Mayer <kai.mayer@dieklingel.com>
+Architecture: arm64
+Description: The Debian Core for dieKlingel
+

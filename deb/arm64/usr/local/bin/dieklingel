@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ ! -f "~/dieklingel/core.yaml" ]; then 
+	mkdir -p ~/dieklingel
+	cp -r /etc/dieklingel/* ~/dieklingel
+fi
+
+/usr/share/dieklingel/core/dieklingel_core $@
