@@ -23,7 +23,7 @@ cp -r deb/$BUILD_ARCHITECTURE/* $BUILD_DIRECTORY/$BUILD_ARCHITECTURE
 
 echo "[ dieKlingel (2/5) ]: Build the core package and copy into deb package build folder."
 
-cd $ROOT_DIRECTORY
+cd $ROOT_DIRECTORY/apps/core
 
 flutter build linux
 cp -r build/linux/$BUILD_ARCHITECTURE/release/bundle/* $BUILD_DIRECTORY/$BUILD_ARCHITECTURE/usr/share/dieklingel/core

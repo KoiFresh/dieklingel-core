@@ -5,4 +5,4 @@ if [ ! -f "~/dieklingel/core.yaml" ]; then
 	cp -r /etc/dieklingel/* ~/dieklingel
 fi
 
-/usr/share/dieklingel/core/dieklingel_core $@
+/usr/share/dieklingel/core/core $@
