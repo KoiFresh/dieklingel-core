@@ -397,7 +397,7 @@ packages:
   mqtt:
     dependency: "direct main"
     description:
-      path: "libraries/mqtt"
+      path: "../../libraries/mqtt"
       relative: true
     source: path
     version: "0.0.1"
@@ -633,7 +633,7 @@ packages:
   ui:
     dependency: "direct main"
     description:
-      path: "libraries/ui"
+      path: "../../libraries/ui"
       relative: true
     source: path
     version: "0.0.1"
