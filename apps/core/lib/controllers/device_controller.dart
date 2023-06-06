@@ -8,19 +8,20 @@ class DeviceController extends BaseController {
   final DeviceRepository deviceRepository;
 
   DeviceController(super.client, this.deviceRepository) {
-    client.answer("rest/devices", _onDevices);
+    client.answer("rest/devices/list", _onDevicesList);
+    client.answer("rest/devices/add", _onDevicesAdd);
+    client.answer("rest/devices/remove", _onDevicesRemove);
   }
 
-  Future<Response> _onDevices(Request request) async {
-    switch (request.method.toUpperCase()) {
-      case "POST":
-        return _onDevicesPost(request);
-    }
-
+  Future<Response> _onDevicesList(Request request) async {
     return Response.notImplemented;
   }
 
-  Future<Response> _onDevicesPost(Request request) async {
+  Future<Response> _onDevicesAdd(Request request) async {
+    return Response.notImplemented;
+  }
+
+  Future<Response> _onDevicesRemove(Request request) async {
     return Response.notImplemented;
   }
 }

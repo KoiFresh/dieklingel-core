@@ -13,8 +13,10 @@ import '../utils/mqtt_channel.dart';
 import '../utils/rtc_client_wrapper.dart';
 import 'base_controller.dart';
 import 'device_controller.dart';
+import 'rtc_controlller.dart';
+import 'snapshot_controller.dart';
 
-class RestController {
+class ControllerManager {
   final Map<StreamSubscription, RtcClientWrapper> connections = {};
   final List<BaseController> _controllers = [];
 
@@ -22,32 +24,18 @@ class RestController {
   final IceServerRepository iceServerRepository;
   final ActionRepository actionRepository;
 
-  RestController(
+  ControllerManager(
     this.client,
     this.iceServerRepository,
     this.actionRepository,
     DeviceRepository deviceRepository,
   ) {
-    client.answer("request/rtc/connect", _onRtcConnectionRequest);
-    client.answer("rest/snapshot", _onSnapshotRequest);
-    client.answer("rest/event/get", _onEventRequest);
-    client.answer("rest/action/trigger", _onActionTrigger);
-
     client.legacyAnswer("request/rtc/connect/+", _onLegacyRtcConnectionRequest);
 
-    _controllers.add(DeviceController(client, deviceRepository));
-  }
-
-  Future<Response> _onSnapshotRequest(Request request) async {
-    return Response.notImplemented;
-  }
-
-  Future<Response> _onEventRequest(Request request) async {
-    return Response.notImplemented;
-  }
-
-  Future<Response> _onRtcConnectionRequest(Request request) async {
-    return Response.notImplemented;
+    _controllers
+      ..add(DeviceController(client, deviceRepository))
+      ..add(RtcController(client))
+      ..add(SnapshotController(client));
   }
 
   Future<LegacyMqttResponse> _onLegacyRtcConnectionRequest(
@@ -98,9 +86,5 @@ class RestController {
 
     connections[subscription] = wrapper;
     return LegacyMqttResponse.ok;
-  }
-
-  Future<Response> _onActionTrigger(Request request) async {
-    return Response.notImplemented;
   }
 }
