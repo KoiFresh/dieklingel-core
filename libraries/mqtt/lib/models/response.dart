@@ -3,6 +3,12 @@ class Response {
     status: 200,
     message: "Ok",
   );
+
+  static const Response created = Response(
+    status: 201,
+    message: "The requested ressource was succesfully created.",
+  );
+
   static const Response notImplemented = Response(
     status: 501,
     message: "The requested Method is not implemented!",

@@ -6,6 +6,7 @@ import 'blocs/app_view_bloc.dart';
 import 'controllers/rest_controller.dart';
 import 'repositories/action_repository.dart';
 import 'repositories/app_repository.dart';
+import 'repositories/device_repository.dart';
 import 'repositories/ice_server_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt/models/mqtt_uri.dart';
@@ -27,6 +28,7 @@ void main() async {
   AppRepository appRepository = AppRepository();
   IceServerRepository iceServerRepository = IceServerRepository();
   SignRepository signRepository = SignRepository();
+  DeviceRepository deviceRepository = DeviceRepository();
 
   mqtt.Client client = mqtt.Client();
 
@@ -44,6 +46,7 @@ void main() async {
             client,
             iceServerRepository,
             actionRepository,
+            deviceRepository,
           ),
           lazy: false,
         ),

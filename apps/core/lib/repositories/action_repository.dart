@@ -2,7 +2,7 @@ import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';
 import '../models/action.dart';
-import 'file_base_repository.dart';
+import 'yaml_file_base_repository.dart';
 
 class ActionRepository extends YamlFileBaseRepository {
   Future<List<Action>> fetchAllActions() async {

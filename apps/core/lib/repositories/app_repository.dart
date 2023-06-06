@@ -2,7 +2,7 @@ import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';
 import '../models/viewport_clip.dart';
-import 'file_base_repository.dart';
+import 'yaml_file_base_repository.dart';
 
 class AppRepository extends YamlFileBaseRepository {
   ViewportClip? _viewportClip;

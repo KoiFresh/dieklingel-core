@@ -2,7 +2,7 @@ import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';
 import '../models/ice_server.dart';
-import 'file_base_repository.dart';
+import 'yaml_file_base_repository.dart';
 
 class IceServerRepository extends YamlFileBaseRepository {
   Future<List<IceServer>> fetchAllIceServers() async {
