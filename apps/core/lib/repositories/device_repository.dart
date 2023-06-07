@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../models/device.dart';
-import 'yaml_file_base_repository.dart';
+import 'base_repository.dart';
 
 import 'package:path/path.dart' as path;
 
-class DeviceRepository extends YamlFileBaseRepository {
+class DeviceRepository extends BaseRepository {
   Future<List<Device>> fetchAllDevices() async {
     File deviceFile = File(path.join(homePath, "devices.json"));
     if (!(await deviceFile.exists())) {

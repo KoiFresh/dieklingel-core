@@ -1,11 +1,8 @@
 import 'dart:io';
 
-abstract class FileBaseRepository {
-  String get homePath =>
-      Platform.environment["SNAP_REAL_HOME"] ??
-      Platform.environment["HOME"] ??
-      "";
+import 'base_repository.dart';
 
+abstract class FileBaseRepository extends BaseRepository {
   String get configFilePath;
 
   Future<String> readConfigFile() async {

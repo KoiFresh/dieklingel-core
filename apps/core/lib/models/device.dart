@@ -1,5 +1,5 @@
 class Device {
-  final String id;
+  final int id;
   final List<String> signs;
 
   Device({
@@ -8,7 +8,7 @@ class Device {
   });
 
   factory Device.fromMap(Map<String, dynamic> map) {
-    if (map["id"] is! String) {
+    if (map["id"] != null && map["id"] is! int) {
       throw FormatException(
         "In order to create a Device from a map, the map has to have a key 'id' of type String.",
         map,

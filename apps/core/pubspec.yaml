@@ -42,6 +42,7 @@ dependencies:
   provider: ^6.0.5
   rfw: ^1.0.8
   shell: ^2.0.0
+  sqflite: ^2.2.8+4
   ui:
     path: ../../libraries/ui
   uuid: ^3.0.7
