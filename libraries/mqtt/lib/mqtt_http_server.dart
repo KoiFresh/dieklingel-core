@@ -62,12 +62,17 @@ class MqttHttpServer {
         }
 
         Map<String, dynamic>? headers = payload["headers"];
+        Uri requestedUri = Uri.parse("/$topic");
 
         request = Request(
           payload["method"] ?? "GET",
-          host.replace(path: "/$topic"),
+          requestedUri.replace(
+            host: host.host,
+            port: host.port,
+            scheme: host.scheme,
+          ),
           headers: headers?.cast<String, Object>(),
-          url: Uri(path: topic),
+          url: Uri.parse(topic),
         );
       } on RequestParseError catch (error) {
         print(error.message);

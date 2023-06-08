@@ -15,7 +15,14 @@ class ActionService {
     final Router router = Router();
 
     router.get("/", (Request request) async {
-      List<Action> actions = await actionRepository.fetchAllActions();
+      List<Action> actions;
+      if (request.requestedUri.queryParameters.containsKey("trigger")) {
+        actions = await actionRepository.fetchActionsFor(
+          request.requestedUri.queryParameters["trigger"]!,
+        );
+      } else {
+        actions = await actionRepository.fetchAllActions();
+      }
       List<Map<String, dynamic>> body = actions.map((e) => e.toMap()).toList();
 
       return Response.ok(

@@ -23,7 +23,7 @@ class Action {
 
   Map<String, dynamic> toMap() {
     return {
-      "trigger": trigger.toString(),
+      "trigger": trigger.pattern,
       "lane": lane,
     };
   }
