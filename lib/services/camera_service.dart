@@ -6,7 +6,7 @@ class CameraService {
     final router = Router();
 
     router.get("/snapshot", (Request request) {
-      return Response.ok(":)");
+      return Response(501, body: "Snapshot is not implemented!");
     });
 
     return router;

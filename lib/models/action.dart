@@ -20,4 +20,11 @@ class Action {
       lane: lane,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "trigger": trigger.toString(),
+      "lane": lane,
+    };
+  }
 }

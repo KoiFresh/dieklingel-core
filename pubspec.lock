@@ -336,6 +336,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  get_it:
+    dependency: "direct main"
+    description:
+      name: get_it
+      sha256: "529de303c739fca98cd7ece5fca500d8ff89649f1bb4b4e94fb20954abcd7468"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.6.0"
   glob:
     dependency: transitive
     description:
@@ -353,7 +361,7 @@ packages:
     source: hosted
     version: "2.3.1"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
@@ -460,10 +468,8 @@ packages:
     dependency: "direct main"
     description:
       path: "libraries/mqtt"
-      ref: "feature/sip"
-      resolved-ref: "5934e80ba869c21cc68cc4b0b5fa021c8762c9a5"
-      url: "https://github.com/KoiFresh/dieklingel-core.git"
-    source: git
+      relative: true
+    source: path
     version: "0.0.1"
   mqtt_client:
     dependency: transitive
@@ -678,6 +684,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.5"
+  sqflite_common_ffi:
+    dependency: "direct main"
+    description:
+      name: sqflite_common_ffi
+      sha256: f86de82d37403af491b21920a696b19f01465b596f545d1acd4d29a0a72418ad
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.5"
+  sqlite3:
+    dependency: transitive
+    description:
+      name: sqlite3
+      sha256: "281b672749af2edf259fc801f0fcba092257425bcd32a0ce1c8237130bc934c7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.11.2"
   stack_trace:
     dependency: transitive
     description:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 import '../blocs/app_view_bloc.dart';
 import '../blocs/passcode_view_bloc.dart';
@@ -49,13 +50,13 @@ class _Viewport extends StatelessWidget {
           providers: [
             BlocProvider(
               create: (_) => PasscodeViewBloc(
-                context.read<ActionRepository>(),
+                GetIt.I<ActionRepository>(),
               ),
             ),
             BlocProvider(
               create: (_) => SignListViewBloc(
-                context.read<SignRepository>(),
-                context.read<ActionRepository>(),
+                GetIt.I<SignRepository>(),
+                GetIt.I<ActionRepository>(),
               ),
             )
           ],

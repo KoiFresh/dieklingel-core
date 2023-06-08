@@ -1,23 +1,119 @@
-import 'dart:convert';
-import 'dart:io';
+import 'package:sqflite/sqflite.dart';
 
 import '../models/device.dart';
-import 'base_repository.dart';
 
-import 'package:path/path.dart' as path;
+import 'database_repository.dart';
 
-class DeviceRepository extends BaseRepository {
+class DeviceRepository extends DatabaseRepository {
   Future<List<Device>> fetchAllDevices() async {
-    File deviceFile = File(path.join(homePath, "devices.json"));
-    if (!(await deviceFile.exists())) {
-      return [];
+    Database db = await open();
+    List<Map<String, dynamic>> entries = await db.query("devices");
+    List<Device> devices = [];
+
+    for (Map<String, dynamic> entry in entries) {
+      String token = entry["token"];
+      List<Map<String, dynamic>> signs = await db.query(
+        "signs",
+        where: "device_token = ?",
+        whereArgs: [token],
+      );
+      devices.add(
+        Device(
+          signs: signs.map((e) => e["name"].toString()).toList(),
+          token: token,
+        ),
+      );
     }
 
-    String rawDevices = await deviceFile.readAsString();
-    List<dynamic> jsonDevices = jsonDecode(rawDevices);
-
-    return jsonDevices.map((e) => Device.fromMap(e)).toList();
+    await db.close();
+    return devices;
   }
 
-  Future<void> addDevice(Device device) async {}
+  Future<Device> addDevice(Device device) async {
+    Database db = await open();
+
+    await db.insert(
+      "devices",
+      {
+        "token": device.token,
+      },
+    );
+
+    for (String sign in device.signs) {
+      await db.insert(
+        "signs",
+        {
+          "name": sign,
+          "device_token": device.token,
+        },
+      );
+    }
+
+    await db.close();
+    return device;
+  }
+
+  Future<Device> modifyDevice(Device device) async {
+    Database db = await open();
+
+    bool deviceExists = (await db.query(
+      "devices",
+      where: "token = ?",
+      whereArgs: [device.token],
+    ))
+        .isNotEmpty;
+
+    if (!deviceExists) {
+      throw ModifyDeviceError(
+          "The Device can not be modified because it does not exist.", device);
+    }
+
+    await db.delete(
+      "signs",
+      where: "device_token = ?",
+      whereArgs: [device.token],
+    );
+
+    for (String sign in device.signs) {
+      await db.insert(
+        "signs",
+        {
+          "name": sign,
+          "device_token": device.token,
+        },
+      );
+    }
+
+    await db.close();
+    return device;
+  }
+
+  Future<void> deleteDevice(Device device) async {
+    Database db = await open();
+
+    await db.delete(
+      "signs",
+      where: "device_token = ?",
+      whereArgs: [device.token],
+    );
+    await db.delete(
+      "devices",
+      where: "token = ?",
+      whereArgs: [device.token],
+    );
+
+    await db.close();
+  }
+}
+
+class ModifyDeviceError extends Error {
+  final String message;
+  final Device? device;
+
+  ModifyDeviceError(this.message, [this.device]);
+
+  @override
+  String toString() {
+    return "$message, requested device: $device";
+  }
 }

@@ -22,6 +22,7 @@ class AuthenticationService {
   Middleware _authenticate() {
     return (Handler innerHandler) {
       return (Request request) {
+        // TODO: check for authentification
         return Future.sync(() => innerHandler(request));
       };
     };

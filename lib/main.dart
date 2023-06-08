@@ -1,22 +1,23 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 import 'blocs/app_view_bloc.dart';
-import 'controllers/controller_manager.dart';
 import 'repositories/action_repository.dart';
 import 'repositories/app_repository.dart';
 import 'repositories/device_repository.dart';
-import 'repositories/ice_server_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:mqtt/mqtt.dart' as mqtt;
+import 'package:mqtt/mqtt.dart';
 import 'package:path/path.dart' as path;
 import 'package:shelf/shelf_io.dart' as io;
 
 import 'repositories/sign_repository.dart';
 import 'services/authentication_service.dart';
 import 'services/camera_service.dart';
+import 'services/action_service.dart';
+import 'services/device_service.dart';
 import 'views/app_view.dart';
 
 void main() async {
@@ -26,48 +27,35 @@ void main() async {
       "";
   Directory.current = path.join(homeDirectory, "dieklingel");
 
-  CameraService cameraService = CameraService();
+  GetIt.I.registerSingleton(ActionRepository());
+  GetIt.I.registerSingleton(AppRepository());
+  GetIt.I.registerSingleton(SignRepository());
+  GetIt.I.registerSingleton(DeviceRepository());
 
   final service = AuthenticationService({
-    "/": cameraService.handler,
+    "/actions": ActionService(GetIt.I<ActionRepository>()).handler,
+    "/camera": CameraService().handler,
+    "/devices": DeviceService(GetIt.I<DeviceRepository>()).handler,
   });
 
-  await io.serve(service.handler, "0.0.0.0", 8081);
-
-  final actionRepository = ActionRepository();
+  /* final actionRepository = ActionRepository();
   final appRepository = AppRepository();
   final iceServerRepository = IceServerRepository();
   final signRepository = SignRepository();
-  final deviceRepository = DeviceRepository();
+  final deviceRepository = DeviceRepository();*/
 
-  mqtt.Client client = mqtt.Client();
-
-  client
-      .connect(
-        mqtt.MqttUri.fromUri(await appRepository.fetchMqttUri()),
-        username: await appRepository.fetchMqttUsername(),
-        password: await appRepository.fetchMqttPassword(),
-      )
-      .then(
-        (value) => client
-            .publish(mqtt.Message("system/boot", DateTime.now().toString())),
-      );
-
-  final controllerManager = ControllerManager(
-    client,
-    iceServerRepository,
-    actionRepository,
-    deviceRepository,
-  );
+  await Future.wait([
+    io.serve(service.handler, "0.0.0.0", 8081),
+    MqttHttpServer().serve(
+      service.handler,
+      Uri.parse("mqtt://server.dieklingel.com:1883/dieklingel"),
+    )
+  ]);
 
   runApp(
     MultiProvider(
       providers: [
-        Provider(create: (_) => controllerManager),
-        RepositoryProvider(create: (_) => appRepository),
-        RepositoryProvider(create: (_) => actionRepository),
-        RepositoryProvider(create: (_) => signRepository),
-        BlocProvider(create: (_) => AppViewBloc(appRepository, client))
+        BlocProvider(create: (_) => AppViewBloc(GetIt.I<AppRepository>()))
       ],
       child: const App(),
     ),
