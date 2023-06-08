@@ -37,14 +37,22 @@ dependencies:
   flutter_bloc: ^8.1.2
   flutter_webrtc: ^0.9.25
   mqtt:
-    path: ../../libraries/mqtt
+  #  path: ../../libraries/mqtt
+    git:
+      url: https://github.com/KoiFresh/dieklingel-core.git
+      ref: feature/sip
+      path: libraries/mqtt
   path: ^1.8.2
   provider: ^6.0.5
   rfw: ^1.0.8
   shell: ^2.0.0
   sqflite: ^2.2.8+4
   ui:
-    path: ../../libraries/ui
+#    path: ../../libraries/ui
+    git:
+      url: https://github.com/KoiFresh/dieklingel-core.git
+      ref: feature/sip
+      path: libraries/ui
   uuid: ^3.0.7
   yaml: ^3.1.1
 

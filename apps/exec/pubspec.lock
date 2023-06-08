@@ -275,9 +275,11 @@ packages:
   mqtt:
     dependency: "direct main"
     description:
-      path: "../../libraries/mqtt"
-      relative: true
-    source: path
+      path: "libraries/mqtt"
+      ref: "feature/sip"
+      resolved-ref: "5934e80ba869c21cc68cc4b0b5fa021c8762c9a5"
+      url: "https://github.com/KoiFresh/dieklingel-core.git"
+    source: git
     version: "0.0.1"
   mqtt_client:
     dependency: transitive

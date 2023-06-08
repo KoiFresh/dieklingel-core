@@ -1,6 +1,5 @@
 name: dieklingel
 title: dieKlingel Core
-icon: snap/gui/logo_512x512_rounded_corners.png
 contact: kai.mayer@dieklingel.com
 website: https://dieklingel.de/
 license: GPL-3.0
@@ -16,89 +15,27 @@ architectures:
   - build-on: arm64
 
 parts:
-  flutter-git:
-    source: https://github.com/flutter/flutter.git
-    source-branch: "3.3.10"
-    plugin: nil
-    override-build: |
-      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/bin
-      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/libexec
-      cp -r $SNAPCRAFT_PART_SRC $SNAPCRAFT_PART_INSTALL/usr/libexec/flutter
-      ln -sf $SNAPCRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $SNAPCRAFT_PART_INSTALL/usr/bin/flutter
-      ln -sf $SNAPCRAFT_PART_INSTALL/usr/libexec/flutter/bin/dart $SNAPCRAFT_PART_INSTALL/usr/bin/dart
-      export PATH="$SNAPCRAFT_PART_INSTALL/usr/bin:$PATH"
-      flutter doctor
-      flutter precache
-    build-packages:
-      - clang
-      - cmake
-      - curl
-      - ninja-build
-      - unzip
-    override-prime: ""
-
   core:
-    plugin: nil
-    source: .
-    after: [flutter-git]
+    plugin: flutter
+    source: apps/core
+    flutter-target: lib/main.dart
     build-packages:
+      - curl
       - pkg-config
       - libgstreamer1.0-dev
       - libgstreamer-plugins-base1.0-dev
-    override-build: |
-      set -eux
-      flutter pub get
-      flutter build linux --release -v
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/dieklingel_core
-      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/dieklingel_core/
-  exec:
-    plugin: nil
-    source: .
-    after: [flutter-git]
-    override-build: |
-      set -eux
-      dart pub get
-      dart compile exe bin/exec.dart -o exec
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/exec
-      cp exec $SNAPCRAFT_PART_INSTALL/bin/exec/exec
-  apn:
-    plugin: nil
-    source: packages/apn
-    after: [flutter-git]
-    override-build: |
-      set -eux
-      dart pub get
-      dart compile exe bin/apn.dart -o apn
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/apn
-      cp apn $SNAPCRAFT_PART_INSTALL/bin/apn/apn
 
 apps:
   core:
-    command: bin/dieklingel_core/dieklingel_core
-    autostart: dieklingel.core.desktop
-#    daemon: simple
-#    passthrough:
-#      daemon-scope: user
+    command: core
     plugs:
       - home
       - network
       - camera
       - audio-playback
       - audio-record
+      - x11
+      - wayland
     extensions: [gnome]
     environment:
       LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/dieklingel_core/lib"
-  exec:
-    command: bin/exec/exec
-    plugs:
-      - home
-      - network
-  apn:
-    command: bin/apn/apn
-    daemon: simple
-#    passthrough:
-#      daemon-scope: user
-    plugs:
-      - home
-      - network
-
