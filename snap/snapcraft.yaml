@@ -17,7 +17,7 @@ architectures:
 parts:
   core:
     plugin: flutter
-    source: apps/core
+    source: .
     flutter-target: lib/main.dart
     build-packages:
       - curl
