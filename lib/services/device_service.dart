@@ -26,13 +26,34 @@ class DeviceService {
       );
     });
 
+    router.get("/<token>", (Request request, String token) async {
+      try {
+        Device device = await deviceRepository.fetchDeviceByToken(token);
+
+        return Response.ok(
+          jsonEncode(device.toMap()),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        );
+      } on FetchDeviceError {
+        return Response.notFound("The requested device was not found");
+      }
+    });
+
     router.post("/", (Request request) async {
       Map<String, dynamic> body = jsonDecode(await request.readAsString());
       Device device = Device.fromMap(body);
 
       await deviceRepository.addDevice(device);
 
-      return Response.ok("Ok");
+      return Response(
+        201,
+        body: jsonEncode(device.toMap()),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
     });
 
     router.patch("/<token>", (Request request, String token) async {
@@ -43,6 +64,24 @@ class DeviceService {
       );
 
       await deviceRepository.modifyDevice(device);
+
+      return Response.ok(
+        jsonEncode(device.toMap()),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
+    });
+
+    router.put("/<token>", (Request request, String token) async {
+      Map<String, dynamic> body = jsonDecode(await request.readAsString());
+      Device device = Device(
+        signs: (body["signs"] as List).cast<String>(),
+        token: token,
+      );
+
+      await deviceRepository.deleteDevice(device);
+      await deviceRepository.addDevice(device);
 
       return Response.ok(jsonEncode(device.toMap()));
     });

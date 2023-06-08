@@ -29,6 +29,34 @@ class DeviceRepository extends DatabaseRepository {
     return devices;
   }
 
+  Future<Device> fetchDeviceByToken(String token) async {
+    Database db = await open();
+    List<Map<String, dynamic>> entries = await db.query(
+      "devices",
+      where: "token = ?",
+      whereArgs: [token],
+      limit: 1,
+    );
+
+    if (entries.isEmpty) {
+      throw FetchDeviceError("The requested device does not exist.", token);
+    }
+
+    List<Map<String, dynamic>> signs = await db.query(
+      "signs",
+      where: "device_token = ?",
+      whereArgs: [token],
+    );
+
+    Device device = Device(
+      signs: signs.map((e) => e["name"].toString()).toList(),
+      token: token,
+    );
+
+    await db.close();
+    return device;
+  }
+
   Future<Device> addDevice(Device device) async {
     Database db = await open();
 
@@ -56,14 +84,14 @@ class DeviceRepository extends DatabaseRepository {
   Future<Device> modifyDevice(Device device) async {
     Database db = await open();
 
-    bool deviceExists = (await db.query(
+    List<Map<String, dynamic>> entries = await db.query(
       "devices",
       where: "token = ?",
       whereArgs: [device.token],
-    ))
-        .isNotEmpty;
+      limit: 1,
+    );
 
-    if (!deviceExists) {
+    if (entries.isEmpty) {
       throw ModifyDeviceError(
           "The Device can not be modified because it does not exist.", device);
     }
@@ -115,5 +143,17 @@ class ModifyDeviceError extends Error {
   @override
   String toString() {
     return "$message, requested device: $device";
+  }
+}
+
+class FetchDeviceError extends Error {
+  final String message;
+  final String? token;
+
+  FetchDeviceError(this.message, [this.token]);
+
+  @override
+  String toString() {
+    return "$message, token: $token";
   }
 }
