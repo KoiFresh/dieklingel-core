@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mqtt/mqtt.dart';
+import 'package:shelf/shelf.dart';
 
 import 'blocs/app_view_bloc.dart';
 import 'controllers/controller_manager.dart';
@@ -13,8 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mqtt/mqtt.dart' as mqtt;
 import 'package:path/path.dart' as path;
+import 'package:shelf/shelf_io.dart' as io;
 
 import 'repositories/sign_repository.dart';
+import 'services/authentication_service.dart';
+import 'services/camera_service.dart';
 import 'views/app_view.dart';
 
 void main() async {
@@ -23,6 +26,14 @@ void main() async {
       Platform.environment["HOME"] ??
       "";
   Directory.current = path.join(homeDirectory, "dieklingel");
+
+  CameraService cameraService = CameraService();
+
+  final service = AuthenticationService({
+    "/": cameraService.handler,
+  });
+
+  await io.serve(service.handler, "0.0.0.0", 8081);
 
   final actionRepository = ActionRepository();
   final appRepository = AppRepository();
@@ -34,13 +45,13 @@ void main() async {
 
   client
       .connect(
-        MqttUri.fromUri(await appRepository.fetchMqttUri()),
+        mqtt.MqttUri.fromUri(await appRepository.fetchMqttUri()),
         username: await appRepository.fetchMqttUsername(),
         password: await appRepository.fetchMqttPassword(),
       )
       .then(
-        (value) =>
-            client.publish(Message("system/boot", DateTime.now().toString())),
+        (value) => client
+            .publish(mqtt.Message("system/boot", DateTime.now().toString())),
       );
 
   final controllerManager = ControllerManager(

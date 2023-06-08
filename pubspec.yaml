@@ -45,6 +45,8 @@ dependencies:
   path: ^1.8.2
   provider: ^6.0.5
   rfw: ^1.0.8
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
   shell: ^2.0.0
   sqflite: ^2.2.8+4
   ui:
