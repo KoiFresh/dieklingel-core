@@ -1,4 +1,0 @@
-enum ConnectionState {
-  connected,
-  disconnected,
-}

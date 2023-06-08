@@ -11,8 +11,11 @@ dependencies:
   build_runner: ^2.3.3
   flutter:
     sdk: flutter
+  http: ^0.13.5
   mqtt_client: ^9.8.1
   path: ^1.8.2
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
   uuid: ^3.0.7
   yaml: ^3.1.1
 
@@ -22,7 +25,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
   mockito: ^5.4.0
-  typed_buffer: ^2.2.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
