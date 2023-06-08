@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shelf/shelf.dart';
 
 import 'blocs/app_view_bloc.dart';
 import 'controllers/controller_manager.dart';
