@@ -83,12 +83,23 @@ class MqttHttpServer {
       }
 
       String? answerChannel = request.headers["mqtt_answer_channel"];
-      if (answerChannel == null) {
-        print("request is missing mqtt_answer_channel header");
+      bool isSocketMessage = ["true", "yes"].contains(
+        request.headers["is_socket_message"]?.toLowerCase(),
+      );
+      if (answerChannel == null && !isSocketMessage) {
+        print(
+          "You either have to specify 'mqtt_answer_channel' or 'is_socket_message' header, in order to use http over mqtt. The request will be silently ignored!",
+        );
         return;
       }
 
       Response response = await _handler!(request);
+
+      if (isSocketMessage) {
+        // should be treated as socket message, so we will not send a response
+        return;
+      }
+
       String answer = jsonEncode(await _responseToMap(response));
 
       _client?.publishMessage(

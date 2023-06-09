@@ -35,6 +35,7 @@ class MqttHttpClient {
     if (request.headers["mqtt_answer_channel"] == null) {
       request.headers["mqtt_answer_channel"] = const Uuid().v4();
     }
+    request.headers.remove("is_socket_message");
 
     Completer<String?> completer = Completer<String?>();
 
@@ -85,6 +86,36 @@ class MqttHttpClient {
     );
   }
 
+  Future<void> _socket(Request request) async {
+    final String hostname =
+        request.url.isScheme("ws") || request.url.isScheme("wss")
+            ? "${request.url.scheme}://${request.url.host}"
+            : request.url.host;
+
+    final MqttClient client = _factory.create(hostname, const Uuid().v4())
+      ..port = request.url.port
+      ..keepAlivePeriod = 20
+      ..setProtocolV311()
+      ..autoReconnect = true;
+
+    await client.connect(
+      request.headers["username"],
+      request.headers["password"],
+    );
+
+    request.headers["is_socket_message"] = "true";
+    request.headers.remove("mqtt_answer_channel");
+
+    String requestPath = path.normalize("./${request.url.path}");
+
+    String payload = jsonEncode(_requestToMap(request));
+    client.publishMessage(
+      requestPath,
+      MqttQos.exactlyOnce,
+      MqttClientPayloadBuilder().addUTF8String(payload).payload!,
+    );
+  }
+
   Map<String, dynamic> _requestToMap(Request request) {
     return {
       "method": request.method,
@@ -93,13 +124,13 @@ class MqttHttpClient {
     };
   }
 
-  Future<Response> _send(
+  Future<Request> _createRequest(
     String method,
     Uri url,
     Map<String, String>? headers, [
     Object? body,
     Encoding? encoding,
-  ]) {
+  ]) async {
     Request request = Request(method, url);
 
     if (headers != null) {
@@ -120,11 +151,11 @@ class MqttHttpClient {
       }
     }
 
-    return _fetch(request);
+    return request;
   }
 
   Future<Response> get(Uri url, {Map<String, String>? headers}) =>
-      _send("GET", url, headers);
+      _createRequest("GET", url, headers).then((req) => _fetch(req));
 
   Future<Response> post(
     Uri url, {
@@ -132,7 +163,8 @@ class MqttHttpClient {
     Object? body,
     Encoding? encoding,
   }) =>
-      _send("POST", url, headers, body, encoding);
+      _createRequest("POST", url, headers, body, encoding)
+          .then((req) => _fetch(req));
 
   Future<Response> put(
     Uri url, {
@@ -140,7 +172,8 @@ class MqttHttpClient {
     Object? body,
     Encoding? encoding,
   }) =>
-      _send("PUT", url, headers, body, encoding);
+      _createRequest("PUT", url, headers, body, encoding)
+          .then((req) => _fetch(req));
 
   Future<Response> patch(
     Uri url, {
@@ -148,7 +181,8 @@ class MqttHttpClient {
     Object? body,
     Encoding? encoding,
   }) =>
-      _send("PATCH", url, headers, body, encoding);
+      _createRequest("PATCH", url, headers, body, encoding)
+          .then((req) => _fetch(req));
 
   Future<Response> delete(
     Uri url, {
@@ -156,5 +190,15 @@ class MqttHttpClient {
     Object? body,
     Encoding? encoding,
   }) =>
-      _send("DELETE", url, headers, body, encoding);
+      _createRequest("DELETE", url, headers, body, encoding)
+          .then((req) => _fetch(req));
+
+  Future<void> socket(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
+  }) =>
+      _createRequest("CONNECT", url, headers, body, encoding)
+          .then((req) => _fetch(req));
 }

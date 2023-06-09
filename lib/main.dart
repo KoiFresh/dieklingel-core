@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import 'repositories/ice_server_repository.dart';
+import 'services/rtc_service.dart';
 import 'ui/blocs/app_view_bloc.dart';
 import 'repositories/action_repository.dart';
 import 'repositories/app_repository.dart';
@@ -32,11 +34,13 @@ void main() async {
   GetIt.I.registerSingleton(AppRepository());
   GetIt.I.registerSingleton(SignRepository());
   GetIt.I.registerSingleton(DeviceRepository());
+  GetIt.I.registerSingleton(IceServerRepository());
 
   final service = AuthenticationService({
     "/actions": ActionService(GetIt.I<ActionRepository>()).handler,
     "/camera": CameraService().handler,
     "/devices": DeviceService(GetIt.I<DeviceRepository>()).handler,
+    "/rtc": RtcService(GetIt.I<IceServerRepository>()).handler,
     "/signs": SignService(GetIt.I<SignRepository>()).handler,
   });
 
