@@ -1,148 +1,101 @@
-import 'package:sqflite/sqflite.dart';
+import 'package:hive/hive.dart';
 
+import '../hive/hive_device_adapter.dart';
 import '../models/device.dart';
 
 import 'database_repository.dart';
 
 class DeviceRepository extends DatabaseRepository {
-  Future<List<Device>> fetchAllDevices() async {
-    Database db = await open();
-    List<Map<String, dynamic>> entries = await db.query("devices");
-    List<Device> devices = [];
+  DeviceRepository() {
+    if (!Hive.isAdapterRegistered(HiveDeviceAdapter().typeId)) {
+      Hive.registerAdapter(HiveDeviceAdapter());
+    }
+  }
 
-    for (Map<String, dynamic> entry in entries) {
-      String token = entry["token"];
-      List<Map<String, dynamic>> signs = await db.query(
-        DatabaseRepositoryTable.signs,
-        where: "device_token = ?",
-        whereArgs: [token],
-      );
-      devices.add(
-        Device(
-          signs: signs.map((e) => e["name"].toString()).toList(),
-          token: token,
+  Future<List<Device>> fetchAllDevices({List<String>? signs}) async {
+    Box<Device> deviceBox = await Hive.openBox("devices");
+
+    List<Device> devices = deviceBox.values.toList();
+    if (signs != null) {
+      devices.removeWhere(
+        (device) => device.signs.every(
+          (sign) => !signs.contains(sign),
         ),
       );
     }
 
-    await db.close();
+    await deviceBox.compact();
+    await deviceBox.close();
     return devices;
   }
 
   Future<Device> fetchDeviceByToken(String token) async {
-    Database db = await open();
-    List<Map<String, dynamic>> entries = await db.query(
-      DatabaseRepositoryTable.devices,
-      where: "token = ?",
-      whereArgs: [token],
-      limit: 1,
-    );
+    Box<Device> deviceBox = await Hive.openBox("devices");
 
-    if (entries.isEmpty) {
-      throw FetchDeviceError("The requested device does not exist.", token);
+    Device? device = deviceBox.get(token);
+    if (device == null) {
+      throw FetchDeviceError("The requested Device could not be found.", token);
     }
 
-    List<Map<String, dynamic>> signs = await db.query(
-      DatabaseRepositoryTable.signs,
-      where: "device_token = ?",
-      whereArgs: [token],
-    );
-
-    Device device = Device(
-      signs: signs.map((e) => e["name"].toString()).toList(),
-      token: token,
-    );
-
-    await db.close();
+    await deviceBox.compact();
+    await deviceBox.close();
     return device;
   }
 
   Future<Device> addDevice(Device device) async {
-    Database db = await open();
+    Box<Device> deviceBox = await Hive.openBox("devices");
 
-    await db.insert(
-      DatabaseRepositoryTable.devices,
-      {
-        "token": device.token,
-      },
-    );
-
-    for (String sign in device.signs) {
-      await db.insert(
-        DatabaseRepositoryTable.signs,
-        {
-          "name": sign,
-          "device_token": device.token,
-        },
+    if (deviceBox.containsKey(device.token)) {
+      throw DeviceError(
+        "The Device could not be created, the token already exists!",
+        device,
       );
     }
+    await deviceBox.put(device.token, device);
 
-    await db.close();
+    await deviceBox.compact();
+    await deviceBox.close();
     return device;
   }
 
-  Future<Device> modifyDevice(Device device) async {
-    Database db = await open();
+  Future<Device> modifyDevice(String oldToken, Device device) async {
+    Box<Device> deviceBox = await Hive.openBox("devices");
 
-    List<Map<String, dynamic>> entries = await db.query(
-      DatabaseRepositoryTable.devices,
-      where: "token = ?",
-      whereArgs: [device.token],
-      limit: 1,
-    );
-
-    if (entries.isEmpty) {
-      throw ModifyDeviceError(
-          "The Device can not be modified because it does not exist.", device);
-    }
-
-    await db.delete(
-      DatabaseRepositoryTable.signs,
-      where: "device_token = ?",
-      whereArgs: [device.token],
-    );
-
-    for (String sign in device.signs) {
-      await db.insert(
-        DatabaseRepositoryTable.signs,
-        {
-          "name": sign,
-          "device_token": device.token,
-        },
+    if (!deviceBox.containsKey(oldToken)) {
+      throw DeviceError(
+        "The Device can not be modified, it has to be created first",
+        device,
       );
     }
+    if (oldToken != device.token) {
+      await deviceBox.delete(oldToken);
+    }
+    await deviceBox.put(device.token, device);
 
-    await db.close();
+    await deviceBox.compact();
+    await deviceBox.close();
     return device;
   }
 
   Future<void> deleteDevice(Device device) async {
-    Database db = await open();
+    Box<Device> deviceBox = await Hive.openBox("devices");
 
-    await db.delete(
-      DatabaseRepositoryTable.signs,
-      where: "device_token = ?",
-      whereArgs: [device.token],
-    );
-    await db.delete(
-      DatabaseRepositoryTable.devices,
-      where: "token = ?",
-      whereArgs: [device.token],
-    );
+    await deviceBox.delete(device.token);
 
-    await db.close();
+    await deviceBox.compact();
+    await deviceBox.close();
   }
 }
 
-class ModifyDeviceError extends Error {
+class DeviceError extends Error {
   final String message;
   final Device? device;
 
-  ModifyDeviceError(this.message, [this.device]);
+  DeviceError(this.message, [this.device]);
 
   @override
   String toString() {
-    return "$message, requested device: $device";
+    return "$message; device: $device";
   }
 }
 

@@ -1,3 +1,5 @@
+import 'package:blueprint/blueprint.dart';
+
 class Device {
   final String token;
   final List<String> signs;
@@ -8,19 +10,14 @@ class Device {
   });
 
   factory Device.fromMap(Map<String, dynamic> map) {
-    if (map["signs"] is! List) {
-      throw FormatException(
-        "In order to create a Device from a map, the map has to have a key 'signs' of type String.",
-        map,
-      );
-    }
-
-    if (map["token"] is! String) {
-      throw FormatException(
-        "In order to create a Device from a map, the map has to have a key 'token' of type String.",
-        map,
-      );
-    }
+    matchMap(
+      map,
+      {
+        "token": StringF,
+        "signs": ListF.of(StringF),
+      },
+      throwable: true,
+    );
 
     return Device(
       signs: (map["signs"] as List).cast<String>(),

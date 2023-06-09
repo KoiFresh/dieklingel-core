@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:blueprint/blueprint.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
@@ -15,11 +16,18 @@ class DeviceService {
     final Router router = Router();
 
     router.get("/", (Request request) async {
-      List<Device> devices = await deviceRepository.fetchAllDevices();
-      List<Map<String, dynamic>> body = devices.map((e) => e.toMap()).toList();
+      List<Device> devices;
+      List<String>? signs;
+      if (request.requestedUri.queryParameters.containsKey("signs")) {
+        signs = request.requestedUri.queryParametersAll["signs"];
+      }
+      devices = await deviceRepository.fetchAllDevices(signs: signs);
+
+      List<Map<String, dynamic>> responseBody =
+          devices.map((e) => e.toMap()).toList();
 
       return Response.ok(
-        jsonEncode(body),
+        jsonEncode(responseBody),
         headers: {
           "Content-Type": "application/json",
         },
@@ -42,8 +50,17 @@ class DeviceService {
     });
 
     router.post("/", (Request request) async {
-      Map<String, dynamic> body = jsonDecode(await request.readAsString());
-      Device device = Device.fromMap(body);
+      Map<String, dynamic> body;
+      Device device;
+
+      try {
+        body = jsonDecode(await request.readAsString());
+        device = Device.fromMap(body);
+      } on FormatException catch (error) {
+        return Response.badRequest(body: error.toString());
+      } on TypeDoesNotMatch catch (error) {
+        return Response.badRequest(body: error.toString());
+      }
 
       await deviceRepository.addDevice(device);
 
@@ -57,13 +74,18 @@ class DeviceService {
     });
 
     router.patch("/<token>", (Request request, String token) async {
-      Map<String, dynamic> body = jsonDecode(await request.readAsString());
-      Device device = Device(
-        signs: (body["signs"] as List).cast<String>(),
-        token: token,
-      );
+      Map<String, dynamic> body;
+      Device device;
+      try {
+        body = jsonDecode(await request.readAsString());
+        device = Device.fromMap(body);
+      } on FormatException catch (error) {
+        return Response.badRequest(body: error.toString());
+      } on TypeDoesNotMatch catch (error) {
+        return Response.badRequest(body: error.toString());
+      }
 
-      await deviceRepository.modifyDevice(device);
+      await deviceRepository.modifyDevice(token, device);
 
       return Response.ok(
         jsonEncode(device.toMap()),

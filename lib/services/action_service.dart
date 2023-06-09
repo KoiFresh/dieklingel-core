@@ -52,7 +52,7 @@ class ActionService {
         );
 
         trigger = body["trigger"];
-        environment = body["environment"];
+        environment = body["environment"] ?? {};
       } on FormatException catch (error) {
         return Response.badRequest(body: error.toString());
       } on TypeDoesNotMatch catch (error) {
