@@ -1,0 +1,1 @@
+../dieklingel/scripts/push-notification.sh
