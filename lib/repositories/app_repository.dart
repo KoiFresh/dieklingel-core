@@ -1,18 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:yaml/yaml.dart';
 
 import '../extensions/yaml_map.dart';
-import '../models/viewport_clip.dart';
 import 'yaml_file_base_repository.dart';
 
 class AppRepository extends YamlFileBaseRepository {
-  ViewportClip? _viewportClip;
+  EdgeInsets? _viewportClip;
   Uri? _mqttUri;
   String? _mqttUsername;
   String? _mqttPassword;
   Duration? _screenTimeout;
 
-  Future<ViewportClip> fetchViewportClip({bool useCache = true}) async {
-    ViewportClip? clip = _viewportClip;
+  Future<EdgeInsets> fetchViewportClip({bool useCache = true}) async {
+    EdgeInsets? clip = _viewportClip;
 
     if (clip != null && useCache) {
       return clip;
@@ -24,11 +24,11 @@ class AppRepository extends YamlFileBaseRepository {
         .get<YamlMap>("viewport")
         .get<YamlMap>("clip");
 
-    clip = ViewportClip(
-      left: viewportClip.get<int>("left").toDouble(),
-      top: viewportClip.get<int>("top").toDouble(),
-      right: viewportClip.get<int>("right").toDouble(),
-      bottom: viewportClip.get<int>("bottom").toDouble(),
+    clip = EdgeInsets.fromLTRB(
+      viewportClip.get<int>("left").toDouble(),
+      viewportClip.get<int>("top").toDouble(),
+      viewportClip.get<int>("right").toDouble(),
+      viewportClip.get<int>("bottom").toDouble(),
     );
 
     _viewportClip = clip;
