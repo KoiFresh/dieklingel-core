@@ -18,6 +18,7 @@ import 'services/authentication_service.dart';
 import 'services/camera_service.dart';
 import 'services/action_service.dart';
 import 'services/device_service.dart';
+import 'services/sign_service.dart';
 import 'views/app_view.dart';
 
 void main() async {
@@ -36,6 +37,7 @@ void main() async {
     "/actions": ActionService(GetIt.I<ActionRepository>()).handler,
     "/camera": CameraService().handler,
     "/devices": DeviceService(GetIt.I<DeviceRepository>()).handler,
+    "/signs": SignService(GetIt.I<SignRepository>()).handler,
   });
 
   /* final actionRepository = ActionRepository();
