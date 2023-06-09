@@ -5,11 +5,11 @@ import 'package:get_it/get_it.dart';
 import '../blocs/app_view_bloc.dart';
 import '../blocs/passcode_view_bloc.dart';
 import '../blocs/sign_list_view_bloc.dart';
-import '../components/activity_listener.dart';
-import '../repositories/action_repository.dart';
-import '../repositories/sign_repository.dart';
+import '../../components/activity_listener.dart';
+import '../../repositories/action_repository.dart';
+import '../../repositories/sign_repository.dart';
 import '../states/app_state.dart';
-import '../utils/touch_scroll_behavior.dart';
+import '../../utils/touch_scroll_behavior.dart';
 import 'home_view.dart';
 
 class App extends StatelessWidget {

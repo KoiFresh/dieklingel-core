@@ -1,4 +1,4 @@
-import '../models/sign.dart';
+import '../../models/sign.dart';
 
 class SignListState {
   final List<Sign> signs;

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import 'blocs/app_view_bloc.dart';
+import 'ui/blocs/app_view_bloc.dart';
 import 'repositories/action_repository.dart';
 import 'repositories/app_repository.dart';
 import 'repositories/device_repository.dart';
@@ -19,7 +19,7 @@ import 'services/camera_service.dart';
 import 'services/action_service.dart';
 import 'services/device_service.dart';
 import 'services/sign_service.dart';
-import 'views/app_view.dart';
+import 'ui/views/app_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

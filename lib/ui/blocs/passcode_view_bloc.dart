@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shell/shell.dart';
 
-import '../models/action.dart';
-import '../repositories/action_repository.dart';
+import '../../models/action.dart';
+import '../../repositories/action_repository.dart';
 import '../states/passcode_state.dart';
 
 class PasscodeViewBloc extends Cubit<PasscodeState> {

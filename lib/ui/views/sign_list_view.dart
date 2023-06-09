@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/app_view_bloc.dart';
 import '../blocs/sign_list_view_bloc.dart';
-import '../components/bell_sign.dart';
-import '../models/sign.dart';
+import '../../components/bell_sign.dart';
+import '../../models/sign.dart';
 import '../states/app_state.dart';
 import '../states/sign_list_state.dart';
 
