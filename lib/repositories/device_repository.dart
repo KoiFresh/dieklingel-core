@@ -13,7 +13,7 @@ class DeviceRepository extends DatabaseRepository {
     for (Map<String, dynamic> entry in entries) {
       String token = entry["token"];
       List<Map<String, dynamic>> signs = await db.query(
-        "signs",
+        DatabaseRepositoryTable.signs,
         where: "device_token = ?",
         whereArgs: [token],
       );
@@ -32,7 +32,7 @@ class DeviceRepository extends DatabaseRepository {
   Future<Device> fetchDeviceByToken(String token) async {
     Database db = await open();
     List<Map<String, dynamic>> entries = await db.query(
-      "devices",
+      DatabaseRepositoryTable.devices,
       where: "token = ?",
       whereArgs: [token],
       limit: 1,
@@ -43,7 +43,7 @@ class DeviceRepository extends DatabaseRepository {
     }
 
     List<Map<String, dynamic>> signs = await db.query(
-      "signs",
+      DatabaseRepositoryTable.signs,
       where: "device_token = ?",
       whereArgs: [token],
     );
@@ -61,7 +61,7 @@ class DeviceRepository extends DatabaseRepository {
     Database db = await open();
 
     await db.insert(
-      "devices",
+      DatabaseRepositoryTable.devices,
       {
         "token": device.token,
       },
@@ -69,7 +69,7 @@ class DeviceRepository extends DatabaseRepository {
 
     for (String sign in device.signs) {
       await db.insert(
-        "signs",
+        DatabaseRepositoryTable.signs,
         {
           "name": sign,
           "device_token": device.token,
@@ -85,7 +85,7 @@ class DeviceRepository extends DatabaseRepository {
     Database db = await open();
 
     List<Map<String, dynamic>> entries = await db.query(
-      "devices",
+      DatabaseRepositoryTable.devices,
       where: "token = ?",
       whereArgs: [device.token],
       limit: 1,
@@ -97,14 +97,14 @@ class DeviceRepository extends DatabaseRepository {
     }
 
     await db.delete(
-      "signs",
+      DatabaseRepositoryTable.signs,
       where: "device_token = ?",
       whereArgs: [device.token],
     );
 
     for (String sign in device.signs) {
       await db.insert(
-        "signs",
+        DatabaseRepositoryTable.signs,
         {
           "name": sign,
           "device_token": device.token,
@@ -120,12 +120,12 @@ class DeviceRepository extends DatabaseRepository {
     Database db = await open();
 
     await db.delete(
-      "signs",
+      DatabaseRepositoryTable.signs,
       where: "device_token = ?",
       whereArgs: [device.token],
     );
     await db.delete(
-      "devices",
+      DatabaseRepositoryTable.devices,
       where: "token = ?",
       whereArgs: [device.token],
     );

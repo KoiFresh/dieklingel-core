@@ -14,12 +14,12 @@ class DatabaseRepository extends BaseRepository {
       version: 2,
       onCreate: (db, version) {
         return db.execute("""
-          CREATE TABLE devices
+          CREATE TABLE ${DatabaseRepositoryTable.devices}
           (
             token TEXT NOT NULL PRIMARY KEY
           );
 
-          CREATE TABLE signs
+          CREATE TABLE ${DatabaseRepositoryTable.signs}
           (
             name TEXT NOT NULL,
             device_token TEXT NOT NULL,
@@ -30,4 +30,10 @@ class DatabaseRepository extends BaseRepository {
       },
     );
   }
+}
+
+abstract class DatabaseRepositoryTable {
+  DatabaseRepositoryTable._();
+  static String signs = "signs";
+  static String devices = "devices";
 }
