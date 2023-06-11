@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:path/path.dart';
+
 abstract class BaseRepository {
   String get homePath =>
-      Platform.environment["SNAP_REAL_HOME"] ??
-      Platform.environment["HOME"] ??
-      "";
+      Platform.environment["SNAP_USER_COMMON"] ??
+      join(Platform.environment["HOME"] ?? "/etc", "dieklingel");
 }

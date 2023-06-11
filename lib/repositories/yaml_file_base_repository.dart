@@ -7,7 +7,6 @@ abstract class YamlFileBaseRepository extends FileBaseRepository {
   @override
   String get configFilePath => path.join(
         homePath,
-        "dieklingel",
         "core.yaml",
       );
 

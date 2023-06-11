@@ -5,6 +5,6 @@ import 'package:path/path.dart' as path;
 
 class DatabaseRepository extends BaseRepository {
   DatabaseRepository() {
-    Hive.init(path.join(homePath, "dieklingel", "storage"));
+    Hive.init(path.join(homePath, "storage"));
   }
 }
