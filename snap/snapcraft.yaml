@@ -1,4 +1,4 @@
-name: dieklingel
+name: dieklingel-core
 title: dieKlingel Core
 contact: kai.mayer@dieklingel.com
 website: https://dieklingel.de/
@@ -22,7 +22,7 @@ parts:
       - home
       - scripts
 
-  core:
+  dieklingel-core:
     plugin: flutter
     source: .
     flutter-target: lib/main.dart
@@ -35,8 +35,8 @@ parts:
       - python3
 
 apps:
-  core:
-    command: core
+  dieklingel-core:
+    command: scripts/runner
     plugs:
       - home
       - network
@@ -45,5 +45,3 @@ apps:
       - audio-record
       - wayland
     extensions: [gnome]
-    environment:
-      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/dieklingel_core/lib"
