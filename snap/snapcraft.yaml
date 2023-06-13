@@ -45,3 +45,17 @@ apps:
       - audio-record
       - wayland
     extensions: [gnome]
+
+  daemon:
+    daemon: simple
+    command: scripts/runner
+    passthrough:
+      daemon-scope: user
+    plugs:
+      - home
+      - network
+      - camera
+      - audio-playback
+      - audio-record
+      - wayland
+    extensions: [gnome]

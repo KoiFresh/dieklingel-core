@@ -2,4 +2,4 @@
 
 cp -rn $SNAP/home/. $SNAP_USER_COMMON
 
-$SNAP/core
+exec $SNAP/core
