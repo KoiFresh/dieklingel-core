@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cp -rn $SNAP/home/. $SNAP_USER_COMMON
-
-exec $SNAP/core
