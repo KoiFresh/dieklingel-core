@@ -5,15 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type DeviceController struct {
-	deviceRepository repositories.DeviceRepository
-}
+var Devices *DeviceController = &DeviceController{}
 
-func NewDeviceController() *DeviceController {
-	return &DeviceController{}
-}
+type DeviceController struct{}
 
 func (controller *DeviceController) All(context *gin.Context) {
 
-	context.IndentedJSON(200, controller.deviceRepository.FetchAllDevices())
+	context.IndentedJSON(200, repositories.Devices.FetchAllDevices())
 }

@@ -10,10 +10,9 @@ import (
 func Init(port int16) {
 	var router = gin.New()
 
-	var deviceController = controllers.NewDeviceController()
 	var devicesRoute = router.Group("/devices")
 	{
-		devicesRoute.GET("/", deviceController.All)
+		devicesRoute.GET("/", controllers.Devices.All)
 	}
 
 	if err := router.Run(fmt.Sprintf(":%d", port)); err != nil {

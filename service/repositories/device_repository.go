@@ -4,11 +4,9 @@ import (
 	"github.com/dieklingel-core/models"
 )
 
-type DeviceRepository struct{}
+var Devices *DeviceRepository = &DeviceRepository{}
 
-func NewDeviceRepository() *DeviceRepository {
-	return &DeviceRepository{}
-}
+type DeviceRepository struct{}
 
 func (repository *DeviceRepository) FetchAllDevices() []models.Device {
 	var list = make([]models.Device, 0)
