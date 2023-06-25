@@ -10,10 +10,18 @@ import 'factories/mqtt_client_factory.dart';
 
 class MqttHttpClient {
   final MqttClientFactory _factory;
+  final bool _keepConnectionAlive;
+  MqttClient? _client;
 
   MqttHttpClient({
     MqttClientFactory factory = const MqttClientFactory(),
-  }) : _factory = factory;
+  })  : _factory = factory,
+        _keepConnectionAlive = false;
+
+  MqttHttpClient.keepAlive({
+    MqttClientFactory factory = const MqttClientFactory(),
+  })  : _factory = factory,
+        _keepConnectionAlive = true;
 
   Future<Response> _fetch(Request request) async {
     final String hostname =
@@ -21,11 +29,12 @@ class MqttHttpClient {
             ? "${request.url.scheme}://${request.url.host}"
             : request.url.host;
 
-    final MqttClient client = _factory.create(hostname, const Uuid().v4())
-      ..port = request.url.port
-      ..keepAlivePeriod = 20
-      ..setProtocolV311()
-      ..autoReconnect = true;
+    final MqttClient client =
+        _client ?? _factory.create(hostname, const Uuid().v4())
+          ..port = request.url.port
+          ..keepAlivePeriod = 20
+          ..setProtocolV311()
+          ..autoReconnect = true;
 
     await client.connect(
       request.headers["username"],
@@ -69,6 +78,11 @@ class MqttHttpClient {
       onTimeout: () => null,
     );
 
+    if (!_keepConnectionAlive) {
+      client.disconnect();
+      _client = null;
+    }
+
     if (message == null) {
       throw TimeoutException(
         "There was no response received in the given time",
@@ -92,11 +106,12 @@ class MqttHttpClient {
             ? "${request.url.scheme}://${request.url.host}"
             : request.url.host;
 
-    final MqttClient client = _factory.create(hostname, const Uuid().v4())
-      ..port = request.url.port
-      ..keepAlivePeriod = 20
-      ..setProtocolV311()
-      ..autoReconnect = true;
+    final MqttClient client =
+        _client ?? _factory.create(hostname, const Uuid().v4())
+          ..port = request.url.port
+          ..keepAlivePeriod = 20
+          ..setProtocolV311()
+          ..autoReconnect = true;
 
     await client.connect(
       request.headers["username"],
@@ -114,6 +129,12 @@ class MqttHttpClient {
       MqttQos.exactlyOnce,
       MqttClientPayloadBuilder().addUTF8String(payload).payload!,
     );
+
+    if (_keepConnectionAlive) {
+      return;
+    }
+    client.disconnect();
+    _client = null;
   }
 
   Map<String, dynamic> _requestToMap(Request request) {
@@ -200,5 +221,5 @@ class MqttHttpClient {
     Encoding? encoding,
   }) =>
       _createRequest("CONNECT", url, headers, body, encoding)
-          .then((req) => _fetch(req));
+          .then((req) => _socket(req));
 }
