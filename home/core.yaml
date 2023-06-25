@@ -16,6 +16,9 @@ mqtt:
   username: ''
   password: ''
 
+http:
+  port: 8081
+
 gui:
   timeout: 30
   viewport:
@@ -27,10 +30,10 @@ gui:
   # configuration for signs displayed on the main page
   signs:
     default:
-      interface: files/sign.dart
+      interface: files/sign.rfwtxt
       audio: files/sign.wav
     default2:
-      interface: files/sign.dart
+      interface: files/sign.rfwtxt
       audio: files/sign.wav
   screensaver:
     # timeout in seconds when the screen will switch to inactive state

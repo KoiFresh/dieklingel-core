@@ -10,6 +10,7 @@ class AppRepository extends YamlFileBaseRepository {
   String? _mqttUsername;
   String? _mqttPassword;
   Duration? _screenTimeout;
+  int? _httpPort;
 
   Future<EdgeInsets> fetchViewportClip({bool useCache = true}) async {
     EdgeInsets? clip = _viewportClip;
@@ -76,6 +77,20 @@ class AppRepository extends YamlFileBaseRepository {
 
     _mqttPassword = password;
     return password;
+  }
+
+  Future<int> fetchHttpPort({bool useCache = true}) async {
+    int? port = _httpPort;
+
+    if (port != null && useCache) {
+      return port;
+    }
+
+    YamlMap config = await readYamlConfig();
+    port = config.read<YamlMap>("http")?.read<int>("port") ?? 80;
+
+    _httpPort = port;
+    return port;
   }
 
   Future<Duration> fetchScreenTimeout({bool useCache = true}) async {

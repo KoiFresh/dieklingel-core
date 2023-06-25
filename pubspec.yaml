@@ -55,6 +55,7 @@ dependencies:
       ref: feature/sip
       path: libraries/ui
   uuid: ^3.0.7
+  window_manager: ^0.3.4
   yaml: ^3.1.1
 
 dev_dependencies:

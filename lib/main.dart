@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'repositories/ice_server_repository.dart';
 import 'services/rtc_service.dart';
@@ -12,7 +13,6 @@ import 'repositories/device_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mqtt/mqtt.dart';
-import 'package:path/path.dart' as path;
 import 'package:shelf/shelf_io.dart' as io;
 
 import 'repositories/sign_repository.dart';
@@ -22,19 +22,30 @@ import 'services/action_service.dart';
 import 'services/device_service.dart';
 import 'services/sign_service.dart';
 import 'ui/views/app_view.dart';
+import 'utils/logger.dart';
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  String homeDirectory = Platform.environment["SNAP_REAL_HOME"] ??
-      Platform.environment["HOME"] ??
-      "";
-  Directory.current = path.join(homeDirectory, "dieklingel");
 
-  GetIt.I.registerSingleton(ActionRepository());
-  GetIt.I.registerSingleton(AppRepository());
-  GetIt.I.registerSingleton(SignRepository());
-  GetIt.I.registerSingleton(DeviceRepository());
-  GetIt.I.registerSingleton(IceServerRepository());
+  if (Platform.environment["DIEKLINGEL_HOME"] != null) {
+    Directory.current = Platform.environment["DIEKLINGEL_HOME"];
+  }
+
+  if (args.contains("--kiosk") || args.contains("-k")) {
+    Logger.info("Running as kiosk.");
+
+    WindowManager.instance
+      ..setFullScreen(true)
+      ..setAlwaysOnTop(true)
+      ..setAsFrameless();
+  }
+
+  GetIt.I
+    ..registerSingleton(ActionRepository())
+    ..registerSingleton(AppRepository())
+    ..registerSingleton(SignRepository())
+    ..registerSingleton(DeviceRepository())
+    ..registerSingleton(IceServerRepository());
 
   final service = AuthenticationService({
     "/actions": ActionService(GetIt.I<ActionRepository>()).handler,
@@ -44,14 +55,10 @@ void main() async {
     "/signs": SignService(GetIt.I<SignRepository>()).handler,
   });
 
-  /* final actionRepository = ActionRepository();
-  final appRepository = AppRepository();
-  final iceServerRepository = IceServerRepository();
-  final signRepository = SignRepository();
-  final deviceRepository = DeviceRepository();*/
+  int port = await GetIt.I<AppRepository>().fetchHttpPort();
 
   await Future.wait([
-    io.serve(service.handler, "0.0.0.0", 8081),
+    io.serve(service.handler, "0.0.0.0", port),
     MqttHttpServer().serve(
       service.handler,
       Uri.parse("mqtt://server.dieklingel.com:1883/dieklingel"),
