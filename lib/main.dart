@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:blueprint/blueprint.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:window_manager/window_manager.dart';
@@ -47,7 +48,12 @@ void main(List<String> args) async {
     ..registerSingleton(DeviceRepository())
     ..registerSingleton(IceServerRepository());
 
-  await GetIt.I<AppRepository>().validate(throwable: true);
+  try {
+    await GetIt.I<AppRepository>().validate(throwable: true);
+  } on BluePrintException catch (exception) {
+    Logger.error(exception.msg);
+    exit(1);
+  }
 
   final service = AuthenticationService({
     "/actions": ActionService(GetIt.I<ActionRepository>()).handler,
