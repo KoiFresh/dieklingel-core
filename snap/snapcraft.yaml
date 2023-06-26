@@ -1,13 +1,13 @@
 name: dieklingel-core
 title: dieKlingel Core
-icon: snap/gui/logo_512x512_rounded_corners.png
 contact: kai.mayer@dieklingel.com
 website: https://dieklingel.de/
 license: GPL-3.0
-version: 0.0.2+3
+version: 0.1.0+1
 summary: The core of the dieKlingel project.
 description: The core project containing the most important services to run the door unit.
 confinement: strict
+compression: lzo
 base: core22
 grade: stable
 
@@ -15,10 +15,25 @@ architectures:
   - build-on: amd64
   - build-on: arm64
 
+apps:
+  dieklingel-core:
+    command: bin/core
+    plugs:
+      - wayland
+      - network
+      - camera
+      - audio-playback
+      - audio-record
+    extensions:
+      - gnome
+    environment:
+      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/lib"
+      DIEKLINGEL_HOME: "$SNAP_USER_COMMON"
+
 parts:
   flutter-git:
     source: https://github.com/flutter/flutter.git
-    source-branch: '3.3.10'
+    source-branch: '3.12.0'
     plugin: nil
     override-build: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/bin
@@ -37,72 +52,20 @@ parts:
       - unzip
     override-prime: ''
 
-  gui:
+  dieklingel-core:
     plugin: nil
-    source: packages/gui
-    after: [flutter-git]
+    source: .
+    after:
+      - flutter-git
     build-packages:
-      - pkg-config
       - libgstreamer1.0-dev
       - libgstreamer-plugins-base1.0-dev
     override-build: |
       set -eux
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/lib
+      flutter clean
       flutter pub get
       flutter build linux --release -v
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/gui
-      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/gui/
-  rtc:
-    plugin: nil
-    source: packages/rtc
-    after: [flutter-git]
-    build-packages:
-      - pkg-config
-    override-build: |
-      set -eux
-      flutter pub get
-      flutter build linux --release -v
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/rtc
-      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/rtc/
-  apn:
-    plugin: nil
-    source: packages/apn
-    after: [flutter-git]
-    override-build: |
-      set -eux
-      dart pub get
-      dart compile exe bin/apn.dart -o apn
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin/apn
-      cp apn $SNAPCRAFT_PART_INSTALL/bin/apn/apn
-
-apps:
-  gui:
-    command: bin/gui/gui
-    daemon: simple
-    passthrough:
-      daemon-scope: user
-    plugs:
-      - home
-      - network
-    extensions: [gnome]
-  rtc:
-    command: bin/rtc/rtc
-    daemon: simple
-    passthrough:
-      daemon-scope: user
-    plugs:
-      - home
-      - network
-      - camera
-      - audio-playback
-      - audio-record
-    extensions: [gnome]
-    environment:
-      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/rtc/lib"
-  apn:
-    command: bin/apn/apn
-    daemon: simple
-    passthrough:
-      daemon-scope: user
-    plugs:
-      - home
-      - network
+      cp -r build/linux/*/release/bundle/* $SNAPCRAFT_PART_INSTALL/bin/
+    stage-packages:
+      - python3
