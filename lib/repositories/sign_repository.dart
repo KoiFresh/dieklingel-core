@@ -10,16 +10,12 @@ class SignRepository extends YamlFileBaseRepository {
   Future<List<Sign>> fetchAllSigns() async {
     YamlMap config = await readYamlConfig();
 
-    List<Sign> signs = config
-        .get<YamlMap>("gui")
-        .get<YamlMap>("signs")
-        .map<String, YamlMap>((key, value) => MapEntry(key, value))
-        .entries
-        .map(
-      (e) {
-        String identifier = e.key;
-        File audio = File(e.value.get<String>("audio"));
-        File interface = File(e.value.get<String>("interface"));
+    List<Sign> signs =
+        config.get<YamlMap>("gui").get<YamlList>("signs").cast<YamlMap>().map(
+      (YamlMap e) {
+        String identifier = e.get<String>("name");
+        File audio = File(e.get<String>("audio"));
+        File interface = File(e.get<String>("interface"));
 
         return Sign(identifier: identifier, audio: audio, interface: interface);
       },

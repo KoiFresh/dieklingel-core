@@ -29,12 +29,12 @@ gui:
       left: 10
   # configuration for signs displayed on the main page
   signs:
-    default:
+    - name: default
       interface: files/sign.rfwtxt
-      audio: files/sign.wav
-    default2:
+      audio: files/bell.wav
+    - name: default2
       interface: files/sign.rfwtxt
-      audio: files/sign.wav
+      audio: files/bell.wav
   screensaver:
     # timeout in seconds when the screen will switch to inactive state
     timeout: 10

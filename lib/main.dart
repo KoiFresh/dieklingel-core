@@ -47,6 +47,8 @@ void main(List<String> args) async {
     ..registerSingleton(DeviceRepository())
     ..registerSingleton(IceServerRepository());
 
+  await GetIt.I<AppRepository>().validate(throwable: true);
+
   final service = AuthenticationService({
     "/actions": ActionService(GetIt.I<ActionRepository>()).handler,
     "/camera": CameraService().handler,
