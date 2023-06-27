@@ -53,17 +53,16 @@ class RtcService {
       MqttHttpClient client = MqttHttpClient();
 
       wrapper.onMessage(
-        (SignalingMessage message) {
+        (SignalingMessage message) async {
           if (message.type == SignalingMessageType.leave ||
               message.type == SignalingMessageType.error) {
             wrapper.dispose();
             _connections.remove(channel);
           }
 
-          client.socket(
-            request.requestedUri.replace(
-              path: "/$channel",
-            ),
+          Uri uri = request.requestedUri.replace(path: "$channel/connection");
+          await client.socket(
+            uri,
             headers: {
               "Content-Type": "application/json",
             },
@@ -84,7 +83,7 @@ class RtcService {
       );
     });
 
-    router.connect("/connections/<channel>", (
+    router.connect("/connections/<channel|.*>", (
       Request request,
       String channel,
     ) async {

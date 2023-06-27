@@ -65,11 +65,13 @@ void main(List<String> args) async {
 
   int port = await GetIt.I<AppRepository>().fetchHttpPort();
 
+  MqttHttpServer server = MqttHttpServer();
+
   await Future.wait([
     io.serve(service.handler, "0.0.0.0", port),
-    MqttHttpServer().serve(
+    server.serve(
       service.handler,
-      Uri.parse("mqtt://server.dieklingel.com:1883/dieklingel"),
+      await GetIt.I<AppRepository>().fetchMqttUri(),
     )
   ]);
 
