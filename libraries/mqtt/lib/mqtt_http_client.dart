@@ -133,8 +133,8 @@ class MqttHttpClient {
     if (_keepConnectionAlive) {
       return;
     }
-    client.disconnect();
-    _client = null;
+    //client.disconnect();
+    //_client = null;
   }
 
   Map<String, dynamic> _requestToMap(Request request) {

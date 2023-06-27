@@ -12,7 +12,7 @@ actions:
      echo unlock2 > hallo.txt 
 
 mqtt:
-  uri: mqtt://server.dieklingel.com:1883/com.dieklingel/mayer/kai/
+  uri: mqtt://server.dieklingel.com:1883/dieklingel/mayer/kai/
   username: ''
   password: ''
 
