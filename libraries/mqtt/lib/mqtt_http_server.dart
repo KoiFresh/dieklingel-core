@@ -37,17 +37,18 @@ class MqttHttpServer {
 
     final String prefix = path.normalize("./${host.path}");
 
-    _client = _factory.create(hostname, powerdBy)
+    final client = _factory.create(hostname, powerdBy)
       ..port = host.port
       ..keepAlivePeriod = 20
       ..setProtocolV311()
       ..autoReconnect = true;
 
-    await _client?.connect(username, password);
+    await client.connect(username, password);
 
-    _handler = Router()..mount("/$prefix", handler);
+    final router = Router()..mount("/$prefix", handler);
+    _handler = router;
 
-    _client?.updates?.listen((event) async {
+    client.updates!.listen((event) async {
       MqttPublishMessage rec = event[0].payload as MqttPublishMessage;
       final String topic = event[0].topic;
       List<int> messageAsBytes = rec.payload.message;
@@ -62,6 +63,7 @@ class MqttHttpServer {
         }
 
         Map<String, dynamic>? headers = payload["headers"];
+
         Uri requestedUri = Uri.parse("/$topic");
 
         request = Request(
@@ -73,6 +75,7 @@ class MqttHttpServer {
           ),
           headers: headers?.cast<String, Object>(),
           url: Uri.parse(topic),
+          body: payload["body"],
         );
       } on RequestParseError catch (error) {
         print(error.message);
@@ -96,6 +99,7 @@ class MqttHttpServer {
       Response response = await _handler!(request);
 
       if (isSocketMessage) {
+        print("socket message, no response");
         // should be treated as socket message, so we will not send a response
         return;
       }
@@ -109,7 +113,12 @@ class MqttHttpServer {
       );
     });
 
-    _client?.subscribe(path.normalize("$prefix/#"), MqttQos.exactlyOnce);
+    // client.subscribe(path.normalize("$prefix/#"), MqttQos.atLeastOnce);
+
+    client.subscribe(path.normalize("#"), MqttQos.atLeastOnce);
+    client.publishMessage("/hello/world", MqttQos.atLeastOnce,
+        MqttClientPayloadBuilder().addUTF8String("Hello World").payload!);
+    _client = client;
   }
 
   Future<Map<String, dynamic>> _responseToMap(Response response) async {
