@@ -99,7 +99,6 @@ class MqttHttpServer {
       Response response = await _handler!(request);
 
       if (isSocketMessage) {
-        print("socket message, no response");
         // should be treated as socket message, so we will not send a response
         return;
       }
