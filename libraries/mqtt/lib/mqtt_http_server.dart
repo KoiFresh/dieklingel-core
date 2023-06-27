@@ -113,9 +113,8 @@ class MqttHttpServer {
       );
     });
 
-    // client.subscribe(path.normalize("$prefix/#"), MqttQos.atLeastOnce);
-
-    client.subscribe(path.normalize("#"), MqttQos.atLeastOnce);
+    client.subscribe(path.normalize("$prefix/#"), MqttQos.atLeastOnce);
+    // client.subscribe(path.normalize("#"), MqttQos.atLeastOnce);
     client.publishMessage("/hello/world", MqttQos.atLeastOnce,
         MqttClientPayloadBuilder().addUTF8String("Hello World").payload!);
     _client = client;
