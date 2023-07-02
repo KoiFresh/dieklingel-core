@@ -17,12 +17,13 @@ class Action {
       yaml.cast(),
       {
         "trigger": StringF,
-        "run": StringF,
+        "lane": StringF,
       },
+      throwable: true,
     );
 
     RegExp trigger = RegExp(yaml.get<String>("trigger"));
-    String lane = yaml.get<String>("run");
+    String lane = yaml.get<String>("lane");
 
     return Action(
       trigger: trigger,
