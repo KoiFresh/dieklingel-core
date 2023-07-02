@@ -21,6 +21,7 @@ class IceServer {
         "username": StringOrNull,
         "credential": StringOrNull,
       },
+      throwable: true,
     );
 
     return IceServer(
@@ -36,7 +37,7 @@ class IceServer {
 
   @override
   String toString() {
-    return "IceServer urls: $urls, username: $username, credential: $credential";
+    return "IceServer: urls->'$urls', username->'$username', credential->'$credential'";
   }
 
   Map<String, dynamic> toMap() {
