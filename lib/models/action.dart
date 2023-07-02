@@ -1,5 +1,6 @@
 import 'package:yaml/yaml.dart';
 
+import '../blueprint/blueprint.dart';
 import '../extensions/yaml_map.dart';
 
 class Action {
@@ -12,6 +13,14 @@ class Action {
   });
 
   factory Action.fromYaml(YamlMap yaml) {
+    matchMap(
+      yaml.cast(),
+      {
+        "trigger": StringF,
+        "run": StringF,
+      },
+    );
+
     RegExp trigger = RegExp(yaml.get<String>("trigger"));
     String lane = yaml.get<String>("run");
 

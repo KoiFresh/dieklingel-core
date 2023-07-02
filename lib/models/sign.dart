@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:yaml/yaml.dart';
 
+import '../blueprint/blueprint.dart';
 import '../extensions/yaml_map.dart';
 
 class Sign {
@@ -16,6 +17,15 @@ class Sign {
   });
 
   factory Sign.fromYaml(YamlMap yaml) {
+    matchMap(
+      yaml.cast(),
+      {
+        "identifier": StringF,
+        "audio": FileF,
+        "interface": FileF,
+      },
+    );
+
     String identifier = yaml.get<String>("identifier");
     File audio = File(yaml.get<String>("audio"));
     File interface = File(yaml.get<String>("interface"));

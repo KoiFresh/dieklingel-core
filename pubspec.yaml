@@ -40,6 +40,8 @@ dependencies:
   get_it: ^7.6.0
   hive: ^2.2.3
   http: ^0.13.6
+  logger:
+    path: libraries/logger
   mqtt:
     path: libraries/mqtt
   path: ^1.8.2

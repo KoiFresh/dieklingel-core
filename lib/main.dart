@@ -67,7 +67,7 @@ void main(List<String> args) async {
 
   MqttHttpServer server = MqttHttpServer();
 
-  await Future.wait([
+  Future.wait([
     io.serve(service.handler, "0.0.0.0", port),
     server.serve(
       service.handler,
