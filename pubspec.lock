@@ -441,7 +441,7 @@ packages:
     source: hosted
     version: "2.1.1"
   logger:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "libraries/logger"
       relative: true
