@@ -21,14 +21,22 @@ class Sign {
       yaml.cast(),
       {
         "identifier": StringF,
-        "audio": FileF,
-        "interface": FileF,
+        "audio": FileF.exist(),
+        "interface": FileF.exist(),
       },
+      throwable: true,
     );
 
     String identifier = yaml.get<String>("identifier");
     File audio = File(yaml.get<String>("audio"));
     File interface = File(yaml.get<String>("interface"));
+
+    if (identifier.isEmpty) {
+      throw BluePrintException(
+        key: "identifier",
+        msg: "Cannot create a Sign with an empty identifier",
+      );
+    }
 
     return Sign(
       identifier: identifier,
