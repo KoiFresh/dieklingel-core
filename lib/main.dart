@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:blueprint/blueprint.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'repositories/ice_server_repository.dart';
@@ -23,7 +24,6 @@ import 'services/action_service.dart';
 import 'services/device_service.dart';
 import 'services/sign_service.dart';
 import 'ui/views/app_view.dart';
-import 'utils/logger.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +67,7 @@ void main(List<String> args) async {
 
   MqttHttpServer server = MqttHttpServer();
 
-  await Future.wait([
+  Future.wait([
     io.serve(service.handler, "0.0.0.0", port),
     server.serve(
       service.handler,

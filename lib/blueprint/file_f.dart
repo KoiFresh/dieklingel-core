@@ -6,7 +6,13 @@ import 'package:blueprint/blueprint.dart';
 const FileF = FileBluePrintField();
 
 class FileBluePrintField extends BluePrintField {
-  const FileBluePrintField();
+  final bool existForSuccess;
+
+  const FileBluePrintField({this.existForSuccess = false});
+
+  FileBluePrintField exist() {
+    return const FileBluePrintField(existForSuccess: true);
+  }
 
   @override
   void match(String key, Object? value) {
@@ -18,7 +24,7 @@ class FileBluePrintField extends BluePrintField {
       File file = File(value);
       bool exists = file.existsSync();
 
-      if (!exists) {
+      if (existForSuccess && !exists) {
         throw BluePrintException(
           key: key,
           value: value,

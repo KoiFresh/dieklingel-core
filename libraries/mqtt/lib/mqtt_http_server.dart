@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:logger/logger.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:path/path.dart' as path;
 import 'package:shelf/shelf.dart';
@@ -43,7 +45,16 @@ class MqttHttpServer {
       ..setProtocolV311()
       ..autoReconnect = true;
 
-    await client.connect(username, password);
+    while (client.connectionStatus?.state != MqttConnectionState.connected) {
+      try {
+        await client.connect(username, password);
+      } on SocketException catch (e) {
+        Logger.warn(
+          "Could not connect to the mqtt broker '$host'. Retry in 10 seconds.",
+        );
+        await Future.delayed(const Duration(seconds: 10));
+      }
+    }
 
     final router = Router()..mount("/$prefix", handler);
     _handler = router;
