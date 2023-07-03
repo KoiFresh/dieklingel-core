@@ -18,14 +18,12 @@ jobs:
           flutter-version: '3.3.10'
           channel: 'stable'
       
-      - name: Install Pubs for shared
+      - name: Install Pubs for core
         run: |
-          cd packages/shared
           flutter pub get
 
-      - name: Run Tests for shared
+      - name: Run Tests for core
         run: |
-          cd packages/shared
           flutter test
 
   snapcraft-build-linux:
