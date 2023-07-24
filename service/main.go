@@ -42,6 +42,7 @@ func main() {
 	handlers.RegisterCameraHandler(prefix+"/camera", client)
 	handlers.RegisterRtcHandler(prefix+"/rtc", client)
 	handlers.RegisterDeviceHandler(prefix+"/devices", client)
+	handlers.RegisterActionHandler(prefix+"/actions", client)
 
 	// Wait for interruption to exit
 	var sigint = make(chan os.Signal, 1)
