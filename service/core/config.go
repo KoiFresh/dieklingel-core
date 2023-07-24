@@ -9,6 +9,11 @@ import (
 
 type Config struct {
 	Actions []Action `yaml:"actions"`
+	Mqtt    struct {
+		Uri      string `yaml:"uri"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+	} `yaml:"mqtt"`
 }
 
 func NewConfigFromCurrentDirectory() (*Config, error) {

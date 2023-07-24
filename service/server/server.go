@@ -2,6 +2,8 @@ package server
 
 import (
 	"log"
+	"net/url"
+	"path"
 	"time"
 
 	"github.com/dieklingel-core/handlers"
@@ -9,15 +11,16 @@ import (
 	"github.com/google/uuid"
 )
 
-func Run() {
+func Run(url url.URL, username string, password string) {
 	var id = uuid.New()
 	log.Printf("Start connection with id '%s'.\r\n", id.String())
+	prefix := path.Join("./", url.Path)
 
 	var options = mqtt.NewClientOptions()
-	options.AddBroker("mqtt://server.dieklingel.com:1883")
+	options.AddBroker(url.String())
 	options.SetClientID(id.String())
-	options.SetUsername("admin")
-	options.SetPassword("admin")
+	options.SetUsername(username)
+	options.SetPassword(password)
 	options.SetAutoReconnect(true)
 	options.SetKeepAlive(10 * time.Second)
 	options.OnConnect = onConnect
@@ -28,12 +31,10 @@ func Run() {
 	for !client.IsConnected() {
 		if token := client.Connect(); token.Wait() && token.Error() != nil {
 			log.Printf("Could not connect tho the broker. Message: %s\r\n", token.Error().Error())
-			log.Printf("Retry connecting in ten seconds.\r\n")
+			log.Printf("Retry connecting in 10 seconds.\r\n")
 			time.Sleep(10 * time.Second)
 		}
 	}
-
-	var prefix = "dieklingel/test/"
 
 	// TODO: use prefix from env or input
 	handlers.RegisterCameraHandler(prefix+"/camera", client)

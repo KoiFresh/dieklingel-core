@@ -14,7 +14,6 @@ import (
 	"github.com/pion/mediadevices/pkg/codec/vpx"
 	_ "github.com/pion/mediadevices/pkg/driver/camera"
 	_ "github.com/pion/mediadevices/pkg/driver/microphone"
-	"github.com/pion/mediadevices/pkg/prop"
 	"github.com/pion/webrtc/v3"
 )
 
@@ -61,16 +60,15 @@ func onCreateConnection(client mqtt.Client, req core.Request) core.Response {
 		mediadevices.WithAudioEncoders(&opusParams),
 	)
 
-	stream, _ = mediadevices.GetUserMedia(mediadevices.MediaStreamConstraints{
-		Video: func(constraint *mediadevices.MediaTrackConstraints) {
-			// Query for ideal resolutions
-			constraint.Width = prop.Int(600)
-			constraint.Height = prop.Int(400)
-
-		},
+	stream, err = mediadevices.GetUserMedia(mediadevices.MediaStreamConstraints{
+		Video: func(constraint *mediadevices.MediaTrackConstraints) {},
 		Audio: func(mtc *mediadevices.MediaTrackConstraints) {},
 		Codec: codecSelector,
 	})
+
+	if err != nil {
+		return core.NewResponse(fmt.Sprintf("error while opening media devices: %s", err.Error()), 500)
+	}
 
 	mediaEngine := webrtc.MediaEngine{}
 	codecSelector.Populate(&mediaEngine)
