@@ -14,7 +14,7 @@ import 'repositories/app_repository.dart';
 import 'repositories/device_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:mqtt/mqtt.dart';
+import '../packages/mqtt/lib/mqtt.dart';
 import 'package:shelf/shelf_io.dart' as io;
 
 import 'repositories/sign_repository.dart';
