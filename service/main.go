@@ -41,6 +41,7 @@ func main() {
 	// TODO: use prefix from env or input
 	handlers.RegisterCameraHandler(prefix+"/camera", client)
 	handlers.RegisterRtcHandler(prefix+"/rtc", client)
+	handlers.RegisterDeviceHandler(prefix+"/devices", client)
 
 	// Wait for interruption to exit
 	var sigint = make(chan os.Signal, 1)
