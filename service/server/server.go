@@ -41,6 +41,7 @@ func Run(url url.URL, username string, password string) {
 	handlers.RegisterRtcHandler(prefix+"/rtc", client)
 	handlers.RegisterDeviceHandler(prefix+"/devices", client)
 	handlers.RegisterActionHandler(prefix+"/actions", client)
+	handlers.RegisterSignHandler(prefix+"/signs", client)
 }
 
 func onConnect(client mqtt.Client) {
