@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/dieklingel-core/core"
@@ -12,6 +13,18 @@ import (
 )
 
 func main() {
+	wd := os.Getenv("DIEKLINGEL_HOME")
+	if len(strings.TrimSpace(wd)) == 0 {
+		log.Printf("the working directory cannot be empty. Please set the environment variable DIEKLINGEL_HOME")
+		os.Exit(1)
+	}
+	if err := syscall.Chdir(wd); err != nil {
+		log.Printf("error while switching to workdir: %s", err.Error())
+		os.Exit(1)
+	}
+	dir, _ := syscall.Getwd()
+	log.Printf("Running in working directory: %s", dir)
+
 	config, err := core.NewConfigFromCurrentDirectory()
 	if err != nil {
 		log.Printf("cannot read config fiel: %s", err.Error())
