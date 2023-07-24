@@ -9,7 +9,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-type HandlerFunction func(core.Request) core.Response
+type HandlerFunction func(mqtt.Client, core.Request) core.Response
 
 func register(client mqtt.Client, channel string, handler HandlerFunction) {
 	client.Subscribe(channel, 2, func(c mqtt.Client, m mqtt.Message) {
@@ -20,7 +20,8 @@ func register(client mqtt.Client, channel string, handler HandlerFunction) {
 			return
 		}
 
-		var response = handler(request)
+		request.RequestPath = m.Topic()
+		var response = handler(client, request)
 		if request.IsSocketMessage() {
 			return
 		}
@@ -37,6 +38,7 @@ func register(client mqtt.Client, channel string, handler HandlerFunction) {
 			return
 		}
 
-		client.Publish(path.Join(channel, answerChannel), 2, false, string(json))
+		// use m.Topic() instead if channel, cause channel could contain wildcards lilke + or # on which we cannot send
+		client.Publish(path.Join(m.Topic(), answerChannel), 2, false, string(json))
 	})
 }

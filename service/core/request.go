@@ -7,8 +7,32 @@ import (
 )
 
 type Request struct {
-	Headers map[string]string `json:"headers"`
-	Body    string            `json:"body"`
+	Headers     map[string]string `json:"headers"`
+	Body        string            `json:"body"`
+	Method      string            `json:"method"`
+	RequestPath string            `json:"-"`
+}
+
+func NewRequest(mqttAnswerChannel string, body string) Request {
+	request := Request{
+		Headers: map[string]string{
+			"mqtt_answer_channel": mqttAnswerChannel,
+		},
+		Body: body,
+	}
+
+	return request
+}
+
+func NewSocketRequest(body string) Request {
+	request := Request{
+		Headers: map[string]string{
+			"is_socket_message": "true",
+		},
+		Body: body,
+	}
+
+	return request
 }
 
 func (req *Request) GetAnswerChannel() (string, error) {

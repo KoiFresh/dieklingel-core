@@ -15,7 +15,7 @@ func RegisterCameraHandler(prefix string, client mqtt.Client) {
 	register(client, path.Join(prefix, "snapshot"), onSnapshot)
 }
 
-func onSnapshot(req core.Request) core.Response {
+func onSnapshot(c mqtt.Client, req core.Request) core.Response {
 	cam, err := gocv.OpenVideoCapture(0)
 	if err != nil {
 		return core.NewResponse(fmt.Sprintf("Could not open the camera: %s", err.Error()), 500)
