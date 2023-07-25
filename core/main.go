@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/KoiFresh/dieklingel-core/core/internal/proxy"
 	"github.com/KoiFresh/dieklingel-core/core/models"
 	"github.com/KoiFresh/dieklingel-core/core/server"
 )
@@ -42,6 +43,7 @@ func main() {
 		config.Mqtt.Password,
 		config.Mqtt.Username,
 	)
+	proxy.RunListener(8081)
 
 	// Wait for interruption to exit
 	var sigint = make(chan os.Signal, 1)
