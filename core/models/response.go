@@ -1,4 +1,4 @@
-package core
+package models
 
 type Response struct {
 	Body       string            `json:"body"`

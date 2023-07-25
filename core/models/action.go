@@ -1,4 +1,4 @@
-package core
+package models
 
 type Action struct {
 	Trigger string `json:"trigger" yaml:"trigger"`

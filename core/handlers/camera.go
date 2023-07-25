@@ -7,7 +7,7 @@ import (
 	"image/jpeg"
 	"path"
 
-	"github.com/dieklingel-core/core"
+	"github.com/KoiFresh/dieklingel-core/core/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/pion/mediadevices"
 )
@@ -16,12 +16,12 @@ func RegisterCameraHandler(prefix string, client mqtt.Client) {
 	register(client, path.Join(prefix, "snapshot"), onSnapshot)
 }
 
-func onSnapshot(c mqtt.Client, req core.Request) core.Response {
+func onSnapshot(c mqtt.Client, req models.Request) models.Response {
 	stream, err := mediadevices.GetUserMedia(mediadevices.MediaStreamConstraints{
 		Video: func(constraint *mediadevices.MediaTrackConstraints) {},
 	})
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("cannot capture frame: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("cannot capture frame: %s", err.Error()), 500)
 	}
 
 	// Since track can represent audio as well, we need to cast it to
@@ -41,6 +41,6 @@ func onSnapshot(c mqtt.Client, req core.Request) core.Response {
 	var output bytes.Buffer
 	jpeg.Encode(&output, frame, nil)
 
-	response := core.NewResponse(hex.EncodeToString(output.Bytes()), 200)
+	response := models.NewResponse(hex.EncodeToString(output.Bytes()), 200)
 	return response.WithContentType("image/jpeg")
 }

@@ -6,7 +6,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/dieklingel-core/handlers"
+	"github.com/KoiFresh/dieklingel-core/core/handlers"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )

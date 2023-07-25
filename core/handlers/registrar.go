@@ -5,15 +5,15 @@ import (
 	"log"
 	"path"
 
-	"github.com/dieklingel-core/core"
+	"github.com/KoiFresh/dieklingel-core/core/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-type HandlerFunction func(mqtt.Client, core.Request) core.Response
+type HandlerFunction func(mqtt.Client, models.Request) models.Response
 
 func register(client mqtt.Client, channel string, handler HandlerFunction) {
 	client.Subscribe(channel, 2, func(c mqtt.Client, m mqtt.Message) {
-		var request = core.Request{}
+		var request = models.Request{}
 
 		if err := json.Unmarshal(m.Payload(), &request); err != nil {
 			log.Printf("Could not parse the request: %s. Request will be silently ignored.\r\n", err.Error())

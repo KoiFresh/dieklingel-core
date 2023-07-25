@@ -4,7 +4,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/dieklingel-core/core"
+	"github.com/KoiFresh/dieklingel-core/core/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
@@ -12,7 +12,7 @@ func RegisterSignHandler(prefix string, client mqtt.Client) {
 	register(client, path.Join(prefix, "ring", "+"), onSignRing)
 }
 
-func onSignRing(client mqtt.Client, req core.Request) core.Response {
+func onSignRing(client mqtt.Client, req models.Request) models.Response {
 	pathSegments := strings.Split(req.RequestPath, "/")
 	sign := pathSegments[len(pathSegments)-1]
 
@@ -23,5 +23,5 @@ func onSignRing(client mqtt.Client, req core.Request) core.Response {
 		},
 	)
 
-	return core.NewResponse("Ok", 200)
+	return models.NewResponse("Ok", 200)
 }

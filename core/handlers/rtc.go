@@ -7,7 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/dieklingel-core/core"
+	"github.com/KoiFresh/dieklingel-core/core/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/pion/mediadevices"
 	"github.com/pion/mediadevices/pkg/codec/opus"
@@ -18,6 +18,7 @@ import (
 )
 
 var connections map[string]*webrtc.PeerConnection = make(map[string]*webrtc.PeerConnection)
+var stream mediadevices.MediaStream
 
 func RegisterRtcHandler(prefix string, client mqtt.Client) {
 	register(client, path.Join(prefix, "connections"), onGetConnections)
@@ -26,23 +27,21 @@ func RegisterRtcHandler(prefix string, client mqtt.Client) {
 	register(client, path.Join(prefix, "connections", "candidate", "+"), onAddCandidate)
 }
 
-func onGetConnections(c mqtt.Client, req core.Request) core.Response {
+func onGetConnections(c mqtt.Client, req models.Request) models.Response {
 	json, err := json.Marshal(connections)
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not encode: %s.", err), 500)
+		return models.NewResponse(fmt.Sprintf("Could not encode: %s.", err), 500)
 	}
 
-	return core.NewResponse(string(json), 200)
+	return models.NewResponse(string(json), 200)
 }
 
-var stream mediadevices.MediaStream
-
-func onCreateConnection(client mqtt.Client, req core.Request) core.Response {
+func onCreateConnection(client mqtt.Client, req models.Request) models.Response {
 	pathSegments := strings.Split(req.RequestPath, "/")
 	id := pathSegments[len(pathSegments)-1]
 
 	if _, exists := connections[id]; exists {
-		return core.NewResponse(fmt.Sprintf("Cannot create a connection with id '%s' because a connection with this id already exists.", id), 409)
+		return models.NewResponse(fmt.Sprintf("Cannot create a connection with id '%s' because a connection with this id already exists.", id), 409)
 	}
 
 	vpxParams, err := vpx.NewVP8Params()
@@ -67,7 +66,7 @@ func onCreateConnection(client mqtt.Client, req core.Request) core.Response {
 	})
 
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("error while opening media devices: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("error while opening media devices: %s", err.Error()), 500)
 	}
 
 	mediaEngine := webrtc.MediaEngine{}
@@ -86,7 +85,7 @@ func onCreateConnection(client mqtt.Client, req core.Request) core.Response {
 	)
 	if err != nil {
 		peerConnection.Close()
-		return core.NewResponse(fmt.Sprintf("Cannot create a connection: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Cannot create a connection: %s", err.Error()), 500)
 	}
 
 	for _, track := range stream.GetTracks() {
@@ -101,7 +100,7 @@ func onCreateConnection(client mqtt.Client, req core.Request) core.Response {
 			return // dont know why the callback is called with nil, but it is the case
 		}
 		candidate, _ := json.Marshal(c.ToJSON())
-		request := core.NewSocketRequest(string(candidate))
+		request := models.NewSocketRequest(string(candidate))
 		request.Method = "CONNECT"
 		json, _ := json.Marshal(request)
 
@@ -134,10 +133,10 @@ func onCreateConnection(client mqtt.Client, req core.Request) core.Response {
 
 	connections[id] = peerConnection
 
-	return core.NewResponse(string(json), 201)
+	return models.NewResponse(string(json), 201)
 }
 
-func onCloseConnection(client mqtt.Client, req core.Request) core.Response {
+func onCloseConnection(client mqtt.Client, req models.Request) models.Response {
 	pathSegments := strings.Split(req.RequestPath, "/")
 	id := pathSegments[len(pathSegments)-1]
 
@@ -149,26 +148,26 @@ func onCloseConnection(client mqtt.Client, req core.Request) core.Response {
 		connection.Close()
 	}
 
-	return core.NewResponse("", 200)
+	return models.NewResponse("", 200)
 }
 
-func onAddCandidate(client mqtt.Client, req core.Request) core.Response {
+func onAddCandidate(client mqtt.Client, req models.Request) models.Response {
 	pathSegments := strings.Split(req.RequestPath, "/")
 	id := pathSegments[len(pathSegments)-1]
 
 	candidate := &webrtc.ICECandidateInit{}
 	if err := json.Unmarshal([]byte(req.Body), candidate); err != nil {
 		log.Printf("could not parse candidate: %s", err.Error())
-		return core.NewResponse(fmt.Sprintf("the canidate could not be parsed: %s", err.Error()), 400)
+		return models.NewResponse(fmt.Sprintf("the canidate could not be parsed: %s", err.Error()), 400)
 	}
 
 	if connection, exists := connections[id]; exists {
 		if err := connection.AddICECandidate(*candidate); err != nil {
 			log.Printf("could not add candidate: %s", err.Error())
-			return core.NewResponse(fmt.Sprintf("could not add the candidate: %s", err.Error()), 500)
+			return models.NewResponse(fmt.Sprintf("could not add the candidate: %s", err.Error()), 500)
 		}
-		return core.NewResponse("ok", 200)
+		return models.NewResponse("ok", 200)
 	}
 
-	return core.NewResponse("the requested resource does not exist", 404)
+	return models.NewResponse("the requested resource does not exist", 404)
 }

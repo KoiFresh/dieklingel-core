@@ -1,4 +1,4 @@
-module github.com/dieklingel-core
+module github.com/KoiFresh/dieklingel-core/core
 
 go 1.20
 
@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/blackjack/webcam v0.0.0-20230509180125-87693b3f29dc // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect

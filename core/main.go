@@ -8,8 +8,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/dieklingel-core/core"
-	"github.com/dieklingel-core/server"
+	"github.com/KoiFresh/dieklingel-core/core/models"
+	"github.com/KoiFresh/dieklingel-core/core/server"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	dir, _ := syscall.Getwd()
 	log.Printf("Running in working directory: %s", dir)
 
-	config, err := core.NewConfigFromCurrentDirectory()
+	config, err := models.NewConfigFromCurrentDirectory()
 	if err != nil {
 		log.Printf("cannot read config fiel: %s", err.Error())
 		os.Exit(1)

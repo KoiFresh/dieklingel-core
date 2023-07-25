@@ -8,7 +8,7 @@ import (
 	"path"
 	"regexp"
 
-	"github.com/dieklingel-core/core"
+	"github.com/KoiFresh/dieklingel-core/core/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
@@ -17,32 +17,32 @@ func RegisterActionHandler(prefix string, client mqtt.Client) {
 	register(client, path.Join(prefix, "execute"), onExecuteActions)
 }
 
-func onActions(client mqtt.Client, req core.Request) core.Response {
-	config, err := core.NewConfigFromCurrentDirectory()
+func onActions(client mqtt.Client, req models.Request) models.Response {
+	config, err := models.NewConfigFromCurrentDirectory()
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not read config: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not read config: %s", err.Error()), 500)
 	}
 
 	json, err := json.Marshal(config.Actions)
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not serialize actions: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not serialize actions: %s", err.Error()), 500)
 	}
 
-	return core.NewResponse(string(json), 200)
+	return models.NewResponse(string(json), 200)
 }
 
-func onExecuteActions(client mqtt.Client, req core.Request) core.Response {
+func onExecuteActions(client mqtt.Client, req models.Request) models.Response {
 	payload := make(map[string]interface{})
 	json.Unmarshal([]byte(req.Body), &payload)
 
 	pattern, ok := payload["pattern"].(string)
 	if !ok {
-		return core.NewResponse("the pattern has to be of type string", 400)
+		return models.NewResponse("the pattern has to be of type string", 400)
 	}
 
 	env, ok := payload["environment"].(map[string]interface{})
 	if !ok {
-		return core.NewResponse("the evironment has to be of type {string: string}", 400)
+		return models.NewResponse("the evironment has to be of type {string: string}", 400)
 	}
 	environment := make(map[string]string)
 	for key, value := range env {
@@ -51,23 +51,23 @@ func onExecuteActions(client mqtt.Client, req core.Request) core.Response {
 
 	actions := ExecuteActions(pattern, environment)
 	json, _ := json.Marshal(actions)
-	return core.NewResponse(string(json), 200)
+	return models.NewResponse(string(json), 200)
 }
 
-func ExecuteActions(pattern string, environment map[string]string) []core.Action {
-	config, err := core.NewConfigFromCurrentDirectory()
+func ExecuteActions(pattern string, environment map[string]string) []models.Action {
+	config, err := models.NewConfigFromCurrentDirectory()
 	if err != nil {
 		log.Printf("could not execute actions: %s", err.Error())
-		return make([]core.Action, 0)
+		return make([]models.Action, 0)
 	}
 
 	regex, err := regexp.Compile(pattern)
 	if err != nil {
 		log.Printf("error while compiling regex: %s", err.Error())
-		return make([]core.Action, 0)
+		return make([]models.Action, 0)
 	}
 
-	actions := make([]core.Action, 0)
+	actions := make([]models.Action, 0)
 	for _, action := range config.Actions {
 		match := regex.MatchString(action.Trigger)
 		if match {

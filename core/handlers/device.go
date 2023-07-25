@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dieklingel-core/core"
+	"github.com/KoiFresh/dieklingel-core/core/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	clover "github.com/ostafen/clover/v2"
 	"github.com/ostafen/clover/v2/document"
@@ -21,11 +21,11 @@ func RegisterDeviceHandler(prefix string, client mqtt.Client) {
 	register(client, path.Join(prefix, "delete", "+"), onDeleteDevice)
 }
 
-func onDevices(client mqtt.Client, req core.Request) core.Response {
+func onDevices(client mqtt.Client, req models.Request) models.Response {
 	db, err := clover.Open("storage")
 
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
 	}
 
 	defer db.Close()
@@ -36,36 +36,36 @@ func onDevices(client mqtt.Client, req core.Request) core.Response {
 
 	docs, err := db.FindAll(query.NewQuery("devices"))
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not fetch the devices: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not fetch the devices: %s", err.Error()), 500)
 	}
 
-	devices := make([]core.Device, 0)
+	devices := make([]models.Device, 0)
 	for _, doc := range docs {
-		device := core.NewDeviceFromMap(doc.ToMap())
+		device := models.NewDeviceFromMap(doc.ToMap())
 		devices = append(devices, device)
 	}
 
 	json, err := json.Marshal(devices)
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not serializer the result: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not serializer the result: %s", err.Error()), 500)
 	}
 
-	return core.NewResponse(string(json), 200)
+	return models.NewResponse(string(json), 200)
 }
 
-func onCreateDevice(client mqtt.Client, req core.Request) core.Response {
-	device := core.Device{}
+func onCreateDevice(client mqtt.Client, req models.Request) models.Response {
+	device := models.Device{}
 	if err := json.Unmarshal([]byte(req.Body), &device); err != nil {
-		return core.NewResponse(fmt.Sprintf("could not parse the device: %s", err.Error()), 400)
+		return models.NewResponse(fmt.Sprintf("could not parse the device: %s", err.Error()), 400)
 	}
 
 	if len(device.Token) == 0 {
-		return core.NewResponse("the token cannot be empty", 400)
+		return models.NewResponse("the token cannot be empty", 400)
 	}
 
 	db, err := clover.Open("storage")
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
 	}
 	defer db.Close()
 
@@ -82,28 +82,28 @@ func onCreateDevice(client mqtt.Client, req core.Request) core.Response {
 	doc.SetExpiresAt(time.Now().Add(time.Hour * 24 * 60))
 
 	if err := db.Insert("devices", doc); err != nil {
-		return core.NewResponse(fmt.Sprintf("could not insert device: %s", err.Error()), 400)
+		return models.NewResponse(fmt.Sprintf("could not insert device: %s", err.Error()), 400)
 	}
 
-	return core.NewResponse("Ok", 201)
+	return models.NewResponse("Ok", 201)
 }
 
-func onUpdateDevice(client mqtt.Client, req core.Request) core.Response {
+func onUpdateDevice(client mqtt.Client, req models.Request) models.Response {
 	pathSegments := strings.Split(req.RequestPath, "/")
 	token := pathSegments[len(pathSegments)-1]
 
-	device := core.Device{}
+	device := models.Device{}
 	if err := json.Unmarshal([]byte(req.Body), &device); err != nil {
-		return core.NewResponse(fmt.Sprintf("could not parse the device: %s", err.Error()), 400)
+		return models.NewResponse(fmt.Sprintf("could not parse the device: %s", err.Error()), 400)
 	}
 
 	if len(device.Token) == 0 {
-		return core.NewResponse("the token cannot be empty", 400)
+		return models.NewResponse("the token cannot be empty", 400)
 	}
 
 	db, err := clover.Open("storage")
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
 	}
 	defer db.Close()
 
@@ -112,24 +112,24 @@ func onUpdateDevice(client mqtt.Client, req core.Request) core.Response {
 	values["signs"] = device.Signs
 
 	if err := db.Update(query.NewQuery("devices").Where(query.Field("token").Eq(token)), values); err != nil {
-		return core.NewResponse(fmt.Sprintf("could not update the device: %s", err.Error()), 400)
+		return models.NewResponse(fmt.Sprintf("could not update the device: %s", err.Error()), 400)
 	}
 
-	return core.NewResponse("Ok", 200)
+	return models.NewResponse("Ok", 200)
 }
 
-func onDeleteDevice(client mqtt.Client, req core.Request) core.Response {
+func onDeleteDevice(client mqtt.Client, req models.Request) models.Response {
 	pathSegments := strings.Split(req.RequestPath, "/")
 	token := pathSegments[len(pathSegments)-1]
 
 	db, err := clover.Open("storage")
 	if err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not open the database: %s", err.Error()), 500)
 	}
 	defer db.Close()
 
 	if err := db.Delete(query.NewQuery("devices").Where(query.Field("token").Eq(token))); err != nil {
-		return core.NewResponse(fmt.Sprintf("Could not delete devices: %s", err.Error()), 500)
+		return models.NewResponse(fmt.Sprintf("Could not delete devices: %s", err.Error()), 500)
 	}
-	return core.NewResponse("Ok", 204)
+	return models.NewResponse("Ok", 204)
 }

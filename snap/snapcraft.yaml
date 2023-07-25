@@ -1,4 +1,4 @@
-name: dieklingel-core
+name: dieklingel
 title: dieKlingel Core
 contact: kai.mayer@dieklingel.com
 website: https://dieklingel.de/
@@ -16,36 +16,69 @@ architectures:
   - build-on: arm64
 
 apps:
-  dieklingel-core:
-    command-chain: &_command-chain
+  kiosk:
+    command-chain:
       - bin/wayland-launch
-    command: &_command bin/core
-    plugs: &_plugs
+    command: bin/kiosk
+    plugs:
       - opengl
       - wayland
       - network
-      - camera
       - audio-playback
-      - audio-record
-    extensions: &_extensions
+    extensions:
       - gnome
-    environment: &_environment
+    environment:
       XDG_DATA_HOME: $SNAP_USER_DATA
       XDG_DATA_DIRS: $SNAP/usr/share
       GDK_GL: gles
       LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET"
       DIEKLINGEL_HOME: "$SNAP_USER_COMMON"
-  daemon:
+  kiosk-daemon:
     daemon: simple
     restart-delay: 3s
     restart-condition: always
-    command-chain: *_command-chain
-    command: *_command
-    plugs: *_plugs
-    extensions: *_extensions
-    environment: *_environment
+    command-chain:
+      - bin/wayland-launch
+    command: bin/kiosk
+    plugs:
+      - opengl
+      - wayland
+      - network
+      - audio-playback
+    extensions:
+      - gnome
+    environment:
+      XDG_DATA_HOME: $SNAP_USER_DATA
+      XDG_DATA_DIRS: $SNAP/usr/share
+      GDK_GL: gles
+      LD_LIBRARY_PATH: "$LD_LIBRARY_PATH:$SNAP/bin/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET"
+      DIEKLINGEL_HOME: "$SNAP_USER_COMMON"
+  core:
+    daemon: simple 
+    restart-delay: 3s
+    restart-condition: always
+    command: bin/core
+    plugs:
+      - network
+      - camera
+      - audio-playback
+      - audio-record
+    environment:
+      DIEKLINGEL_HOME: "$SNAP_USER_COMMON"
 
 parts:
+  core:
+    plugin: go
+    source: core
+    build-snaps:
+      - go
+    build-packages:
+      - libopus-dev
+      - libvpx-dev
+    stage-packages:
+      - libopus-dev
+      - libvpx-dev
+
   flutter-git:
     source: https://github.com/flutter/flutter.git
     source-branch: '3.12.0'
@@ -67,9 +100,9 @@ parts:
       - unzip
     override-prime: ''
 
-  dieklingel-core:
+  kiosk:
     plugin: nil
-    source: .
+    source: kiosk
     after:
       - flutter-git
     build-packages:
