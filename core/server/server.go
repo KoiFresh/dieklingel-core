@@ -36,7 +36,6 @@ func RunListener(url url.URL, username string, password string) {
 		}
 	}
 
-	// TODO: use prefix from env or input
 	handlers.RegisterCameraHandler(prefix+"/camera", client)
 	handlers.RegisterRtcHandler(prefix+"/rtc", client)
 	handlers.RegisterDeviceHandler(prefix+"/devices", client)

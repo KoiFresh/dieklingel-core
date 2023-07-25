@@ -140,8 +140,10 @@ func onCloseConnection(client mqtt.Client, req models.Request) models.Response {
 	pathSegments := strings.Split(req.RequestPath, "/")
 	id := pathSegments[len(pathSegments)-1]
 
-	for _, track := range stream.GetTracks() {
-		defer track.Close()
+	if stream != nil {
+		for _, track := range stream.GetTracks() {
+			defer track.Close()
+		}
 	}
 
 	if connection, exists := connections[id]; exists {
