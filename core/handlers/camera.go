@@ -7,13 +7,14 @@ import (
 	"image/jpeg"
 	"path"
 
-	"github.com/KoiFresh/dieklingel-core/core/models"
+	"github.com/KoiFresh/dieklingel-core/core/internal/handler"
+	"github.com/KoiFresh/dieklingel-core/core/internal/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/pion/mediadevices"
 )
 
 func RegisterCameraHandler(prefix string, client mqtt.Client) {
-	register(client, path.Join(prefix, "snapshot"), onSnapshot)
+	handler.Register(client, path.Join(prefix, "snapshot"), onSnapshot)
 }
 
 func onSnapshot(c mqtt.Client, req models.Request) models.Response {

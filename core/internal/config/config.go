@@ -1,19 +1,21 @@
-package models
+package config
 
 import (
 	"log"
 	"os"
 
+	"github.com/KoiFresh/dieklingel-core/core/internal/models"
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	Actions []Action `yaml:"actions"`
+	Actions []models.Action `yaml:"actions"`
 	Mqtt    struct {
 		Uri      string `yaml:"uri"`
 		Username string `yaml:"username"`
 		Password string `yaml:"password"`
 	} `yaml:"mqtt"`
+	Pins []models.Sensor `yaml:"pins"`
 }
 
 func NewConfigFromCurrentDirectory() (*Config, error) {

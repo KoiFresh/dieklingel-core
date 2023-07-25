@@ -2,19 +2,23 @@
 # the shared standartd settings for all packages. This is a sample
 # configuration, which explains every propertie.
 
-
 actions:
   - trigger: ring
     lane: python3 ./scripts/push-notification.py
   - trigger: unlock2
     lane: |
-     touch hallo.txt
-     echo unlock2 > hallo.txt 
+      touch hallo.txt
+      echo unlock2 > hallo.txt
+
+pins:
+  - pin: 10
+    trigger: input-1
+    read-type: pe
 
 mqtt:
   uri: mqtt://server.dieklingel.com:1883/dieklingel/mayer/kai/
-  username: ''
-  password: ''
+  username: ""
+  password: ""
 
 http:
   port: 8081
@@ -50,6 +54,5 @@ rtc:
 
 apn:
   url: https://fcm-worker.dieklingel.workers.dev/fcm/send
-  title: 'Jemand steht vor deiner Tuer!' 
-  body: '{DAY}-{MONTH}-{YEAR} {HOUR}:{MINUTE}:{SECOND}'
-
+  title: "Jemand steht vor deiner Tuer!"
+  body: "{DAY}-{MONTH}-{YEAR} {HOUR}:{MINUTE}:{SECOND}"

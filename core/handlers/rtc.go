@@ -7,7 +7,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/KoiFresh/dieklingel-core/core/models"
+	"github.com/KoiFresh/dieklingel-core/core/internal/handler"
+	"github.com/KoiFresh/dieklingel-core/core/internal/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/pion/mediadevices"
 	"github.com/pion/mediadevices/pkg/codec/opus"
@@ -21,10 +22,10 @@ var connections map[string]*webrtc.PeerConnection = make(map[string]*webrtc.Peer
 var stream mediadevices.MediaStream
 
 func RegisterRtcHandler(prefix string, client mqtt.Client) {
-	register(client, path.Join(prefix, "connections"), onGetConnections)
-	register(client, path.Join(prefix, "connections", "create", "+"), onCreateConnection)
-	register(client, path.Join(prefix, "connections", "close", "+"), onCloseConnection)
-	register(client, path.Join(prefix, "connections", "candidate", "+"), onAddCandidate)
+	handler.Register(client, path.Join(prefix, "connections"), onGetConnections)
+	handler.Register(client, path.Join(prefix, "connections", "create", "+"), onCreateConnection)
+	handler.Register(client, path.Join(prefix, "connections", "close", "+"), onCloseConnection)
+	handler.Register(client, path.Join(prefix, "connections", "candidate", "+"), onAddCandidate)
 }
 
 func onGetConnections(c mqtt.Client, req models.Request) models.Response {

@@ -9,7 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/KoiFresh/dieklingel-core/core/models"
+	"github.com/KoiFresh/dieklingel-core/core/internal/config"
+	"github.com/KoiFresh/dieklingel-core/core/internal/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
@@ -23,7 +24,7 @@ func RunListener(port int) {
 
 func proxy(writer http.ResponseWriter, req *http.Request) {
 	id := uuid.New()
-	config, err := models.NewConfigFromCurrentDirectory()
+	config, err := config.NewConfigFromCurrentDirectory()
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		writer.Write([]byte(err.Error()))

@@ -7,7 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/KoiFresh/dieklingel-core/core/models"
+	"github.com/KoiFresh/dieklingel-core/core/internal/handler"
+	"github.com/KoiFresh/dieklingel-core/core/internal/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	clover "github.com/ostafen/clover/v2"
 	"github.com/ostafen/clover/v2/document"
@@ -15,10 +16,10 @@ import (
 )
 
 func RegisterDeviceHandler(prefix string, client mqtt.Client) {
-	register(client, path.Join(prefix), onDevices)
-	register(client, path.Join(prefix, "create"), onCreateDevice)
-	register(client, path.Join(prefix, "update", "+"), onUpdateDevice)
-	register(client, path.Join(prefix, "delete", "+"), onDeleteDevice)
+	handler.Register(client, path.Join(prefix), onDevices)
+	handler.Register(client, path.Join(prefix, "create"), onCreateDevice)
+	handler.Register(client, path.Join(prefix, "update", "+"), onUpdateDevice)
+	handler.Register(client, path.Join(prefix, "delete", "+"), onDeleteDevice)
 }
 
 func onDevices(client mqtt.Client, req models.Request) models.Response {

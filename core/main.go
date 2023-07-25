@@ -8,8 +8,9 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/KoiFresh/dieklingel-core/core/internal/config"
 	"github.com/KoiFresh/dieklingel-core/core/internal/proxy"
-	"github.com/KoiFresh/dieklingel-core/core/models"
+	"github.com/KoiFresh/dieklingel-core/core/internal/sensor"
 	"github.com/KoiFresh/dieklingel-core/core/server"
 )
 
@@ -26,7 +27,7 @@ func main() {
 	dir, _ := syscall.Getwd()
 	log.Printf("Running in working directory: %s", dir)
 
-	config, err := models.NewConfigFromCurrentDirectory()
+	config, err := config.NewConfigFromCurrentDirectory()
 	if err != nil {
 		log.Printf("cannot read config fiel: %s", err.Error())
 		os.Exit(1)
@@ -44,6 +45,7 @@ func main() {
 		config.Mqtt.Username,
 	)
 	proxy.RunListener(8081)
+	sensor.RunListener(config.Pins)
 
 	// Wait for interruption to exit
 	var sigint = make(chan os.Signal, 1)

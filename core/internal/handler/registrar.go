@@ -1,17 +1,17 @@
-package handlers
+package handler
 
 import (
 	"encoding/json"
 	"log"
 	"path"
 
-	"github.com/KoiFresh/dieklingel-core/core/models"
+	"github.com/KoiFresh/dieklingel-core/core/internal/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 type HandlerFunction func(mqtt.Client, models.Request) models.Response
 
-func register(client mqtt.Client, channel string, handler HandlerFunction) {
+func Register(client mqtt.Client, channel string, handler HandlerFunction) {
 	client.Subscribe(channel, 2, func(c mqtt.Client, m mqtt.Message) {
 		var request = models.Request{}
 
