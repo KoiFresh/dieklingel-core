@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:kiosk/repositories/app_repository.dart';
 
 import '../blocs/app_view_bloc.dart';
 import '../blocs/passcode_view_bloc.dart';
 import '../blocs/sign_list_view_bloc.dart';
 import '../../components/activity_listener.dart';
-import '../../repositories/action_repository.dart';
 import '../../repositories/sign_repository.dart';
 import '../states/app_state.dart';
 import '../../utils/touch_scroll_behavior.dart';
@@ -50,13 +50,13 @@ class _Viewport extends StatelessWidget {
           providers: [
             BlocProvider(
               create: (_) => PasscodeViewBloc(
-                GetIt.I<ActionRepository>(),
+                GetIt.I<AppRepository>(),
               ),
             ),
             BlocProvider(
               create: (_) => SignListViewBloc(
+                GetIt.I<AppRepository>(),
                 GetIt.I<SignRepository>(),
-                GetIt.I<ActionRepository>(),
               ),
             )
           ],

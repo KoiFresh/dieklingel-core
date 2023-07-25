@@ -1,19 +1,23 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shell/shell.dart';
+import 'dart:async';
+import 'dart:convert';
 
-import '../../models/action.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kiosk/models/action_execute_request.dart';
+import 'package:kiosk/repositories/app_repository.dart';
+import 'package:logger/logger.dart';
+import 'package:mqtt/mqtt.dart';
+
 import '../../models/sign.dart';
-import '../../repositories/action_repository.dart';
 import '../../repositories/sign_repository.dart';
 import '../states/sign_list_state.dart';
 
 class SignListViewBloc extends Cubit<SignListState> {
-  final ActionRepository actionRepository;
+  final AppRepository appRepository;
   final SignRepository signRepository;
 
   SignListViewBloc(
+    this.appRepository,
     this.signRepository,
-    this.actionRepository,
   ) : super(SignListState.signs([])) {
     refresh();
   }
@@ -26,14 +30,25 @@ class SignListViewBloc extends Cubit<SignListState> {
   }
 
   Future<void> ring(Sign sign) async {
-    List<Action> actions = await actionRepository.fetchActionsFor("ring");
-
-    for (Action action in actions) {
-      Shell shell = Shell(environment: {
-        "SIGN": sign.identifier,
-      });
-
-      await shell.run("eval", arguments: [action.lane]);
+    MqttHttpClient client = MqttHttpClient();
+    Uri uri = await appRepository.fetchMqttUri();
+    String username = await appRepository.fetchMqttUsername();
+    String password = await appRepository.fetchMqttPassword();
+    try {
+      await client.post(
+        uri.resolve("actions/execute"),
+        headers: {"username": username, "password": password},
+        body: jsonEncode(
+          ActionExecuteRequest(
+            "ring",
+            environment: {
+              "SIGN": sign.identifier,
+            },
+          ).toMap(),
+        ),
+      );
+    } on TimeoutException catch (e) {
+      Logger.warn(e.message ?? "timeout exception");
     }
   }
 }

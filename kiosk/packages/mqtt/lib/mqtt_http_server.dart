@@ -50,7 +50,7 @@ class MqttHttpServer {
         await client.connect(username, password);
       } on SocketException catch (e) {
         Logger.warn(
-          "Could not connect to the mqtt broker '$host'. Retry in 10 seconds.",
+          "Could not connect to the mqtt broker '$host': ${e.message}. Retry in 10 seconds.",
         );
         await Future.delayed(const Duration(seconds: 10));
       }

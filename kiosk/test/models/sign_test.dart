@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:core/blueprint/blueprint.dart';
-import 'package:core/models/sign.dart';
+import 'package:blueprint/blueprint.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kiosk/models/sign.dart';
 import 'package:yaml/yaml.dart';
 
 import '../mocks/fake_file.dart';

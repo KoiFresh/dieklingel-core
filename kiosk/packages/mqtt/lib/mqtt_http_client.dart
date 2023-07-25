@@ -40,6 +40,7 @@ class MqttHttpClient {
       request.headers["username"],
       request.headers["password"],
     );
+    request.headers.remove("password");
 
     if (request.headers["mqtt_answer_channel"] == null) {
       request.headers["mqtt_answer_channel"] = const Uuid().v4();
