@@ -37,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	server.Run(
+	server.RunListener(
 		*uri,
 		config.Mqtt.Password,
 		config.Mqtt.Username,

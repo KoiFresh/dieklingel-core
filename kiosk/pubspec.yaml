@@ -41,9 +41,9 @@ dependencies:
   hive: ^2.2.3
   http: ^0.13.6
   logger:
-    path: libraries/logger
+    path: packages/logger
   mqtt:
-    path: libraries/mqtt
+    path: packages/mqtt
   path: ^1.8.2
   provider: ^6.0.5
   rfw: ^1.0.8
@@ -51,11 +51,7 @@ dependencies:
   shelf_router: ^1.1.4
   shell: ^2.0.0
   ui:
-    #    path: ../../libraries/ui
-    git:
-      url: https://github.com/KoiFresh/dieklingel-core.git
-      ref: feature/sip
-      path: libraries/ui
+    path: packages/ui
   uuid: ^3.0.7
   window_manager: ^0.3.4
   yaml: ^3.1.1

@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func Run(url url.URL, username string, password string) {
+func RunListener(url url.URL, username string, password string) {
 	var id = uuid.New()
 	log.Printf("Start connection with id '%s'.\r\n", id.String())
 	prefix := path.Join("./", url.Path)

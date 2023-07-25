@@ -443,7 +443,7 @@ packages:
   logger:
     dependency: "direct main"
     description:
-      path: "libraries/logger"
+      path: "packages/logger"
       relative: true
     source: path
     version: "0.0.1"
@@ -490,7 +490,7 @@ packages:
   mqtt:
     dependency: "direct main"
     description:
-      path: "libraries/mqtt"
+      path: "packages/mqtt"
       relative: true
     source: path
     version: "0.0.1"
@@ -774,11 +774,9 @@ packages:
   ui:
     dependency: "direct main"
     description:
-      path: "libraries/ui"
-      ref: "feature/sip"
-      resolved-ref: "5934e80ba869c21cc68cc4b0b5fa021c8762c9a5"
-      url: "https://github.com/KoiFresh/dieklingel-core.git"
-    source: git
+      path: "packages/ui"
+      relative: true
+    source: path
     version: "0.0.1"
   uuid:
     dependency: "direct main"

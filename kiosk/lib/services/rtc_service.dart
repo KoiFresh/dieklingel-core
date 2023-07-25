@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../packages/mqtt/lib/mqtt.dart';
+import 'package:mqtt/mqtt_http_client.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
