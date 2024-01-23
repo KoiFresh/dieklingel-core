@@ -1,7 +1,8 @@
 #include <iostream>
-#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QDir>
 #include <QTimer>
+#include <QQmlApplicationEngine>
 #include <linphone++/linphone.hh>
 #include <unistd.h>
 
@@ -63,12 +64,34 @@ int main(int argc, char *argv[])
         exit(state);
     }
 
-    QCoreApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     QTimer timer;
     QObject::connect(
-        &timer, &QTimer::timeout, [core]()
-        { core->iterate(); });
+        &timer,
+        &QTimer::timeout,
+        [core]()
+        {
+            core->iterate();
+        });
     timer.start(500);
 
-    return app.exec();
+    QQmlApplicationEngine engine;
+    const QUrl url("qml/main.qml");
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreated,
+        &app,
+        [url](QObject *obj, const QUrl &objUrl)
+        {
+            if (!obj && url == objUrl)
+            {
+                QCoreApplication::exit(-1);
+            }
+        },
+        Qt::QueuedConnection);
+    engine.load(url);
+
+    int exitcode = app.exec();
+    core->stop();
+    return exitcode;
 }
