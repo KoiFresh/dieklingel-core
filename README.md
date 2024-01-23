@@ -3,7 +3,7 @@
 ## Install
 
 ```sh
-sudo apt-get install -y git build-essential qt6-base-dev liblinphone-dev
+sudo apt-get install -y git build-essential cmake qt6-base-dev qt6-declarative-dev liblinphone-dev
 ```
 
 ## Build

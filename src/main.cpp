@@ -1,6 +1,5 @@
 #include <iostream>
-#include <qt6/QtCore/QtGlobal>
-#include <qt6/QtCore/QDir>
+#include <QDir>
 #include <linphone++/linphone.hh>
 #include <unistd.h>
 
@@ -8,7 +7,7 @@
 
 using namespace linphone;
 
-int main()
+int main(int argc, char *argv[])
 {
     qInfo() << "-----------------------";
     qInfo() << "|   dieKlingel Core   |";
