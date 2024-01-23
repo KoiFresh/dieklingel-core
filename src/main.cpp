@@ -1,5 +1,7 @@
 #include <iostream>
+#include <QCoreApplication>
 #include <QDir>
+#include <QTimer>
 #include <linphone++/linphone.hh>
 #include <unistd.h>
 
@@ -61,11 +63,12 @@ int main(int argc, char *argv[])
         exit(state);
     }
 
-    while (true)
-    {
-        core->iterate();
-        usleep(50000);
-    }
+    QCoreApplication app(argc, argv);
+    QTimer timer;
+    QObject::connect(
+        &timer, &QTimer::timeout, [core]()
+        { core->iterate(); });
+    timer.start(500);
 
-    return 0;
+    return app.exec();
 }

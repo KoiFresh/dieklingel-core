@@ -24,4 +24,5 @@ target_link_libraries(
 	core
 	PRIVATE
 	linphone++
+	Qt6::Core
 )
