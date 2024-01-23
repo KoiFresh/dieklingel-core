@@ -26,5 +26,5 @@ make -C build
 ## Run
 
 ```sh
-build/core
+build/src/app/core
 ```

@@ -1,16 +1,23 @@
 #include <linphone++/linphone.hh>
-#include <qt6/QtCore/QLoggingCategory>
+#include <QLoggingCategory>
+#include <QDir>
 
 using namespace linphone;
 
-class CoreCallback : public CoreListener
+class App : public QObject, public CoreListener
 
 {
 private:
-	/* data */
+	std::shared_ptr<Core> _core;
+
 public:
-	CoreCallback();
-	~CoreCallback();
+	App();
+	~App();
+
+	std::shared_ptr<Core> getCore() const;
+
+public slots:
+	void iterate();
 
 	void onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message) override;
 	void onRegistrationStateChanged(const std::shared_ptr<Core> &lc, const std::shared_ptr<ProxyConfig> &cfg, RegistrationState cstate, const std::string &message) override;
