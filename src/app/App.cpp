@@ -1,6 +1,6 @@
 #include "App.hpp"
 
-App::App()
+App::App(QSettings &settings) : _settings(settings)
 {
 	qInfo() << "-----------------------";
 	qInfo() << "|   dieKlingel Core   |";
@@ -19,10 +19,9 @@ App::App()
 
 	this->_core = factory->createCore("", "", nullptr);
 
-	// TODO: read from config file
-	auto address = factory->createAddress("sip:koifresh@sip.linphone.org");
+	auto address = factory->createAddress(this->_settings.value("core.sip/address").toString().toStdString());
 
-	auto info = factory->createAuthInfo(address->getUsername(), "", "PASSWORD", "", "", "");
+	auto info = factory->createAuthInfo(address->getUsername(), "", this->_settings.value("core.sip/password").toString().toStdString(), "", "", "");
 	this->_core->addAuthInfo(info);
 
 	auto proxy = this->_core->createProxyConfig();
@@ -62,6 +61,13 @@ App::~App()
 void App::iterate()
 {
 	this->_core->iterate();
+}
+
+void App::ring()
+{
+	qInfo() << "emit ring event";
+	// TODO: start outgoing call
+	// this->_core->invite("200");
 }
 
 std::shared_ptr<Core> App::getCore() const

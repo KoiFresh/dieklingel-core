@@ -2,18 +2,18 @@
 #include <QGuiApplication>
 #include <QDir>
 #include <QTimer>
+#include <QSettings>
 #include <QQmlApplicationEngine>
 #include <linphone++/linphone.hh>
 #include <unistd.h>
 
 #include "App.hpp"
 
-using namespace linphone;
-
 int main(int argc, char *argv[])
 {
+    QSettings settings = QSettings("core.ini", QSettings::Format::IniFormat);
     QGuiApplication gui(argc, argv);
-    App app = App();
+    App app = App(settings);
     QTimer timer = QTimer();
 
     QObject::connect(
@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
         &QTimer::timeout,
         &app, &App::iterate);
     timer.start(500);
+
+    qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", &app);
 
     QQmlApplicationEngine engine;
     const QUrl url("qml/main.qml");
