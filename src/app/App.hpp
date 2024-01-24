@@ -1,7 +1,12 @@
+#ifndef __APP_HPP__
+#define __APP_HPP__
+
 #include <linphone++/linphone.hh>
 #include <QLoggingCategory>
 #include <QDir>
 #include <QSettings>
+
+#include "Mqtt.hpp"
 
 using namespace linphone;
 
@@ -10,6 +15,7 @@ class App : public QObject, public CoreListener
 	Q_OBJECT
 private:
 	std::shared_ptr<Core> _core;
+	std::shared_ptr<Mqtt> _mqtt;
 	QSettings &_settings;
 
 public:
@@ -29,3 +35,5 @@ public:
 	void onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, linphone::Call::State cstate, const std::string &message) override;
 	void onDtmfReceived(const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, int dtmf) override;
 };
+
+#endif // __APP_HPP_

@@ -6,6 +6,7 @@ App::App(QSettings &settings) : _settings(settings)
 	qInfo() << "|   dieKlingel Core   |";
 	qInfo() << "-----------------------";
 
+	// Linphone setup
 	auto factory = Factory::get();
 	auto path = QDir::currentPath().toStdString();
 	factory->setDataResourcesDir(path);
@@ -58,6 +59,16 @@ App::App(QSettings &settings) : _settings(settings)
 	{
 		qCritical() << "the linphone core could not be started successfully!";
 		exit(state);
+	}
+
+	// MQTT Setup
+	auto mqttEnabled = this->_settings.value("core.mqtt/enabled").toBool();
+	if (mqttEnabled)
+	{
+		_mqtt = std::shared_ptr<Mqtt>(new Mqtt(this->_settings.value("core.mqtt/address").toString()));
+		auto username = this->_settings.value("core.mqtt/username").toString();
+		auto password = this->_settings.value("core.mqtt/password").toString();
+		_mqtt->connect(username, password);
 	}
 }
 

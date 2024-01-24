@@ -13,7 +13,9 @@ sudo apt-get install -y \
     qtwayland5 \
     qml-module-qtquick2 \
     qml-module-qtquick-controls \
-    liblinphone-dev
+    liblinphone-dev \
+    libpaho-mqtt-dev \
+    libpaho-mqttpp-dev
 ```
 
 ## Build
