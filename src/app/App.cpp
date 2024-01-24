@@ -33,13 +33,20 @@ App::App(QSettings &settings) : _settings(settings)
 	this->_core->addProxyConfig(proxy);
 	this->_core->setDefaultProxyConfig(proxy);
 
+	auto types = this->_core->getVideoPayloadTypes();
+	qDebug() << "Video types are:";
+	for (auto type : types)
+	{
+		qDebug() << "\t-" << type->getDescription().c_str();
+	}
 	this->_core->enableSelfView(false);
+	// TODO: enable video capture
 	this->_core->enableVideoCapture(false);
 	this->_core->enableVideoDisplay(false);
 
 	auto nat = this->_core->createNatPolicy();
+	nat->setStunServer("stun.linphone.org");
 	nat->enableStun(true);
-	nat->setStunServer("stun.l.google.com:19302");
 	nat->enableIce(true);
 	this->_core->setNatPolicy(nat);
 
