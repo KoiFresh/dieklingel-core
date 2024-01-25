@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
         &timer,
         &QTimer::timeout,
         &app, &App::iterate);
-    timer.start(500);
+    timer.start(0);
 
     qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", &app);
 

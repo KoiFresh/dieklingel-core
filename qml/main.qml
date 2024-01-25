@@ -24,7 +24,7 @@ Window {
             font.pointSize: 24
             padding: 10
             text: "Fam. Mustermann"
-            onClicked: App.ring()
+            onClicked: App.ring("koifresh@sip.linphone.org")
         }
     }
 }

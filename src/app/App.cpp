@@ -51,6 +51,13 @@ App::App(QSettings &settings) : _settings(settings)
 	nat->enableIce(true);
 	this->_core->setNatPolicy(nat);
 
+	auto transports = factory->createTransports();
+	transports->setUdpPort(0);
+	transports->setDtlsPort(0);
+	transports->setTcpPort(-1);
+	transports->setTlsPort(-1);
+	this->_core->setTransports(transports);
+
 	auto self = std::shared_ptr<CoreListener>(this);
 	this->_core->addListener(self);
 
@@ -81,11 +88,33 @@ void App::iterate()
 	this->_core->iterate();
 }
 
-void App::ring()
+void App::ring(QString number)
 {
 	qInfo() << "emit ring event";
-	// TODO: start outgoing call
-	// this->_core->invite("200");
+
+	this->_ring(number);
+	this->_publish("dieklingel/core/event/on/ring", number);
+}
+
+void App::_ring(QString number)
+{
+	if (this->_core->getCurrentCall() != nullptr)
+	{
+		qInfo() << "there is already an ongoing call, we will not invite" << number;
+		return;
+	}
+
+	this->_core->invite(number.toStdString());
+}
+
+void App::_publish(QString topic, QString message)
+{
+	if (this->_mqtt == nullptr)
+	{
+		return;
+	}
+
+	this->_mqtt->publish(topic, message);
 }
 
 std::shared_ptr<Core> App::getCore() const

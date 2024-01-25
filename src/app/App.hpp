@@ -18,6 +18,9 @@ private:
 	std::shared_ptr<Mqtt> _mqtt;
 	QSettings &_settings;
 
+	void _ring(QString number);
+	void _publish(QString topic, QString message);
+
 public:
 	explicit App(QSettings &settings);
 	~App();
@@ -28,7 +31,7 @@ public slots:
 	void iterate();
 
 public:
-	Q_INVOKABLE void ring();
+	Q_INVOKABLE void ring(QString number);
 
 	void onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message) override;
 	void onRegistrationStateChanged(const std::shared_ptr<Core> &lc, const std::shared_ptr<ProxyConfig> &cfg, RegistrationState cstate, const std::string &message) override;
