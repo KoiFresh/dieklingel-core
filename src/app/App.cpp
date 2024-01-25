@@ -42,7 +42,7 @@ App::App(QSettings &settings) : _settings(settings)
 	}
 	this->_core->enableSelfView(false);
 	// TODO: enable video capture
-	this->_core->enableVideoCapture(false);
+	this->_core->enableVideoCapture(true);
 	this->_core->enableVideoDisplay(false);
 
 	auto nat = this->_core->createNatPolicy();
@@ -104,7 +104,10 @@ void App::_ring(QString number)
 		return;
 	}
 
-	this->_core->invite(number.toStdString());
+	auto params = this->_core->createCallParams(NULL);
+	params->enableEarlyMediaSending(true);
+
+	this->_core->inviteWithParams(number.toStdString(), params);
 }
 
 void App::_publish(QString topic, QString message)
