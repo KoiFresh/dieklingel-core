@@ -6,9 +6,25 @@ import com.dieklingel 1.0
 Window {
     visible: true
     title: "dieKlingel Kiosk"
+    color: "#1c1f1e"
 
-    Button {
-        text: "ring"
-        onClicked: App.ring()
+    Column {
+        spacing: 20
+        anchors.centerIn: parent
+        
+        Image {
+            source: "bell.png"
+            width: parent.width
+            fillMode: Image.PreserveAspectFit
+        }
+        Button {
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+            font.pointSize: 24
+            padding: 10
+            text: "Fam. Mustermann"
+            onClicked: App.ring()
+        }
     }
 }
