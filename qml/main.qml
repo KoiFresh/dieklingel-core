@@ -64,6 +64,7 @@ Window {
                 radius: height / 2
 
                 Image {
+                    id: img
                     anchors {
                         left: parent.left
                         verticalCenter: parent.verticalCenter
@@ -75,10 +76,10 @@ Window {
 
                 Text {
                     anchors  {
-                        right: parent.right
                         verticalCenter: parent.verticalCenter
                     }
-                    padding: 0,0,0,20
+                    x: ((img.width * 0.75) + parent.width - width) / 2
+                    horizontalAlignment: Text.AlignHCenter
                     text: "Fam. Mustermann"
                     color: "white"
                     font {
