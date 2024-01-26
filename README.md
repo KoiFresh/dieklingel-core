@@ -8,11 +8,13 @@ sudo apt-get install -y \
     build-essential \
     cmake \
     libgl1-mesa-dev \
-    qt5base-dev \
+    libssl-dev \
+    qtbase5-dev \
     qtdeclarative5-dev \
     qtwayland5 \
     qml-module-qtquick2 \
-    qml-module-qtquick-controls \
+    qml-module-qtquick-controls2 \
+    qtquickcontrols2-5-dev \
     liblinphone-dev \
     libpaho-mqtt-dev \
     libpaho-mqttpp-dev
