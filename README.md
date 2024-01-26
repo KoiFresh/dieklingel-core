@@ -15,6 +15,7 @@ sudo apt-get install -y \
     qml-module-qtquick2 \
     qml-module-qtquick-controls2 \
     qtquickcontrols2-5-dev \
+    qml-module-qtmultimedia \
     liblinphone-dev \
     libpaho-mqtt-dev \
     libpaho-mqttpp-dev

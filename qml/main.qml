@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
+import QtMultimedia 5.15
 import com.dieklingel 1.0
 
 Window {
@@ -9,6 +10,11 @@ Window {
     color: "#1c1f1e"
     minimumWidth: 480
     minimumHeight: 820
+
+    SoundEffect {
+        id: bell
+        source: "bell.wav"
+    }
 
     Column {
         anchors.centerIn: parent
@@ -49,6 +55,7 @@ Window {
             width: 460
             height: 120
             onPressed: {
+                bell.play();
                 App.ring("sip:user1@192.168.0.191")
             }
 
