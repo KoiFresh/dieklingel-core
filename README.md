@@ -28,5 +28,5 @@ make -C build
 ## Run
 
 ```sh
-build/src/app/core
+build/src/app/dieklingel-core
 ```

@@ -21,14 +21,14 @@ find_package(
 find_package(PahoMqttCpp REQUIRED)
 
 add_executable(
-	core
+	dieklingel-core
     main.cpp
 	App.cpp
 	Mqtt.cpp
 )
 
 target_link_libraries(
-	core
+	dieklingel-core
 	PRIVATE
 	linphone++
 	paho-mqtt3as
@@ -39,4 +39,9 @@ target_link_libraries(
 	Qt5::Gui
 	Qt5::Quick
 	Qt5::QuickControls2
+)
+
+install(
+	TARGETS
+	dieklingel-core
 )
