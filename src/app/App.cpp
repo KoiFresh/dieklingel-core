@@ -106,6 +106,7 @@ void App::_ring(QString number)
 
 	auto params = this->_core->createCallParams(NULL);
 	params->enableEarlyMediaSending(true);
+	params->setMediaEncryption(MediaEncryption::SRTP);
 
 	this->_core->inviteWithParams(number.toStdString(), params);
 }

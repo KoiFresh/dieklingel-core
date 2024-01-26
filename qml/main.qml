@@ -49,7 +49,7 @@ Window {
             width: 460
             height: 120
             onPressed: {
-                App.ring("koifresh")
+                App.ring("sip:user1@192.168.0.191")
             }
 
             Rectangle {

@@ -64,6 +64,10 @@ void Mqtt::connect(QString username, QString password)
 
 void Mqtt::publish(QString topic, QString message)
 {
+	if (!this->_mqtt->is_connected())
+	{
+		return;
+	}
 	this->_mqtt->publish(topic.toStdString(), message.toStdString());
 }
 
