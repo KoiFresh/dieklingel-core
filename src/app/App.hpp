@@ -32,6 +32,9 @@ public slots:
 
 public:
 	Q_INVOKABLE void ring(QString number);
+	void printCoreInformation();
+
+	QString getVersion();
 
 	void onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message) override;
 	void onRegistrationStateChanged(const std::shared_ptr<Core> &lc, const std::shared_ptr<ProxyConfig> &cfg, RegistrationState cstate, const std::string &message) override;

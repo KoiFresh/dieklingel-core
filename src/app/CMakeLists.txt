@@ -20,6 +20,8 @@ find_package(
 
 find_package(PahoMqttCpp REQUIRED)
 
+add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
+
 add_executable(
 	dieklingel-core
     main.cpp

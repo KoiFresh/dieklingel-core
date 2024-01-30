@@ -2,10 +2,6 @@
 
 App::App(QSettings &settings) : _settings(settings)
 {
-	qInfo() << "-----------------------";
-	qInfo() << "|   dieKlingel Core   |";
-	qInfo() << "-----------------------";
-
 	// Linphone setup
 	auto factory = Factory::get();
 	auto path = QDir::currentPath().toStdString();
@@ -13,15 +9,8 @@ App::App(QSettings &settings) : _settings(settings)
 	factory->setImageResourcesDir(path);
 	factory->setTopResourcesDir(path);
 
-	qInfo() << "wd:" << path.c_str();
-	qInfo() << "config:" << factory->getConfigDir(nullptr).c_str();
-	qInfo() << "data:" << factory->getDataDir(nullptr).c_str();
-	qInfo() << "ressources:" << factory->getDataResourcesDir().c_str();
-
 	this->_core = factory->createCore("", "", nullptr);
-
 	auto address = factory->createAddress(this->_settings.value("core.sip/address").toString().toStdString());
-
 	auto info = factory->createAuthInfo(address->getUsername(), "", this->_settings.value("core.sip/password").toString().toStdString(), "", "", "");
 	this->_core->addAuthInfo(info);
 
@@ -34,14 +23,7 @@ App::App(QSettings &settings) : _settings(settings)
 	this->_core->addProxyConfig(proxy);
 	this->_core->setDefaultProxyConfig(proxy);
 
-	auto types = this->_core->getVideoPayloadTypes();
-	qDebug() << "Video types are:";
-	for (auto type : types)
-	{
-		qDebug() << "\t-" << type->getDescription().c_str();
-	}
 	this->_core->enableSelfView(false);
-	// TODO: enable video capture
 	this->_core->enableVideoCapture(true);
 	this->_core->enableVideoDisplay(false);
 
@@ -64,6 +46,8 @@ App::App(QSettings &settings) : _settings(settings)
 
 	auto self = std::shared_ptr<CoreListener>(this);
 	this->_core->addListener(self);
+
+	printCoreInformation();
 
 	auto state = this->_core->start();
 	if (state != 0)
@@ -130,19 +114,66 @@ std::shared_ptr<Core> App::getCore() const
 	return this->_core;
 }
 
+void App::printCoreInformation()
+{
+	QTextStream info(stdout);
+
+	info << "dieklingel core version: " << getVersion() << Qt::endl;
+	info << "liblinphone version: " << this->_core->getVersion().c_str() << Qt::endl;
+	info << "audio codecs:" << Qt::endl;
+	for (auto codec : this->_core->getAudioPayloadTypes())
+	{
+		info << "\t- " << codec->getDescription().c_str() << Qt::endl;
+	}
+	info << "video codecs:" << Qt::endl;
+	for (auto codec : this->_core->getVideoPayloadTypes())
+	{
+		info << "\t- " << codec->getDescription().c_str() << Qt::endl;
+	}
+	info << "audio devices" << Qt::endl;
+	for (auto device : this->_core->getSoundDevicesList())
+	{
+		info << "\t- " << device.c_str() << Qt::endl;
+	}
+	info << "video devices" << Qt::endl;
+	for (auto device : this->_core->getVideoDevicesList())
+	{
+		info << "\t- " << device.c_str() << Qt::endl;
+	}
+	info << "directories:" << Qt::endl;
+	info << "\t- config: " << Factory::get()->getConfigDir(nullptr).c_str() << Qt::endl;
+	info << "\t- data: " << Factory::get()->getDataDir(nullptr).c_str() << Qt::endl;
+	info << "\t- data resources: " << Factory::get()->getDataResourcesDir().c_str() << Qt::endl;
+	info << "\t- download: " << Factory::get()->getDownloadDir(nullptr).c_str() << Qt::endl;
+	info << "\t- image resources: " << Factory::get()->getImageResourcesDir().c_str() << Qt::endl;
+	info << "\t- mediastreamer plugins: " << Factory::get()->getMspluginsDir().c_str() << Qt::endl;
+	info << "\t- ring resources: " << Factory::get()->getRingResourcesDir().c_str() << Qt::endl;
+	info << "\t- sound resources: " << Factory::get()->getSoundResourcesDir().c_str() << Qt::endl;
+	info << "\t- top resources: " << Factory::get()->getTopResourcesDir().c_str() << Qt::endl;
+}
+
+QString App::getVersion()
+{
+#ifndef DIEKLINGEL_CORE_VERSION
+	return "unknown";
+#else
+	return DIEKLINGEL_CORE_VERSION;
+#endif
+}
+
 void App::onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message)
 {
-	qInfo() << "Core state" << message.c_str();
+	qInfo() << "Core state changed:" << message.c_str();
 };
 
 void App::onRegistrationStateChanged(const std::shared_ptr<Core> &lc, const std::shared_ptr<ProxyConfig> &cfg, RegistrationState cstate, const std::string &message)
 {
-	qInfo() << "Registration state: " << message.c_str() << cfg->getIdentityAddress()->asString().c_str();
+	qInfo() << "Registration state changed [" << cfg->getIdentityAddress()->asString().c_str() << "]:" << message.c_str();
 }
 
 void App::onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, linphone::Call::State cstate, const std::string &message)
 {
-	qInfo() << "Call state" << message.c_str();
+	qInfo() << "Call state changed [" << call->getRemoteAddressAsString().c_str() << "]:" << message.c_str();
 	switch (cstate)
 	{
 	case Call::State::IncomingReceived:
