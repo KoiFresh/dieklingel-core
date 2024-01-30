@@ -45,6 +45,10 @@ App::App(QSettings &settings) : _settings(settings)
 	this->_core->enableVideoCapture(true);
 	this->_core->enableVideoDisplay(false);
 
+	// disable all beeping indication sounds
+	// https://github.com/BelledonneCommunications/linphone-desktop/issues/663#issuecomment-1396680741
+	this->_core->getConfig()->setBool("sound", "tone_indications", false);
+
 	auto nat = this->_core->createNatPolicy();
 	nat->setStunServer("stun.linphone.org");
 	nat->enableStun(true);
