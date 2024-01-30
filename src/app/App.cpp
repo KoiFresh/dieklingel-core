@@ -183,8 +183,15 @@ void App::onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const st
 		{
 			qWarning() << "Failed to accept an incomming call";
 		}
+		break;
 	}
-	break;
+	case Call::State::PausedByRemote:
+	case Call::State::Paused:
+		call->setSpeakerMuted(true);
+		break;
+	case Call::State::StreamsRunning:
+		call->setSpeakerMuted(false);
+		break;
 	default:
 		break;
 	}
