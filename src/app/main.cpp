@@ -12,8 +12,8 @@
 int main(int argc, char *argv[])
 {
     QSettings settings = QSettings("core.ini", QSettings::Format::IniFormat);
-    QGuiApplication gui(argc, argv);
     App app = App(settings);
+    QGuiApplication gui(argc, argv);
     QTimer timer = QTimer();
 
     QObject::connect(

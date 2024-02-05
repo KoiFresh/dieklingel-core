@@ -2,6 +2,16 @@
 
 App::App(QSettings &settings) : _settings(settings)
 {
+	// Environment setup
+	this->_settings.beginGroup("core.env");
+	for (const QString &key : this->_settings.childKeys())
+	{
+		qputenv(
+			key.toStdString().c_str(),
+			this->_settings.value(key).toByteArray());
+	}
+	this->_settings.endGroup();
+
 	// Linphone setup
 	auto factory = Factory::get();
 	auto path = QDir::currentPath().toStdString();

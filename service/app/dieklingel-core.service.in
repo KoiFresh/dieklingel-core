@@ -1,0 +1,11 @@
+[Unit]
+Description=dieKlingel Core
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/etc/dieklingel-core
+ExecStart=@EXE_PATH@
+
+[Install]
+WantedBy=mulit-user.target
