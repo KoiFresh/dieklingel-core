@@ -32,6 +32,8 @@ public slots:
 
 public:
 	Q_INVOKABLE void ring(QString number);
+	Q_INVOKABLE QString env(QString key);
+
 	void printCoreInformation();
 
 	QString getVersion();

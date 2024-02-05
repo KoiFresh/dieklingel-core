@@ -94,6 +94,11 @@ void App::ring(QString number)
 	this->_publish("dieklingel/core/event/on/ring", number);
 }
 
+QString App::env(QString key)
+{
+	return qgetenv(key.toStdString().c_str());
+}
+
 void App::_ring(QString number)
 {
 	if (this->_core->getCurrentCall() != nullptr)
