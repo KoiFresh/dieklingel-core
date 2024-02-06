@@ -39,6 +39,11 @@ QVariant CoreConfig::get(QString key, const QVariant &defaultValue)
 	return this->_settings->value(key, defaultValue);
 }
 
+QUrl CoreConfig::getCoreQmlEntry()
+{
+	return QUrl(this->get("core.qml/entry", QVariant("qml/main.qml")).toString());
+}
+
 bool CoreConfig::getCoreSipEnabled()
 {
 	return this->get("core.sip/enabled", QVariant(false)).toBool();

@@ -6,6 +6,7 @@
 #include <QLoggingCategory>
 #include <linphone++/linphone.hh>
 #include <QSettings>
+#include <QUrl>
 
 class CoreConfig
 {
@@ -19,12 +20,14 @@ private:
 	QSettings *_settings = nullptr;
 
 public:
-	CoreConfig(/* args */);
+	CoreConfig();
 	~CoreConfig();
 
 	QString getConfigFilePath();
 
 	QVariant get(QString key, const QVariant &defaultValue = QVariant());
+	QUrl getCoreQmlEntry();
+
 	bool getCoreSipEnabled();
 	QString getCoreSipAddress();
 	QString getCoreSipPassword();

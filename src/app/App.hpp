@@ -25,6 +25,7 @@ public:
 	explicit App(CoreConfig &settings);
 	~App();
 
+	CoreConfig &getConfig() const;
 	std::shared_ptr<Core> getCore() const;
 
 public slots:

@@ -9,6 +9,7 @@ Window {
     color: "#1c1f1e"
     minimumWidth: 480
     minimumHeight: 820
+    visibility: Window.FullScreen
 
     SwipeView {
         anchors {

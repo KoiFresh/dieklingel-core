@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", &app);
 
     QQmlApplicationEngine engine;
-    const QUrl url("qml/main.qml");
+    const QUrl url = conf.getCoreQmlEntry();
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,

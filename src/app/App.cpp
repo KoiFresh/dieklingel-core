@@ -121,6 +121,11 @@ void App::_publish(QString topic, QString message)
 	this->_mqtt->publish(topic, message);
 }
 
+CoreConfig &App::getConfig() const
+{
+	return this->_settings;
+}
+
 std::shared_ptr<Core> App::getCore() const
 {
 	return this->_core;
