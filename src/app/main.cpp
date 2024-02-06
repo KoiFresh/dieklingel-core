@@ -8,11 +8,12 @@
 #include <unistd.h>
 
 #include "App.hpp"
+#include "CoreConfig.hpp"
 
 int main(int argc, char *argv[])
 {
-    QSettings settings = QSettings("core.ini", QSettings::Format::IniFormat);
-    App app = App(settings);
+    CoreConfig conf;
+    App app = App(conf);
     QGuiApplication gui(argc, argv);
     QTimer timer = QTimer();
 

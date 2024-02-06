@@ -4,8 +4,8 @@
 #include <linphone++/linphone.hh>
 #include <QLoggingCategory>
 #include <QDir>
-#include <QSettings>
 
+#include "CoreConfig.hpp"
 #include "Mqtt.hpp"
 
 using namespace linphone;
@@ -16,13 +16,13 @@ class App : public QObject, public CoreListener
 private:
 	std::shared_ptr<Core> _core;
 	std::shared_ptr<Mqtt> _mqtt;
-	QSettings &_settings;
+	CoreConfig &_settings;
 
 	void _ring(QString number);
 	void _publish(QString topic, QString message);
 
 public:
-	explicit App(QSettings &settings);
+	explicit App(CoreConfig &settings);
 	~App();
 
 	std::shared_ptr<Core> getCore() const;

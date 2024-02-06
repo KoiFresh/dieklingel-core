@@ -26,6 +26,7 @@ add_executable(
 	dieklingel-core
     main.cpp
 	App.cpp
+	CoreConfig.cpp
 	Mqtt.cpp
 )
 

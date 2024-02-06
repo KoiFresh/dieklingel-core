@@ -1,16 +1,13 @@
 #include "App.hpp"
 
-App::App(QSettings &settings) : _settings(settings)
+App::App(CoreConfig &settings) : _settings(settings)
 {
 	// Environment setup
-	this->_settings.beginGroup("core.env");
-	for (const QString &key : this->_settings.childKeys())
+	QMap env = this->_settings.getCoreEnv();
+	for (auto entry = env.cbegin(), end = env.cend(); entry != end; entry++)
 	{
-		qputenv(
-			key.toStdString().c_str(),
-			this->_settings.value(key).toByteArray());
+		qputenv(entry.key().toLatin1(), entry.value().toLatin1());
 	}
-	this->_settings.endGroup();
 
 	// Linphone setup
 	auto factory = Factory::get();
@@ -20,8 +17,8 @@ App::App(QSettings &settings) : _settings(settings)
 	factory->setTopResourcesDir(path);
 
 	this->_core = factory->createCore("", "", nullptr);
-	auto address = factory->createAddress(this->_settings.value("core.sip/address").toString().toStdString());
-	auto info = factory->createAuthInfo(address->getUsername(), "", this->_settings.value("core.sip/password").toString().toStdString(), "", "", "");
+	auto address = factory->createAddress(this->_settings.getCoreSipAddress().toStdString());
+	auto info = factory->createAuthInfo(address->getUsername(), "", this->_settings.getCoreSipPassword().toStdString(), "", "", "");
 	this->_core->addAuthInfo(info);
 
 	auto proxy = this->_core->createProxyConfig();
@@ -67,12 +64,12 @@ App::App(QSettings &settings) : _settings(settings)
 	}
 
 	// MQTT Setup
-	auto mqttEnabled = this->_settings.value("core.mqtt/enabled").toBool();
+	auto mqttEnabled = this->_settings.getCoreMqttEnabled();
 	if (mqttEnabled)
 	{
-		_mqtt = std::shared_ptr<Mqtt>(new Mqtt(this->_settings.value("core.mqtt/address").toString()));
-		auto username = this->_settings.value("core.mqtt/username").toString();
-		auto password = this->_settings.value("core.mqtt/password").toString();
+		_mqtt = std::shared_ptr<Mqtt>(new Mqtt(this->_settings.getCoreMqttAddress()));
+		auto username = this->_settings.getCoreMqttUsername();
+		auto password = this->_settings.getCoreMqttPassword();
 		_mqtt->connect(username, password);
 	}
 }
@@ -135,6 +132,7 @@ void App::printCoreInformation()
 
 	info << "dieklingel core version: " << getVersion() << Qt::endl;
 	info << "liblinphone version: " << this->_core->getVersion().c_str() << Qt::endl;
+	info << "config file: " << this->_settings.getConfigFilePath() << Qt::endl;
 	info << "audio codecs:" << Qt::endl;
 	for (auto codec : this->_core->getAudioPayloadTypes())
 	{
