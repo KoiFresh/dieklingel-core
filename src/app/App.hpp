@@ -3,6 +3,8 @@
 
 #include <linphone++/linphone.hh>
 #include <QLoggingCategory>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 #include <QDir>
 
 #include "CoreConfig.hpp"
@@ -17,19 +19,20 @@ private:
 	std::shared_ptr<Core> _core;
 	std::shared_ptr<Mqtt> _mqtt;
 	CoreConfig &_settings;
+	std::shared_ptr<QCoreApplication> _application;
+	std::shared_ptr<QQmlApplicationEngine> _engine;
 
 	void _ring(QString number);
 	void _publish(QString topic, QString message);
+	void _iterate();
 
 public:
-	explicit App(CoreConfig &settings);
+	explicit App(int &argc, char **argv, CoreConfig &settings);
 	~App();
 
 	CoreConfig &getConfig() const;
 	std::shared_ptr<Core> getCore() const;
-
-public slots:
-	void iterate();
+	int exec();
 
 public:
 	Q_INVOKABLE void ring(QString number);

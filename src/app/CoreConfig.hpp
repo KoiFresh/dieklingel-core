@@ -26,6 +26,7 @@ public:
 	QString getConfigFilePath();
 
 	QVariant get(QString key, const QVariant &defaultValue = QVariant());
+	bool getCoreQmlEnabled();
 	QUrl getCoreQmlEntry();
 
 	bool getCoreSipEnabled();

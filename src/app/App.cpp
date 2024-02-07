@@ -1,12 +1,28 @@
 #include "App.hpp"
 
-App::App(CoreConfig &settings) : _settings(settings)
+App::App(int &argc, char **argv, CoreConfig &settings) : _settings(settings)
 {
 	// Environment setup
 	QMap env = this->_settings.getCoreEnv();
 	for (auto entry = env.cbegin(), end = env.cend(); entry != end; entry++)
 	{
 		qputenv(entry.key().toLatin1(), entry.value().toLatin1());
+	}
+
+	// Apllication setup
+	if (this->_settings.getCoreQmlEnabled())
+	{
+		this->_application = std::shared_ptr<QCoreApplication>(new QGuiApplication(argc, argv));
+		this->_engine = std::shared_ptr<QQmlApplicationEngine>(new QQmlApplicationEngine());
+
+		qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", this);
+
+		const QUrl url = this->_settings.getCoreQmlEntry();
+		this->_engine->load(url);
+	}
+	else
+	{
+		this->_application = std::shared_ptr<QCoreApplication>(new QCoreApplication(argc, argv));
 	}
 
 	// Linphone setup
@@ -78,7 +94,7 @@ App::~App()
 {
 }
 
-void App::iterate()
+void App::_iterate()
 {
 	this->_core->iterate();
 }
@@ -129,6 +145,17 @@ CoreConfig &App::getConfig() const
 std::shared_ptr<Core> App::getCore() const
 {
 	return this->_core;
+}
+
+int App::exec()
+{
+	QTimer timer = QTimer();
+	connect(&timer, &QTimer::timeout, this, &App::_iterate);
+	timer.start(0);
+
+	int code = this->_application->exec();
+	this->_core->stop();
+	return code;
 }
 
 void App::printCoreInformation()

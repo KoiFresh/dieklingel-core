@@ -39,6 +39,11 @@ QVariant CoreConfig::get(QString key, const QVariant &defaultValue)
 	return this->_settings->value(key, defaultValue);
 }
 
+bool CoreConfig::getCoreQmlEnabled()
+{
+	return this->get("core.qml/enabled", QVariant(false)).toBool();
+}
+
 QUrl CoreConfig::getCoreQmlEntry()
 {
 	return QUrl(this->get("core.qml/entry", QVariant("qml/main.qml")).toString());
