@@ -178,12 +178,22 @@ void App::printCoreInformation()
 	info << "audio devices" << Qt::endl;
 	for (auto device : this->_core->getSoundDevicesList())
 	{
-		info << "\t- " << device.c_str() << Qt::endl;
+		info << "\t- " << device.c_str();
+		if (device == this->_core->getPlaybackDevice())
+		{
+			info << " (selected)";
+		}
+		info << Qt::endl;
 	}
 	info << "video devices" << Qt::endl;
 	for (auto device : this->_core->getVideoDevicesList())
 	{
-		info << "\t- " << device.c_str() << Qt::endl;
+		info << "\t- " << device.c_str();
+		if (device == this->_core->getVideoDevice())
+		{
+			info << " (selected)";
+		}
+		info << Qt::endl;
 	}
 	info << "directories:" << Qt::endl;
 	info << "\t- config: " << Factory::get()->getConfigDir(nullptr).c_str() << Qt::endl;
