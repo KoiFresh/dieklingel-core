@@ -1,18 +1,39 @@
 #include "App.hpp"
 
-App::App(int &argc, char **argv, CoreConfig &settings) : _settings(settings)
+App::App(int &argc, char **argv, CoreConfig &settings) : _argc(argc), _argv(argv), _settings(settings)
 {
-	// Environment setup
+	_initEnv();
+	if (this->_settings.getCoreSipEnabled())
+	{
+		_initCore();
+	}
+	if (this->_settings.getCoreMqttEnabled())
+	{
+		_initMqtt();
+	}
+	_initApplication();
+
+	printCoreInformation();
+}
+
+App::~App()
+{
+}
+
+void App::_initEnv()
+{
 	QMap env = this->_settings.getCoreEnv();
 	for (auto entry = env.cbegin(), end = env.cend(); entry != end; entry++)
 	{
 		qputenv(entry.key().toLatin1(), entry.value().toLatin1());
 	}
+}
 
-	// Apllication setup
+void App::_initApplication()
+{
 	if (this->_settings.getCoreQmlEnabled())
 	{
-		this->_application = std::shared_ptr<QCoreApplication>(new QGuiApplication(argc, argv));
+		this->_application = std::shared_ptr<QCoreApplication>(new QGuiApplication(this->_argc, this->_argv));
 		this->_engine = std::shared_ptr<QQmlApplicationEngine>(new QQmlApplicationEngine());
 
 		qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", this);
@@ -22,10 +43,12 @@ App::App(int &argc, char **argv, CoreConfig &settings) : _settings(settings)
 	}
 	else
 	{
-		this->_application = std::shared_ptr<QCoreApplication>(new QCoreApplication(argc, argv));
+		this->_application = std::shared_ptr<QCoreApplication>(new QCoreApplication(this->_argc, this->_argv));
 	}
+}
 
-	// Linphone setup
+void App::_initCore()
+{
 	auto factory = Factory::get();
 	auto path = QDir::currentPath().toStdString();
 	factory->setDataResourcesDir(path);
@@ -70,28 +93,20 @@ App::App(int &argc, char **argv, CoreConfig &settings) : _settings(settings)
 	auto self = std::shared_ptr<CoreListener>(this);
 	this->_core->addListener(self);
 
-	printCoreInformation();
-
 	auto state = this->_core->start();
 	if (state != 0)
 	{
 		qCritical() << "the linphone core could not be started successfully!";
 		exit(state);
 	}
-
-	// MQTT Setup
-	auto mqttEnabled = this->_settings.getCoreMqttEnabled();
-	if (mqttEnabled)
-	{
-		_mqtt = std::shared_ptr<Mqtt>(new Mqtt(this->_settings.getCoreMqttAddress()));
-		auto username = this->_settings.getCoreMqttUsername();
-		auto password = this->_settings.getCoreMqttPassword();
-		_mqtt->connect(username, password);
-	}
 }
 
-App::~App()
+void App::_initMqtt()
 {
+	_mqtt = std::shared_ptr<Mqtt>(new Mqtt(this->_settings.getCoreMqttAddress()));
+	auto username = this->_settings.getCoreMqttUsername();
+	auto password = this->_settings.getCoreMqttPassword();
+	_mqtt->connect(username, password);
 }
 
 void App::_iterate()
@@ -114,6 +129,11 @@ QString App::env(QString key)
 
 void App::_ring(QString number)
 {
+	if (this->_core == nullptr)
+	{
+		return;
+	}
+
 	if (this->_core->getCurrentCall() != nullptr)
 	{
 		qInfo() << "there is already an ongoing call, we will not invite" << number;
@@ -137,24 +157,21 @@ void App::_publish(QString topic, QString message)
 	this->_mqtt->publish(topic, message);
 }
 
-CoreConfig &App::getConfig() const
-{
-	return this->_settings;
-}
-
-std::shared_ptr<Core> App::getCore() const
-{
-	return this->_core;
-}
-
 int App::exec()
 {
 	QTimer timer = QTimer();
-	connect(&timer, &QTimer::timeout, this, &App::_iterate);
-	timer.start(0);
+	if (this->_core != nullptr)
+	{
+		connect(&timer, &QTimer::timeout, this, &App::_iterate);
+		timer.start(0);
+	}
 
 	int code = this->_application->exec();
-	this->_core->stop();
+
+	if (this->_core != nullptr)
+	{
+		this->_core->stop();
+	}
 	return code;
 }
 
@@ -178,50 +195,54 @@ void App::printCoreInformation()
 		info << "\tmqtt address: " << this->_settings.getCoreMqttAddress() << Qt::endl;
 	}
 
-	info << "audio codecs:" << Qt::endl;
-	for (auto codec : this->_core->getAudioPayloadTypes())
+	info << "sip enabled:" << (this->_settings.getCoreSipEnabled() ? "true" : "false") << Qt::endl;
+	if (this->_settings.getCoreSipEnabled())
 	{
-		info << "\t- " << codec->getDescription().c_str() << Qt::endl;
-	}
-
-	info << "video codecs:" << Qt::endl;
-	for (auto codec : this->_core->getVideoPayloadTypes())
-	{
-		info << "\t- " << codec->getDescription().c_str() << Qt::endl;
-	}
-
-	info << "audio devices" << Qt::endl;
-	for (auto device : this->_core->getSoundDevicesList())
-	{
-		info << "\t- " << device.c_str();
-		if (device == this->_core->getPlaybackDevice())
+		info << "\taudio codecs:" << Qt::endl;
+		for (auto codec : this->_core->getAudioPayloadTypes())
 		{
-			info << " (selected)";
+			info << "\t\t- " << codec->getDescription().c_str() << Qt::endl;
 		}
-		info << Qt::endl;
-	}
 
-	info << "video devices:" << Qt::endl;
-	for (auto device : this->_core->getVideoDevicesList())
-	{
-		info << "\t- " << device.c_str();
-		if (device == this->_core->getVideoDevice())
+		info << "\tvideo codecs:" << Qt::endl;
+		for (auto codec : this->_core->getVideoPayloadTypes())
 		{
-			info << " (selected)";
+			info << "\t\t- " << codec->getDescription().c_str() << Qt::endl;
 		}
-		info << Qt::endl;
-	}
 
-	info << "directories:" << Qt::endl;
-	info << "\t- config: " << Factory::get()->getConfigDir(nullptr).c_str() << Qt::endl;
-	info << "\t- data: " << Factory::get()->getDataDir(nullptr).c_str() << Qt::endl;
-	info << "\t- data resources: " << Factory::get()->getDataResourcesDir().c_str() << Qt::endl;
-	info << "\t- download: " << Factory::get()->getDownloadDir(nullptr).c_str() << Qt::endl;
-	info << "\t- image resources: " << Factory::get()->getImageResourcesDir().c_str() << Qt::endl;
-	info << "\t- mediastreamer plugins: " << Factory::get()->getMspluginsDir().c_str() << Qt::endl;
-	info << "\t- ring resources: " << Factory::get()->getRingResourcesDir().c_str() << Qt::endl;
-	info << "\t- sound resources: " << Factory::get()->getSoundResourcesDir().c_str() << Qt::endl;
-	info << "\t- top resources: " << Factory::get()->getTopResourcesDir().c_str() << Qt::endl;
+		info << "\taudio devices:" << Qt::endl;
+		for (auto device : this->_core->getSoundDevicesList())
+		{
+			info << "\t\t- " << device.c_str();
+			if (device == this->_core->getPlaybackDevice())
+			{
+				info << " (selected)";
+			}
+			info << Qt::endl;
+		}
+
+		info << "\tvideo devices:" << Qt::endl;
+		for (auto device : this->_core->getVideoDevicesList())
+		{
+			info << "\t\t- " << device.c_str();
+			if (device == this->_core->getVideoDevice())
+			{
+				info << " (selected)";
+			}
+			info << Qt::endl;
+		}
+
+		info << "\tdirectories:" << Qt::endl;
+		info << "\t\t- config: " << Factory::get()->getConfigDir(nullptr).c_str() << Qt::endl;
+		info << "\t\t- data: " << Factory::get()->getDataDir(nullptr).c_str() << Qt::endl;
+		info << "\t\t- data resources: " << Factory::get()->getDataResourcesDir().c_str() << Qt::endl;
+		info << "\t\t- download: " << Factory::get()->getDownloadDir(nullptr).c_str() << Qt::endl;
+		info << "\t\t- image resources: " << Factory::get()->getImageResourcesDir().c_str() << Qt::endl;
+		info << "\t\t- mediastreamer plugins: " << Factory::get()->getMspluginsDir().c_str() << Qt::endl;
+		info << "\t\t- ring resources: " << Factory::get()->getRingResourcesDir().c_str() << Qt::endl;
+		info << "\t\t- sound resources: " << Factory::get()->getSoundResourcesDir().c_str() << Qt::endl;
+		info << "\t\t- top resources: " << Factory::get()->getTopResourcesDir().c_str() << Qt::endl;
+	}
 }
 
 QString App::getVersion()
