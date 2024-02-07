@@ -9,4 +9,4 @@ WorkingDirectory=/etc/dieklingel-core
 ExecStart=@EXE_PATH@
 
 [Install]
-WantedBy=mulit-user.target
+WantedBy=default.target

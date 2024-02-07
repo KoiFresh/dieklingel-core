@@ -1,0 +1,79 @@
+; core.ini - the configuration file to tell the core how to behave
+;
+; This file is loaded by the core once on startup and used to configure the
+; behaviour of the core.
+;
+
+;
+; The "core.qml" category is used to define the graphical section also called
+; "kiosk" of the core.
+;
+[core.qml]
+
+; Tells the core if the kiosk should be enabled or not.
+;
+; Default: false
+enabled=false
+
+; If the kiosk is enabled the core looks for an qml file as entry point
+; defining the graphical kiosk interface. The path could be absolute or
+; relative from the working directory of the core.
+;
+; Default: qml/main.qml
+entry=qml/main.qml
+
+;
+; The "core.sip" category is used to define the SIP integration of the core.
+;
+[core.sip]
+
+; Tells the core if SIP should be used or not.
+;
+; Default: false
+enabled=false
+
+; If SIP is enabled the core needs a single SIP account to register on a SIP
+; Proxy. The username and the proxy is set in the address in the format
+; sip:<username>@<proxy domain or ip>[:<port>].
+;
+; Default:
+address=sip:user2@192.168.0.92
+
+; The password which sohuld be used for the user set in the core.sip/address.
+;
+; Default:
+password=secure_password
+
+;
+; The "core.mqtt" category is used to define the mqtt intergration of the core.
+;
+[core.mqtt]
+
+; Tells the core if mqtt should be used or not.
+;
+; Default: false
+enabled=false
+
+; If mqtt is enabled the core needs a broker to connect to. The broker is set
+; in the address in the format <broker domain or ip>:<port>.
+;
+; Default:
+address=my-mqtt-broker.com:1883
+
+; The username used for the mqtt broker.
+;
+; Default:
+username=mqtt
+
+; The password used for the mqtt broker.
+;
+; Default:
+password=mqtt
+
+;
+; The "core.env" section is used to set environment variables. The core does set the variables immediatly after starting and loading the config, before the main (graphical) application is started. The variables could be used for example to set the platform for the underlaying qt-framework or to set the wayland display. Because the core is already launched when the variables are set the "core.env" category could not be used to set variables like LD_PRELOAD. Furthermore the core provides a function to read environment variables from qml. So thi section could be used to define e.g. an qml text.
+;
+[core.env]
+
+; see: https://doc.qt.io/qt-5/qguiapplication.html#platformName-prop
+QT_QPA_PLATFORM=wayland
