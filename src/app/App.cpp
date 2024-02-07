@@ -165,16 +165,31 @@ void App::printCoreInformation()
 	info << "dieklingel core version: " << getVersion() << Qt::endl;
 	info << "liblinphone version: " << this->_core->getVersion().c_str() << Qt::endl;
 	info << "config file: " << this->_settings.getConfigFilePath() << Qt::endl;
+
+	info << "qml enabled: " << (this->_settings.getCoreQmlEnabled() ? "true" : "false") << Qt::endl;
+	if (this->_settings.getCoreQmlEnabled())
+	{
+		info << "\tentry file: " << this->_settings.getCoreQmlEntry().toString() << Qt::endl;
+	}
+
+	info << "mqtt enabled: " << (this->_settings.getCoreMqttEnabled() ? "true" : "false") << Qt::endl;
+	if (this->_settings.getCoreMqttEnabled())
+	{
+		info << "\tmqtt address: " << this->_settings.getCoreMqttAddress() << Qt::endl;
+	}
+
 	info << "audio codecs:" << Qt::endl;
 	for (auto codec : this->_core->getAudioPayloadTypes())
 	{
 		info << "\t- " << codec->getDescription().c_str() << Qt::endl;
 	}
+
 	info << "video codecs:" << Qt::endl;
 	for (auto codec : this->_core->getVideoPayloadTypes())
 	{
 		info << "\t- " << codec->getDescription().c_str() << Qt::endl;
 	}
+
 	info << "audio devices" << Qt::endl;
 	for (auto device : this->_core->getSoundDevicesList())
 	{
@@ -185,7 +200,8 @@ void App::printCoreInformation()
 		}
 		info << Qt::endl;
 	}
-	info << "video devices" << Qt::endl;
+
+	info << "video devices:" << Qt::endl;
 	for (auto device : this->_core->getVideoDevicesList())
 	{
 		info << "\t- " << device.c_str();
@@ -195,6 +211,7 @@ void App::printCoreInformation()
 		}
 		info << Qt::endl;
 	}
+
 	info << "directories:" << Qt::endl;
 	info << "\t- config: " << Factory::get()->getConfigDir(nullptr).c_str() << Qt::endl;
 	info << "\t- data: " << Factory::get()->getDataDir(nullptr).c_str() << Qt::endl;
