@@ -3,7 +3,7 @@
 Mqtt::Mqtt(QString address)
 {
 	this->_address = address;
-	this->_mqtt = std::shared_ptr<mqtt::async_client>(new mqtt::async_client(address.toStdString(), "core", nullptr));
+	this->_mqtt = std::make_shared<mqtt::async_client>(address.toStdString(), "core", nullptr);
 	this->_mqtt->set_callback(*this);
 }
 

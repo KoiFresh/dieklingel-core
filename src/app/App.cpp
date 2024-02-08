@@ -33,17 +33,21 @@ void App::_initApplication()
 {
 	if (this->_settings.getCoreQmlEnabled())
 	{
-		this->_application = std::shared_ptr<QCoreApplication>(new QGuiApplication(this->_argc, this->_argv));
-		this->_engine = std::shared_ptr<QQmlApplicationEngine>(new QQmlApplicationEngine());
+		this->_application = std::make_shared<QGuiApplication>(this->_argc, this->_argv);
+		this->_engine = std::make_shared<QQmlApplicationEngine>();
+		this->_filter = std::make_shared<InactivityDetector>();
 
 		qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", this);
 
 		const QUrl url = this->_settings.getCoreQmlEntry();
 		this->_engine->load(url);
+
+		this->_application->installEventFilter(this->_filter.get());
+		connect(this->_filter.get(), &InactivityDetector::inactivity, this, &App::inactivity);
 	}
 	else
 	{
-		this->_application = std::shared_ptr<QCoreApplication>(new QCoreApplication(this->_argc, this->_argv));
+		this->_application = std::make_shared<QCoreApplication>(this->_argc, this->_argv);
 	}
 }
 
@@ -103,7 +107,7 @@ void App::_initCore()
 
 void App::_initMqtt()
 {
-	_mqtt = std::shared_ptr<Mqtt>(new Mqtt(this->_settings.getCoreMqttAddress()));
+	_mqtt = std::make_shared<Mqtt>(this->_settings.getCoreMqttAddress());
 	auto username = this->_settings.getCoreMqttUsername();
 	auto password = this->_settings.getCoreMqttPassword();
 	_mqtt->connect(username, password);
@@ -119,7 +123,17 @@ void App::ring(QString number)
 	qInfo() << "emit ring event";
 
 	this->_ring(number);
-	this->_publish("dieklingel/core/event/on/ring", number);
+	this->publish("dieklingel/core/event/on/ring", number);
+}
+
+void App::publish(QString topic, QString message)
+{
+	if (this->_mqtt == nullptr)
+	{
+		return;
+	}
+
+	this->_mqtt->publish(topic, message);
 }
 
 QString App::env(QString key)
@@ -145,16 +159,6 @@ void App::_ring(QString number)
 	params->setMediaEncryption(MediaEncryption::SRTP);
 
 	this->_core->inviteWithParams(number.toStdString(), params);
-}
-
-void App::_publish(QString topic, QString message)
-{
-	if (this->_mqtt == nullptr)
-	{
-		return;
-	}
-
-	this->_mqtt->publish(topic, message);
 }
 
 int App::exec()
@@ -278,6 +282,11 @@ void App::onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const st
 		}
 		break;
 	}
+	case Call::State::OutgoingEarlyMedia:
+		// mute speaker while early media, in order to suppress the remote
+		// ringing sound played by the pbx (like fritzbox)
+		call->setSpeakerMuted(true);
+		break;
 	case Call::State::PausedByRemote:
 	case Call::State::Paused:
 		call->setSpeakerMuted(true);
