@@ -123,7 +123,17 @@ void App::ring(QString number)
 	qInfo() << "emit ring event";
 
 	this->_ring(number);
-	this->_publish("dieklingel/core/event/on/ring", number);
+	this->publish("dieklingel/core/event/on/ring", number);
+}
+
+void App::publish(QString topic, QString message)
+{
+	if (this->_mqtt == nullptr)
+	{
+		return;
+	}
+
+	this->_mqtt->publish(topic, message);
 }
 
 QString App::env(QString key)
@@ -149,16 +159,6 @@ void App::_ring(QString number)
 	params->setMediaEncryption(MediaEncryption::SRTP);
 
 	this->_core->inviteWithParams(number.toStdString(), params);
-}
-
-void App::_publish(QString topic, QString message)
-{
-	if (this->_mqtt == nullptr)
-	{
-		return;
-	}
-
-	this->_mqtt->publish(topic, message);
 }
 
 int App::exec()

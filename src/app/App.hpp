@@ -32,7 +32,6 @@ private:
 	void _initMqtt();
 
 	void _ring(QString number);
-	void _publish(QString topic, QString message);
 	void _iterate();
 
 public:
@@ -43,6 +42,7 @@ public:
 
 	int exec();
 	Q_INVOKABLE void ring(QString number);
+	Q_INVOKABLE void publish(QString topic, QString message);
 	Q_INVOKABLE QString env(QString key);
 
 	void printCoreInformation();

@@ -4,6 +4,7 @@ import QtQuick.Window 2.12
 import com.dieklingel 1.0
 
 import "signs" as Signs
+import "views" as Views
 
 Window {
     visible: true
@@ -11,7 +12,7 @@ Window {
     color: "#1c1f1e"
     minimumWidth: 480
     minimumHeight: 820
-    //visibility: Window.FullScreen
+    visibility: Window.FullScreen
 
     Connections {
         target: App
@@ -27,5 +28,6 @@ Window {
         }
 
         Signs.Sign {}
+        Views.Light {}
     }
 }
