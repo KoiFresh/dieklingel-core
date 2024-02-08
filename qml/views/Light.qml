@@ -1,6 +1,5 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Controls.Styles 1.4
 import com.dieklingel 1.0
 
 Item {
@@ -32,7 +31,7 @@ Item {
 			}
 
 			onPressed: {
-				App.publish("core/external/light", "on")
+				App.publish("dieklingel/core/io/light", "on")
 			}
 		}
 	}
