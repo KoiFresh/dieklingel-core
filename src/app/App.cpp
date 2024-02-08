@@ -282,6 +282,11 @@ void App::onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const st
 		}
 		break;
 	}
+	case Call::State::OutgoingEarlyMedia:
+		// mute speaker while early media, in order to suppress the remote
+		// ringing sound played by the pbx (like fritzbox)
+		call->setSpeakerMuted(true);
+		break;
 	case Call::State::PausedByRemote:
 	case Call::State::Paused:
 		call->setSpeakerMuted(true);
