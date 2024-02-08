@@ -5,7 +5,8 @@ Description=dieKlingel Core
 Type=simple
 Restart=always
 WorkingDirectory=/etc/dieklingel-core
+@ENVIRONMENT_LIBCAMERA@
 ExecStart=@EXE_PATH@
 
 [Install]
-WantedBy=mulit-user.target
+WantedBy=default.target
