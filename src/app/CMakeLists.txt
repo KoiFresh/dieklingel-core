@@ -27,6 +27,7 @@ add_executable(
     main.cpp
 	App.cpp
 	CoreConfig.cpp
+	InactivityDetector.cpp
 	Mqtt.cpp
 )
 

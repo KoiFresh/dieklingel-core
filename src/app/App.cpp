@@ -33,17 +33,21 @@ void App::_initApplication()
 {
 	if (this->_settings.getCoreQmlEnabled())
 	{
-		this->_application = std::shared_ptr<QCoreApplication>(new QGuiApplication(this->_argc, this->_argv));
-		this->_engine = std::shared_ptr<QQmlApplicationEngine>(new QQmlApplicationEngine());
+		this->_application = std::make_shared<QGuiApplication>(this->_argc, this->_argv);
+		this->_engine = std::make_shared<QQmlApplicationEngine>();
+		this->_filter = std::make_shared<InactivityDetector>();
 
 		qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", this);
 
 		const QUrl url = this->_settings.getCoreQmlEntry();
 		this->_engine->load(url);
+
+		this->_application->installEventFilter(this->_filter.get());
+		connect(this->_filter.get(), &InactivityDetector::inactivity, this, &App::inactivity);
 	}
 	else
 	{
-		this->_application = std::shared_ptr<QCoreApplication>(new QCoreApplication(this->_argc, this->_argv));
+		this->_application = std::make_shared<QCoreApplication>(this->_argc, this->_argv);
 	}
 }
 
@@ -103,7 +107,7 @@ void App::_initCore()
 
 void App::_initMqtt()
 {
-	_mqtt = std::shared_ptr<Mqtt>(new Mqtt(this->_settings.getCoreMqttAddress()));
+	_mqtt = std::make_shared<Mqtt>(this->_settings.getCoreMqttAddress());
 	auto username = this->_settings.getCoreMqttUsername();
 	auto password = this->_settings.getCoreMqttPassword();
 	_mqtt->connect(username, password);

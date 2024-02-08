@@ -8,6 +8,7 @@
 #include <QDir>
 
 #include "CoreConfig.hpp"
+#include "InactivityDetector.hpp"
 #include "Mqtt.hpp"
 
 using namespace linphone;
@@ -23,6 +24,7 @@ private:
 	std::shared_ptr<Mqtt> _mqtt;
 	std::shared_ptr<QCoreApplication> _application;
 	std::shared_ptr<QQmlApplicationEngine> _engine;
+	std::shared_ptr<InactivityDetector> _filter;
 
 	void _initEnv();
 	void _initApplication();
@@ -45,6 +47,10 @@ public:
 
 	void printCoreInformation();
 
+signals:
+	void inactivity();
+
+protected:
 	void onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message) override;
 	void onRegistrationStateChanged(const std::shared_ptr<Core> &lc, const std::shared_ptr<ProxyConfig> &cfg, RegistrationState cstate, const std::string &message) override;
 	void onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, linphone::Call::State cstate, const std::string &message) override;
