@@ -29,5 +29,6 @@ Window {
 
         Signs.Sign {}
         Views.Light {}
+        Views.Passcode {}
     }
 }
