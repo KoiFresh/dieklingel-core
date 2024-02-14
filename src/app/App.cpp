@@ -107,10 +107,15 @@ void App::_initCore()
 
 void App::_initMqtt()
 {
-	_mqtt = std::make_shared<Mqtt>(this->_settings.getCoreMqttAddress());
+	this->_mqtt = std::make_shared<Mqtt>(this->_settings.getCoreMqttAddress());
 	auto username = this->_settings.getCoreMqttUsername();
 	auto password = this->_settings.getCoreMqttPassword();
-	_mqtt->connect(username, password);
+	this->_mqtt->connect(username, password);
+	for (auto topic : this->_settings.getCoreMqttSubscriptions())
+	{
+		this->_mqtt->subscribe(topic);
+	}
+	connect(this->_mqtt.get(), &Mqtt::messageReceived, this, &App::messageReceived);
 }
 
 void App::_iterate()

@@ -45,6 +45,10 @@ void Mqtt::connect(QString username, QString password)
 						"connected",
 						mqtt::GRANTED_QOS_2,
 						true);
+					for (auto topic : this->_subscriptions)
+					{
+						this->_mqtt->subscribe(topic.toStdString(), mqtt::GRANTED_QOS_2);
+					}
 					return;
 				}
 				catch (mqtt::exception e)
@@ -60,6 +64,15 @@ void Mqtt::connect(QString username, QString password)
 				}
 			}
 		});
+}
+
+void Mqtt::subscribe(QString topic)
+{
+	this->_subscriptions.append(topic);
+	if (this->_mqtt->is_connected())
+	{
+		this->_mqtt->subscribe(topic.toStdString().c_str(), mqtt::GRANTED_QOS_2);
+	}
 }
 
 void Mqtt::publish(QString topic, QString message)
@@ -80,4 +93,9 @@ void Mqtt::connection_lost(const std::string &cause)
 {
 	qDebug() << "The connection to the mqtt broker was lost";
 	this->connect(this->_username, this->_password);
+}
+
+void Mqtt::message_arrived(mqtt::const_message_ptr message)
+{
+	this->messageReceived(QString(message->get_topic().c_str()), QString(message->get_payload_str().c_str()));
 }
