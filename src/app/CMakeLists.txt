@@ -20,6 +20,11 @@ find_package(
 
 find_package(PahoMqttCpp REQUIRED)
 
+find_library(LIBLINPHONE_LIBRARY NAMES liblinphone++.so)
+if(NOT LIBLINPHONE_LIBRARY)
+	message(FATAL_ERROR "liblinphone library not found. Install apt install liblinphone-dev")
+endif()
+
 add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 
 add_executable(
@@ -34,7 +39,7 @@ add_executable(
 target_link_libraries(
 	dieklingel-core
 	PRIVATE
-	linphone++
+	${LIBLINPHONE_LIBRARY}
 	paho-mqtt3as
 	paho-mqttpp3
 	Qt5::Core

@@ -37,6 +37,7 @@ public:
 	QString getCoreMqttAddress();
 	QString getCoreMqttUsername();
 	QString getCoreMqttPassword();
+	QStringList getCoreMqttSubscriptions();
 
 	QMap<QString, QString> getCoreEnv();
 };

@@ -70,6 +70,11 @@ username=mqtt
 ; Default:
 password=mqtt
 
+; A list of all mqtt topics which the core should subscribe to.
+;
+; Default:
+subscriptions=home/light/main/door, home/light/back/door
+
 ;
 ; The "core.env" section is used to set environment variables. The core does set the variables immediatly after starting and loading the config, before the main (graphical) application is started. The variables could be used for example to set the platform for the underlaying qt-framework or to set the wayland display. Because the core is already launched when the variables are set the "core.env" category could not be used to set variables like LD_PRELOAD. Furthermore the core provides a function to read environment variables from qml. So thi section could be used to define e.g. an qml text.
 ;

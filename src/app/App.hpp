@@ -49,6 +49,7 @@ public:
 
 signals:
 	void inactivity();
+	void messageReceived(QString topic, QString message);
 
 protected:
 	void onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message) override;

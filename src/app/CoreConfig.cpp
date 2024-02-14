@@ -84,6 +84,11 @@ QString CoreConfig::getCoreMqttPassword()
 	return this->get("core.mqtt/password").toString();
 }
 
+QStringList CoreConfig::getCoreMqttSubscriptions()
+{
+	return this->get("core.mqtt/subscriptions").toStringList();
+}
+
 QMap<QString, QString> CoreConfig::getCoreEnv()
 {
 	QMap<QString, QString> env;
