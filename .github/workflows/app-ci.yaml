@@ -20,6 +20,7 @@ jobs:
             libssl-dev \
             qtbase5-dev \
             qtdeclarative5-dev \
+            qtquickcontrols2-5-dev \
             liblinphone-dev \
             libpaho-mqtt-dev \
             libpaho-mqttpp-dev
