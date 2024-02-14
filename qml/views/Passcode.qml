@@ -11,7 +11,7 @@ Item {
 			opacity: 1.0 - Math.abs(Tumbler.displacement) / (Tumbler.tumbler.visibleItemCount / 2)
 			horizontalAlignment: Text.AlignHCenter
 			verticalAlignment: Text.AlignVCenter
-			font.pointSize: 16
+			font.pointSize: 24
 			color: "white"
 		}
 	}
@@ -37,9 +37,9 @@ Item {
 		randomize();
 	}
 
-	Column {
+	Item {
 		anchors {
-			centerIn: parent
+			fill: parent
 		}
 		
 		Row {
@@ -50,26 +50,38 @@ Item {
 
 			Tumbler {
 				model: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F"]
+				height: parent.parent.height * 2/5
+				width: parent.parent.width / 6
 				delegate: tumblerDelegate
 			}
 			Tumbler {
 				model: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F"]
+				height: parent.parent.height * 2/5
+				width: parent.parent.width / 6
 				delegate: tumblerDelegate
 			}
 			Tumbler {
 				model: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F"]
+				height: parent.parent.height * 2/5
+				width: parent.parent.width / 6
 				delegate: tumblerDelegate
 			}
 			Tumbler {
 				model: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F"]
+				height: parent.parent.height * 2/5
+				width: parent.parent.width / 6
 				delegate: tumblerDelegate
 			}
 			Tumbler {
 				model: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F"]
+				height: parent.parent.height * 2/5
+				width: parent.parent.width / 6
 				delegate: tumblerDelegate
 			}
 			Tumbler {
 				model: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F"]
+				height: parent.parent.height * 2/5
+				width: parent.parent.width / 6
 				delegate: tumblerDelegate
 			}
 		}
@@ -82,7 +94,8 @@ Item {
 			background: Rectangle {
 				color: "transparent"
 			}
-			padding: 60
+			topPadding: 100
+			rightPadding: 200
 
 			onPressed: {
 				let pin = getPasscode();
