@@ -1,0 +1,31 @@
+name: "Build for Linux (Ubuntu)"
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Install build dependencies for core
+        run: |
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            libssl-dev \
+            qtbase5-dev \
+            qtdeclarative5-dev \
+            qtquickcontrols2-5-dev \
+            liblinphone-dev \
+            libpaho-mqtt-dev \
+            libpaho-mqttpp-dev
+
+      - name: Build the core
+        run: |
+          cmake -B build
+          make -C build
