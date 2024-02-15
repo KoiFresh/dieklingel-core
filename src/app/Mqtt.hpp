@@ -5,6 +5,7 @@
 #include <QLoggingCategory>
 #include <QtConcurrent>
 #include <QString>
+#include <QUuid>
 
 class Mqtt : public QObject, public mqtt::callback
 {

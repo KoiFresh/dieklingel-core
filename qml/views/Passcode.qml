@@ -86,33 +86,48 @@ Item {
 			}
 		}
 
-		Button {
+		Row {
+			height: 120
+			spacing: 100
 			anchors {
-				right: passcode.right	
-				top: passcode.bottom
-			}
-			background: Rectangle {
-				color: "transparent"
-			}
-			topPadding: 100
-			rightPadding: 200
-
-			onPressed: {
-				let pin = getPasscode();
-				randomize();
-				if(pin === App.env("QML_PASSCODE")) {
-					console.log("TODO: unlock the door");
-				}
+				bottom: parent.bottom
+				horizontalCenter: parent.horizontalCenter
 			}
 
-			Image {
-				source: "key.png"
-				width: 80
-				height: 80
+			LightButton {
 				anchors {
-					centerIn: parent
+					top: parent.top
 				}
-				fillMode: Image.PreserveAspectFit
+			}
+
+			Button {
+				width: 100
+				height: 100
+
+				background: Rectangle {
+					color:  parent.pressed ? "#1EFFFFFF" : "transparent"
+					border.width: 1
+					border.color: "white"
+					radius: 15
+				}
+
+				onReleased: {
+					let pin = getPasscode();
+					randomize();
+					if(pin === App.env("QML_PASSCODE")) {
+						console.log("TODO: unlock the door");
+					}
+				}
+
+				Image {
+					source: "key.png"
+					width: 60
+					height: 60
+					anchors {
+						centerIn: parent
+					}
+					fillMode: Image.PreserveAspectFit
+				}
 			}
 		}
 	}

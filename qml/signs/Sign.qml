@@ -47,8 +47,10 @@ Item {
             width: 460
             height: 120
             onPressed: {
-                bell.play();
                 App.ring("sip:koifresh@sip.linphone.org")
+            }
+            onReleased: {
+                bell.play();
             }
 
             Rectangle {
