@@ -34,7 +34,7 @@ Button {
 		}
 	}
 
-	onPressed: {
+	onReleased: {
 		App.publish("home/light/main/door", light.isOn ? "off" : "on")
 	}
 }

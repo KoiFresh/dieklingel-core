@@ -111,7 +111,7 @@ Item {
 					radius: 15
 				}
 
-				onPressed: {
+				onReleased: {
 					let pin = getPasscode();
 					randomize();
 					if(pin === App.env("QML_PASSCODE")) {
