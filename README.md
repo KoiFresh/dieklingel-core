@@ -40,6 +40,13 @@ an mqtt broker, and publish events on topics, so that other smart devices could
 react on these. Also states like "online" and "offline" could be gathered via
 mqtt.
 
+### 🕹️ GPIO
+
+Do you prefer a physical button instead of the onscreen button? Don't worry,
+use the gpio pins of your Raspberry Pi as input to react on a button press. An
+integration which gets extremle powerfull in combination with the Kiosk, just
+use QML to script the actions on an input event.
+
 ## 🚦 Run the Project
 
 To be able to run the project you have to build it. Start by cloning this repository.
