@@ -44,6 +44,20 @@ address=sip:user2@192.168.0.92
 ; Default:
 password=secure_password
 
+; Sets the devicename for the preffered audio device used for capturing audio.
+; This is useful for e.g. if you use the pipewire echo-cancel module.
+; See: https://docs.pipewire.org/page_module_echo_cancel.html
+;
+; Default:
+capture-device=PulseAudio Unknown: Echo-Cancel Source
+
+; Sets the devicename for the preffered audio device used for playing audio.
+; This is useful for e.g. if you use the pipewire echo-cancel module.
+; See: https://docs.pipewire.org/page_module_echo_cancel.html
+;
+; Default:
+playback-device=PulseAudio Unknown: Echo-Cancel Sink
+
 ;
 ; The "core.mqtt" category is used to define the mqtt intergration of the core.
 ;

@@ -81,6 +81,9 @@ void App::_initCore()
 	// https://github.com/BelledonneCommunications/linphone-desktop/issues/663#issuecomment-1396680741
 	this->_core->getConfig()->setBool("sound", "tone_indications", false);
 
+	this->_core->setCaptureDevice(this->_settings.getCoreSipCaptureDevice().toStdString());
+	this->_core->setPlaybackDevice(this->_settings.getCoreSipPlaybackDevice().toStdString());
+
 	auto nat = this->_core->createNatPolicy();
 	nat->setStunServer("stun.linphone.org");
 	nat->enableStun(true);
@@ -225,7 +228,11 @@ void App::printCoreInformation()
 			info << "\t\t- " << device.c_str();
 			if (device == this->_core->getPlaybackDevice())
 			{
-				info << " (selected)";
+				info << " (selected [playback])";
+			}
+			if (device == this->_core->getCaptureDevice())
+			{
+				info << " (selected [capture])";
 			}
 			info << Qt::endl;
 		}
