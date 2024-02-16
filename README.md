@@ -63,6 +63,7 @@ sudo apt-get install -y \
     qtquickcontrols2-5-dev \
     qml-module-qtmultimedia \
     liblinphone-dev \
+    libgpiod-dev \
     libpaho-mqtt-dev \
     libpaho-mqttpp-dev
 ```

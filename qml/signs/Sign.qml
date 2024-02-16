@@ -1,11 +1,21 @@
 import QtQuick 2.12
 import QtMultimedia 5.15
 import com.dieklingel 1.0
+import com.dieklingel.gpio 1.0
 
 Item {    
 	SoundEffect {
         id: bell
         source: "bell.wav"
+    }
+
+    Input {
+        // GPIO17 - physical pin 11
+        pin: 17
+
+        onFallingEdge: {
+            bell.play();
+        }   
     }
 
     Column {
