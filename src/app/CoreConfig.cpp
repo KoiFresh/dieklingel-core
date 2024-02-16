@@ -64,6 +64,16 @@ QString CoreConfig::getCoreSipPassword()
 	return this->get("core.sip/password").toString();
 }
 
+QString CoreConfig::getCoreSipCaptureDevice()
+{
+	return this->get("core.sip/capture-device", QVariant("h")).toString();
+}
+
+QString CoreConfig::getCoreSipPlaybackDevice()
+{
+	return this->get("core.sip/playback-device").toString();
+}
+
 bool CoreConfig::getCoreMqttEnabled()
 {
 	return this->get("core.mqtt/enabled", QVariant(false)).toBool();

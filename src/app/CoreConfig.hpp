@@ -32,6 +32,8 @@ public:
 	bool getCoreSipEnabled();
 	QString getCoreSipAddress();
 	QString getCoreSipPassword();
+	QString getCoreSipCaptureDevice();
+	QString getCoreSipPlaybackDevice();
 
 	bool getCoreMqttEnabled();
 	QString getCoreMqttAddress();
