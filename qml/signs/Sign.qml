@@ -4,6 +4,8 @@ import com.dieklingel 1.0
 import com.dieklingel.gpio 1.0
 
 Item {    
+    property bool move
+
 	SoundEffect {
         id: bell
         source: "bell.wav"
@@ -12,10 +14,36 @@ Item {
     Input {
         // GPIO17 - physical pin 11
         pin: 17
+        id: inputButton
 
         onFallingEdge: {
             bell.play();
         }   
+    }
+
+
+    Input {
+        pin: 23
+        id: movement
+
+        onFallingEdge: {
+            timer.start();
+        }
+        onRisingEdge: {
+            move = true;
+            timer.stop();
+        }
+    }
+
+
+    Timer {
+        id: timer
+        interval: 15000
+        repeat: false
+
+        onTriggered: {
+            move = false;
+        }
     }
 
     Column {
@@ -70,7 +98,7 @@ Item {
                 color: parent.pressed ? "grey" : "transparent"
                 border {
                     width: 5
-                    color: "green"
+                    color: move ? "lightgreen" : "green"
                 }
                 radius: height / 2
 
