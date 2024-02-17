@@ -40,6 +40,13 @@ an mqtt broker, and publish events on topics, so that other smart devices could
 react on these. Also states like "online" and "offline" could be gathered via
 mqtt.
 
+### 🕹️ GPIO
+
+Do you prefer a physical button instead of the onscreen button? Don't worry,
+use the gpio pins of your Raspberry Pi as input to react on a button press. An
+integration which gets extremle powerfull in combination with the Kiosk, just
+use QML to script the actions on an input event.
+
 ## 🚦 Run the Project
 
 To be able to run the project you have to build it. Start by cloning this repository.
@@ -49,22 +56,27 @@ To be able to run the project you have to build it. Start by cloning this reposi
 Install dependencies which are required to build and/or run the project.
 
 ```sh
+# Buildtime dependencies
 sudo apt-get install -y \
-    git \
     build-essential \
     cmake \
-    libgl1-mesa-dev \
-    libssl-dev \
-    qtbase5-dev \
-    qtdeclarative5-dev \
-    qtwayland5 \
-    qml-module-qtquick2 \
-    qml-module-qtquick-controls2 \
-    qtquickcontrols2-5-dev \
-    qml-module-qtmultimedia \
+    git \
+    libgpiod-dev \
     liblinphone-dev \
     libpaho-mqtt-dev \
     libpaho-mqttpp-dev
+    libssl-dev \
+    qtbase5-dev \
+    qtdeclarative5-dev \
+    qtquickcontrols2-5-dev
+
+# Runtime dependencies
+sudo apt-get install -y \
+    libgl1-mesa-dev \
+    qml-module-qtmultimedia \
+    qml-module-qtquick-controls2 \
+    qml-module-qtquick2 \
+    qtwayland5
 ```
 
 ### 🏗️ Build the core

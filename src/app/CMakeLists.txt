@@ -20,6 +20,11 @@ find_package(
 
 find_package(PahoMqttCpp REQUIRED)
 
+find_library(GPIOD_LIBRARY NAMES libgpiodcxx.so)
+if(NOT GPIOD_LIBRARY)
+  message(FATAL_ERROR "gpiod library not found. Install apt install libgpiod-dev")
+endif()
+
 find_library(LIBLINPHONE_LIBRARY NAMES liblinphone++.so)
 if(NOT LIBLINPHONE_LIBRARY)
 	message(FATAL_ERROR "liblinphone library not found. Install apt install liblinphone-dev")
@@ -29,8 +34,10 @@ add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 
 add_executable(
 	dieklingel-core
-    main.cpp
+	gpio/Input.cpp
+	gpio/Output.cpp
 	App.cpp
+    main.cpp
 	CoreConfig.cpp
 	InactivityDetector.cpp
 	Mqtt.cpp
@@ -39,6 +46,7 @@ add_executable(
 target_link_libraries(
 	dieklingel-core
 	PRIVATE
+	${GPIOD_LIBRARY}
 	${LIBLINPHONE_LIBRARY}
 	paho-mqtt3as
 	paho-mqttpp3

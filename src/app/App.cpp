@@ -37,11 +37,6 @@ void App::_initApplication()
 		this->_engine = std::make_shared<QQmlApplicationEngine>();
 		this->_filter = std::make_shared<InactivityDetector>();
 
-		qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", this);
-
-		const QUrl url = this->_settings.getCoreQmlEntry();
-		this->_engine->load(url);
-
 		this->_application->installEventFilter(this->_filter.get());
 		connect(this->_filter.get(), &InactivityDetector::inactivity, this, &App::inactivity);
 	}
@@ -176,6 +171,11 @@ int App::exec()
 	{
 		connect(&timer, &QTimer::timeout, this, &App::_iterate);
 		timer.start(0);
+	}
+	if (this->_engine != nullptr)
+	{
+		const QUrl url = this->_settings.getCoreQmlEntry();
+		this->_engine->load(url);
 	}
 
 	int code = this->_application->exec();

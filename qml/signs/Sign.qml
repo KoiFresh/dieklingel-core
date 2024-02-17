@@ -1,11 +1,49 @@
 import QtQuick 2.12
 import QtMultimedia 5.15
 import com.dieklingel 1.0
+import com.dieklingel.gpio 1.0
 
 Item {    
+    property bool move
+
 	SoundEffect {
         id: bell
         source: "bell.wav"
+    }
+
+    Input {
+        // GPIO17 - physical pin 11
+        pin: 17
+        id: inputButton
+
+        onFallingEdge: {
+            bell.play();
+        }   
+    }
+
+
+    Input {
+        pin: 23
+        id: movement
+
+        onFallingEdge: {
+            timer.start();
+        }
+        onRisingEdge: {
+            move = true;
+            timer.stop();
+        }
+    }
+
+
+    Timer {
+        id: timer
+        interval: 15000
+        repeat: false
+
+        onTriggered: {
+            move = false;
+        }
     }
 
     Column {
@@ -15,7 +53,7 @@ Item {
             anchors {
                 horizontalCenter: parent.horizontalCenter
             }
-            text: "1"
+            text: App.env("qml.sign.street.number")
             color: "wheat"
             font {
                 pointSize: 200
@@ -27,7 +65,7 @@ Item {
             anchors {
                 horizontalCenter: parent.horizontalCenter
             }
-            text: "Regenbogen Str."
+            text: App.env("qml.sign.street.name")
             color: "wheat"
             font {
                 pointSize: 35
@@ -47,7 +85,7 @@ Item {
             width: 460
             height: 120
             onPressed: {
-                App.ring("sip:koifresh@sip.linphone.org")
+                App.ring(App.env("qml.sign.sip.address"))
             }
             onReleased: {
                 bell.play();
@@ -60,7 +98,7 @@ Item {
                 color: parent.pressed ? "grey" : "transparent"
                 border {
                     width: 5
-                    color: "green"
+                    color: move ? "lightgreen" : "green"
                 }
                 radius: height / 2
 
@@ -81,7 +119,7 @@ Item {
                     }
                     x: ((img.width * 0.75) + parent.width - width) / 2
                     horizontalAlignment: Text.AlignHCenter
-                    text: "Fam. Mustermann"
+                    text: App.env("qml.sign.family.name")
                     color: "white"
                     font {
                         pointSize: 28

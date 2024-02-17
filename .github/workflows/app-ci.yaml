@@ -18,13 +18,14 @@ jobs:
           sudo apt-get install -y \
             build-essential \
             cmake \
+            libgpiod-dev \
+            liblinphone-dev \
+            libpaho-mqtt-dev \
+            libpaho-mqttpp-dev \
             libssl-dev \
             qtbase5-dev \
             qtdeclarative5-dev \
-            qtquickcontrols2-5-dev \
-            liblinphone-dev \
-            libpaho-mqtt-dev \
-            libpaho-mqttpp-dev
+            qtquickcontrols2-5-dev
 
       - name: Build the core
         run: |
