@@ -1,38 +1,34 @@
-#ifndef __GPIO_INPUT_HPP__
-#define __GPIO_INPUT_HPP__
+#ifndef __GPIO_OUTPUT_HPP__
+#define __GPIO_OUTPUT_HPP__
 
 #include <QObject>
 #include <QLoggingCategory>
 #include <QTimer>
 #include <gpiod.hpp>
 
-class Input : public QObject
+class Output : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(int pin READ getPin WRITE setPin NOTIFY pinChanged)
-	Q_PROPERTY(bool value READ getValue NOTIFY valueChanged)
+	Q_PROPERTY(bool value READ getValue WRITE setValue NOTIFY valueChanged)
 private:
 	int _pin = -1;
 	bool _value = false;
 	gpiod::chip _chip;
 	gpiod::line _line;
-	QTimer _timer;
-
-	void _update();
 
 public:
-	Input();
-	~Input();
+	Output();
+	~Output();
 
 	int getPin();
 	void setPin(int pin);
 	bool getValue();
+	void setValue(bool value);
 
 signals:
 	void pinChanged();
 	void valueChanged();
-	void risingEdge();
-	void fallingEdge();
 };
 
-#endif // __GPIO_INPUT_HPP__
+#endif // __GPIO_OUTPUT_HPP__

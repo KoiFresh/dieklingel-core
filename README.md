@@ -56,23 +56,27 @@ To be able to run the project you have to build it. Start by cloning this reposi
 Install dependencies which are required to build and/or run the project.
 
 ```sh
+# Buildtime dependencies
 sudo apt-get install -y \
-    git \
     build-essential \
     cmake \
-    libgl1-mesa-dev \
+    git \
+    libgpiod-dev \
+    liblinphone-dev \
+    libpaho-mqtt-dev \
+    libpaho-mqttpp-dev
     libssl-dev \
     qtbase5-dev \
     qtdeclarative5-dev \
-    qtwayland5 \
-    qml-module-qtquick2 \
-    qml-module-qtquick-controls2 \
     qtquickcontrols2-5-dev \
+
+# Runtime dependencies
+sudo apt-get install -y \
+    libgl1-mesa-dev \
     qml-module-qtmultimedia \
-    liblinphone-dev \
-    libgpiod-dev \
-    libpaho-mqtt-dev \
-    libpaho-mqttpp-dev
+    qml-module-qtquick-controls2 \
+    qml-module-qtquick2 \
+    qtwayland5
 ```
 
 ### 🏗️ Build the core

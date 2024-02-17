@@ -35,6 +35,7 @@ add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 add_executable(
 	dieklingel-core
 	gpio/Input.cpp
+	gpio/Output.cpp
 	App.cpp
     main.cpp
 	CoreConfig.cpp
