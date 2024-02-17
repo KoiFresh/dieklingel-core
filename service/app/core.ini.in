@@ -90,9 +90,30 @@ password=mqtt
 subscriptions=home/light/main/door, home/light/back/door
 
 ;
-; The "core.env" section is used to set environment variables. The core does set the variables immediatly after starting and loading the config, before the main (graphical) application is started. The variables could be used for example to set the platform for the underlaying qt-framework or to set the wayland display. Because the core is already launched when the variables are set the "core.env" category could not be used to set variables like LD_PRELOAD. Furthermore the core provides a function to read environment variables from qml. So thi section could be used to define e.g. an qml text.
+; The "core.env" section is used to set environment variables. The core does
+; set the variables immediatly after starting and loading the config, before
+; the main (graphical) application is started. The variables could be used for
+; example to set the platform for the underlaying qt-framework or to set the
+; wayland display. Because the core is already launched when the variables are
+; set the "core.env" category could not be used to set variables like
+; LD_PRELOAD. Furthermore the core provides a function to read environment
+; variables from qml. So this section could be used to define e.g. an qml text.
 ;
 [core.env]
 
 ; see: https://doc.qt.io/qt-5/qguiapplication.html#platformName-prop
 QT_QPA_PLATFORM=wayland
+
+; The following variables shouldn't be interpreted as integration. We use the
+; ability to set and pass enviornment variables to the application and read
+; them from qml to configure the user interface.
+; variables used in qml, to set view properties
+qml.global.clip.left=0
+qml.global.clip.top=0
+qml.global.clip.right=0
+qml.global.clip.bottom=0
+qml.passcode=123456
+qml.sign.street.name=Regenbogenstr.
+qml.sign.street.number=1
+qml.sign.family.name=Fam. Mustermann
+qml.sign.sip.address=sip:601@fritz.box

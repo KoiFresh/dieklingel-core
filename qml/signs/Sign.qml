@@ -53,7 +53,7 @@ Item {
             anchors {
                 horizontalCenter: parent.horizontalCenter
             }
-            text: "1"
+            text: App.env("qml.sign.street.number")
             color: "wheat"
             font {
                 pointSize: 200
@@ -65,7 +65,7 @@ Item {
             anchors {
                 horizontalCenter: parent.horizontalCenter
             }
-            text: "Regenbogen Str."
+            text: App.env("qml.sign.street.name")
             color: "wheat"
             font {
                 pointSize: 35
@@ -85,7 +85,7 @@ Item {
             width: 460
             height: 120
             onPressed: {
-                App.ring("sip:koifresh@sip.linphone.org")
+                App.ring(App.env("qml.sign.sip.address"))
             }
             onReleased: {
                 bell.play();
@@ -119,7 +119,7 @@ Item {
                     }
                     x: ((img.width * 0.75) + parent.width - width) / 2
                     horizontalAlignment: Text.AlignHCenter
-                    text: "Fam. Mustermann"
+                    text: App.env("qml.sign.family.name")
                     color: "white"
                     font {
                         pointSize: 28

@@ -68,7 +68,7 @@ sudo apt-get install -y \
     libssl-dev \
     qtbase5-dev \
     qtdeclarative5-dev \
-    qtquickcontrols2-5-dev \
+    qtquickcontrols2-5-dev
 
 # Runtime dependencies
 sudo apt-get install -y \
