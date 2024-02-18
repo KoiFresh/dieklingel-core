@@ -19,7 +19,13 @@ Item {
 	function randomize() {
 		for(let i = 0; i < passcode.children.length; i++) {
 			const tumbler = passcode.children[i];
-			tumbler.currentIndex = Math.floor(Math.random() * tumbler.model.length);
+			let index = tumbler.currentIndex;
+			for(;;) {
+				tumbler.currentIndex = Math.floor(Math.random() * tumbler.model.length);
+				if(tumbler.currentIndex !== index) {
+					break;
+				}
+			}
 		}
 	}
 
