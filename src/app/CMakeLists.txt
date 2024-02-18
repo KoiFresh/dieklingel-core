@@ -7,7 +7,7 @@ set(CMAKE_AUTORCC ON)
 find_package(
 	Qt5
 	REQUIRED
-	COMPONENTS 
+	COMPONENTS
 	Core
 	Concurrent
 	Qml
@@ -15,19 +15,21 @@ find_package(
 	Quick
 	QuickControls2
 )
+
 # not possible, see: https://stackoverflow.com/questions/75624351/unknown-cmake-command-qt-standard-project-setup-on-raspberry-pi
 # qt_standard_project_setup()
-
 find_package(PahoMqttCpp REQUIRED)
 
 find_library(GPIOD_LIBRARY NAMES libgpiodcxx.so)
+
 if(NOT GPIOD_LIBRARY)
-  message(FATAL_ERROR "gpiod library not found. Install apt install libgpiod-dev")
+	message(FATAL_ERROR "gpiod library not found. Install apt install libgpiod-dev")
 endif()
 
-find_library(LIBLINPHONE_LIBRARY NAMES liblinphone++.so)
-if(NOT LIBLINPHONE_LIBRARY)
-	message(FATAL_ERROR "liblinphone library not found. Install apt install liblinphone-dev")
+if(BUILD_LINPHONE_SDK)
+	set(LIBLINPHONE_LIBRARY "liblinphone++")
+else()
+	find_library(LIBLINPHONE_LIBRARY NAMES liblinphone++.so)
 endif()
 
 add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
@@ -37,7 +39,7 @@ add_executable(
 	gpio/Input.cpp
 	gpio/Output.cpp
 	App.cpp
-    main.cpp
+	main.cpp
 	CoreConfig.cpp
 	InactivityDetector.cpp
 	Mqtt.cpp
