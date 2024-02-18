@@ -58,6 +58,13 @@ capture-device=PulseAudio Unknown: Echo-Cancel Source
 ; Default:
 playback-device=PulseAudio Unknown: Echo-Cancel Sink
 
+; Sets the transport type which can by used to establish a connection to the
+; sip proxy. All protocol which are in the list, can be used by the client.
+; Possible values are "udp", "dtls", "tcp", "tls".
+;
+; Default: tcp, tls
+transports=tcp, tls
+
 ;
 ; The "core.mqtt" category is used to define the mqtt intergration of the core.
 ;

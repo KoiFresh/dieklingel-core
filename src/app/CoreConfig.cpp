@@ -74,6 +74,11 @@ QString CoreConfig::getCoreSipPlaybackDevice()
 	return this->get("core.sip/playback-device").toString();
 }
 
+QStringList CoreConfig::getCoreSipTransports()
+{
+	return this->get("core.sip/transports", QVariant("tcp, tls")).toStringList();
+}
+
 bool CoreConfig::getCoreMqttEnabled()
 {
 	return this->get("core.mqtt/enabled", QVariant(false)).toBool();

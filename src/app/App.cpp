@@ -86,10 +86,11 @@ void App::_initCore()
 	this->_core->setNatPolicy(nat);
 
 	auto transports = factory->createTransports();
-	transports->setUdpPort(0);
-	transports->setDtlsPort(0);
-	transports->setTcpPort(-1);
-	transports->setTlsPort(-1);
+	auto t = this->_settings.getCoreSipTransports();
+	transports->setUdpPort(t.contains("udp", Qt::CaseInsensitive) ? -1 : 0);
+	transports->setDtlsPort(t.contains("dtls", Qt::CaseInsensitive) ? -1 : 0);
+	transports->setTcpPort(t.contains("tcp", Qt::CaseInsensitive) ? -1 : 0);
+	transports->setTlsPort(t.contains("tls", Qt::CaseInsensitive) ? -1 : 0);
 	this->_core->setTransports(transports);
 
 	auto self = std::shared_ptr<CoreListener>(this);
@@ -258,6 +259,11 @@ void App::printCoreInformation()
 		info << "\t\t- ring resources: " << Factory::get()->getRingResourcesDir().c_str() << Qt::endl;
 		info << "\t\t- sound resources: " << Factory::get()->getSoundResourcesDir().c_str() << Qt::endl;
 		info << "\t\t- top resources: " << Factory::get()->getTopResourcesDir().c_str() << Qt::endl;
+		info << "\tports:" << Qt::endl;
+		info << "\t\tudp: " << this->_core->getTransportsUsed()->getUdpPort() << Qt::endl;
+		info << "\t\tdtls: " << this->_core->getTransportsUsed()->getDtlsPort() << Qt::endl;
+		info << "\t\ttcp: " << this->_core->getTransportsUsed()->getTcpPort() << Qt::endl;
+		info << "\t\ttls: " << this->_core->getTransportsUsed()->getTlsPort() << Qt::endl;
 	}
 }
 
