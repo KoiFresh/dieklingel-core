@@ -34,6 +34,7 @@ public:
 	QString getCoreSipPassword();
 	QString getCoreSipCaptureDevice();
 	QString getCoreSipPlaybackDevice();
+	QStringList getCoreSipTransports();
 
 	bool getCoreMqttEnabled();
 	QString getCoreMqttAddress();
