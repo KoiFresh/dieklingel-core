@@ -30,6 +30,7 @@ private:
 
 	QFutureInterface<QByteArray> _future;
 
+	MSFilter *_configure(MSFilter *source);
 	static void _onSnapshotTaken(void *userdata, MSFilter *f, unsigned int id, void *arg);
 	void _finishSnapshot();
 
