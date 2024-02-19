@@ -140,6 +140,18 @@ void App::publish(QString topic, QString message)
 	this->_mqtt->publish(topic, message);
 }
 
+void App::snapshot()
+{
+	auto call = this->_core->getCurrentCall();
+	if (call != nullptr)
+	{
+		qInfo() << "We received a request to capture a snapshot! Taking snapshots, when call is active is currently not supported.";
+		return;
+	}
+	auto future = Capturer::snapshot();
+	// TODO: save image from future
+}
+
 QString App::env(QString key)
 {
 	return qgetenv(key.toStdString().c_str());

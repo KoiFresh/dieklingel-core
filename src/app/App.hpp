@@ -7,13 +7,14 @@
 #include <QQmlApplicationEngine>
 #include <QDir>
 
+#include "Capturer.hpp"
 #include "CoreConfig.hpp"
 #include "InactivityDetector.hpp"
 #include "Mqtt.hpp"
 
 using namespace linphone;
 
-class App : public QObject, public CoreListener
+class App : public QObject, public CoreListener, public Capturer
 {
 	Q_OBJECT
 private:
@@ -43,6 +44,7 @@ public:
 	int exec();
 	Q_INVOKABLE void ring(QString number);
 	Q_INVOKABLE void publish(QString topic, QString message);
+	Q_INVOKABLE void snapshot();
 	Q_INVOKABLE QString env(QString key);
 
 	void printCoreInformation();
