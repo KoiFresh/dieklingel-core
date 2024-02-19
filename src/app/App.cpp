@@ -96,6 +96,7 @@ void App::_initCore()
 	auto self = std::shared_ptr<CoreListener>(this);
 	this->_core->addListener(self);
 
+	this->Capturer::useCore(this->_core);
 	auto state = this->_core->start();
 	if (state != 0)
 	{
@@ -148,8 +149,17 @@ void App::snapshot()
 		qInfo() << "We received a request to capture a snapshot! Taking snapshots, when call is active is currently not supported.";
 		return;
 	}
-	auto future = Capturer::snapshot();
-	// TODO: save image from future
+	QtConcurrent::run(
+		[this]()
+		{
+			auto future = this->Capturer::snapshot();
+			future.waitForFinished();
+			QFile f("snapshot.jpg");
+			f.open(QIODevice::ReadWrite);
+			f.write(future.result());
+			f.close();
+			// TODO: use image
+		});
 }
 
 QString App::env(QString key)

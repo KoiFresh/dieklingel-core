@@ -26,6 +26,12 @@ if(NOT GPIOD_LIBRARY)
 	message(FATAL_ERROR "gpiod library not found. Install apt install libgpiod-dev")
 endif()
 
+find_library(LIBLINPHONE_LIBRARY NAMES liblinphone.so)
+
+if(NOT LIBLINPHONE_LIBRARY)
+	message(FATAL_ERROR "liblinphone library not found. Install apt install liblinphone-dev")
+endif()
+
 find_library(LIBLINPHONE_CXX_LIBRARY NAMES liblinphone++.so)
 
 if(NOT LIBLINPHONE_CXX_LIBRARY)
@@ -50,6 +56,7 @@ target_link_libraries(
 	dieklingel-core
 	PRIVATE
 	${GPIOD_LIBRARY}
+	${LIBLINPHONE_LIBRARY}
 	${LIBLINPHONE_CXX_LIBRARY}
 	mediastreamer
 	paho-mqtt3as

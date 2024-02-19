@@ -2,6 +2,7 @@
 #define __CAPTURER_HPP__
 
 #include <linphone++/linphone.hh>
+#include <linphone/linphonecore.h>
 #include <mediastreamer2/mscommon.h>
 #include <mediastreamer2/msjpegwriter.h>
 #include <mediastreamer2/msticker.h>
@@ -14,17 +15,12 @@
 
 using namespace linphone;
 
-#define MAX_PATH_TEMP 255
-
-typedef struct
-{
-	char filePath[MAX_PATH_TEMP];
-} MSJpegWriteEventData;
-
 class Capturer
 {
 private:
-	QMutex _mutex;
+	static const QString FILENAME;
+
+	std::shared_ptr<Core> _core;
 	MSFactory *_factory = nullptr;
 
 	MSFilter *_source = nullptr;
@@ -35,12 +31,13 @@ private:
 	QFutureInterface<QByteArray> _future;
 
 	static void _onSnapshotTaken(void *userdata, MSFilter *f, unsigned int id, void *arg);
-	void _finishSnapshot(QString path);
+	void _finishSnapshot();
 
 public:
 	Capturer();
 	~Capturer();
 
+	void useCore(std::shared_ptr<Core> core);
 	QFuture<QByteArray> snapshot();
 };
 

@@ -1,5 +1,8 @@
 #include "Capturer.hpp"
 
+// static
+const QString Capturer::FILENAME = QDir::tempPath() + "/dieklingel-snapshot-tmp.jpg";
+
 Capturer::Capturer()
 {
 	this->_factory = ms_factory_new_with_voip();
@@ -7,7 +10,19 @@ Capturer::Capturer()
 
 Capturer::~Capturer()
 {
-	delete this->_factory;
+	if (this->_core == nullptr)
+	{
+		ms_factory_destroy(this->_factory);
+	}
+}
+
+void Capturer::useCore(std::shared_ptr<Core> core)
+{
+	if (this->_core == nullptr)
+	{
+		ms_factory_destroy(this->_factory);
+	}
+	this->_factory = linphone_core_get_ms_factory(core->cPtr());
 }
 
 QFuture<QByteArray> Capturer::snapshot()
@@ -42,15 +57,14 @@ QFuture<QByteArray> Capturer::snapshot()
 
 	ms_ticker_attach(this->_ticker, this->_source);
 
-	QString filename = QDir::tempPath() + "/dieklingel-snapshot-tmp.jpg";
-	ms_filter_call_method(this->_sink, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void *)filename.toStdString().c_str());
+	ms_filter_call_method(this->_sink, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void *)Capturer::FILENAME.toStdString().c_str());
 
 	this->_future = QFutureInterface<QByteArray>();
 	this->_future.reportStarted();
 	return this->_future.future();
 }
 
-void Capturer::_finishSnapshot(QString path)
+void Capturer::_finishSnapshot()
 {
 	ms_ticker_detach(this->_ticker, this->_source);
 
@@ -64,7 +78,7 @@ void Capturer::_finishSnapshot(QString path)
 	ms_filter_destroy(this->_pixconv);
 	ms_filter_destroy(this->_source);
 
-	QFile file(path);
+	QFile file(Capturer::FILENAME);
 	file.open(QIODevice::ReadOnly);
 	const QByteArray *contents = new QByteArray(file.readAll());
 	file.close();
@@ -80,12 +94,10 @@ void Capturer::_onSnapshotTaken(void *userdata, MSFilter *f, unsigned int id, vo
 	{
 	case MS_JPEG_WRITER_SNAPSHOT_TAKEN:
 	{
-		MSJpegWriteEventData *event = reinterpret_cast<MSJpegWriteEventData *>(arg);
-		QString path = event->filePath;
 		QtConcurrent::run(
-			[self, path]()
+			[self]()
 			{
-				self->_finishSnapshot(path);
+				self->_finishSnapshot();
 			});
 	}
 	break;
