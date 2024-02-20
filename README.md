@@ -106,6 +106,7 @@ Now its time to enable the integrations you would like to use. The configuration
 - `$HOME/.config/core.ini`
 - `$HOME/core.ini`
 - `/etc/dieklingel-core/core.ini`
+- `/usr/share/dieklingel-core/core.ini`
 
 To configure the core as needed refere to [core.ini](/service/app/core.ini.in).
 
