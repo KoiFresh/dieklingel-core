@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import com.dieklingel 1.0
+import "../components"
 
 Item {
 	Component {
@@ -100,39 +101,38 @@ Item {
 				horizontalCenter: parent.horizontalCenter
 			}
 
-			LightButton {
-				anchors {
-					top: parent.top
+			CButton {
+				id: light
+				property bool isOn: false
+
+				color: isOn ? "yellow" : "white"
+				icon: isOn ? "light.on.png" : "light.off.png"
+				
+				onPressed: {
+					App.publish("home/light/main/door", light.isOn ? "off" : "on")
+				}
+
+				Connections {
+					target: App
+
+					function onMessageReceived(topic, message) {;
+						if(topic === "home/light/main/door") {
+							light.isOn = (message === "on") ? true : false;
+						}
+					}
 				}
 			}
 
-			Button {
-				width: 100
-				height: 100
-
-				background: Rectangle {
-					color:  parent.pressed ? "#1EFFFFFF" : "transparent"
-					border.width: 1
-					border.color: "white"
-					radius: 15
-				}
+			CButton {
+				color: "white"
+				icon: "key.png"
 
 				onReleased: {
 					let pin = getPasscode();
 					randomize();
-					if(pin === App.env("QML_PASSCODE")) {
+					if(pin === App.env("qml.passcode")) {
 						console.log("TODO: unlock the door");
 					}
-				}
-
-				Image {
-					source: "key.png"
-					width: 60
-					height: 60
-					anchors {
-						centerIn: parent
-					}
-					fillMode: Image.PreserveAspectFit
 				}
 			}
 		}
