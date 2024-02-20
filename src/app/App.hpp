@@ -14,7 +14,7 @@
 
 using namespace linphone;
 
-class App : public QObject, public CoreListener, public Capturer
+class App : public QObject, public CoreListener
 {
 	Q_OBJECT
 private:
@@ -26,8 +26,10 @@ private:
 	std::shared_ptr<QCoreApplication> _application;
 	std::shared_ptr<QQmlApplicationEngine> _engine;
 	std::shared_ptr<InactivityDetector> _filter;
+	std::shared_ptr<Capturer> _capturer;
 
 	void _initEnv();
+	void _initCapturer();
 	void _initApplication();
 	void _initCore();
 	void _initMqtt();
@@ -52,6 +54,7 @@ public:
 signals:
 	void inactivity();
 	void messageReceived(QString topic, QString message);
+	void snapshotTaken(QByteArray snapshot);
 
 protected:
 	void onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message) override;

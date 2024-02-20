@@ -92,11 +92,11 @@ MSFilter *Capturer::_configure(MSFilter *source)
 	return pixconv;
 }
 
-QFuture<QByteArray> Capturer::snapshot()
+void Capturer::snapshot()
 {
-	if (this->_future.isRunning())
+	if (!this->_mutex.tryLock())
 	{
-		return _future.future();
+		return;
 	}
 	auto webcam = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(this->_factory));
 	this->_source = ms_web_cam_create_reader(webcam);
@@ -112,10 +112,6 @@ QFuture<QByteArray> Capturer::snapshot()
 	ms_ticker_attach(this->_ticker, this->_source);
 
 	ms_filter_call_method(this->_sink, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void *)Capturer::FILENAME.toStdString().c_str());
-
-	this->_future = QFutureInterface<QByteArray>();
-	this->_future.reportStarted();
-	return this->_future.future();
 }
 
 void Capturer::_finishSnapshot()
@@ -138,9 +134,10 @@ void Capturer::_finishSnapshot()
 
 	QFile file(Capturer::FILENAME);
 	file.open(QIODevice::ReadOnly);
-	const QByteArray *contents = new QByteArray(file.readAll());
+	const QByteArray contents = file.readAll();
 	file.close();
-	this->_future.reportFinished(contents);
+	emit snapshotTaken(contents);
+	_mutex.unlock();
 }
 
 // static

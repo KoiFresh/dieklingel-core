@@ -15,8 +15,9 @@
 
 using namespace linphone;
 
-class Capturer
+class Capturer : public QObject
 {
+	Q_OBJECT
 private:
 	static const QString FILENAME;
 
@@ -28,7 +29,7 @@ private:
 	MSFilter *_sink = nullptr;
 	MSTicker *_ticker = nullptr;
 
-	QFutureInterface<QByteArray> _future;
+	QMutex _mutex;
 
 	MSFilter *_configure(MSFilter *source);
 	static void _onSnapshotTaken(void *userdata, MSFilter *f, unsigned int id, void *arg);
@@ -39,7 +40,10 @@ public:
 	~Capturer();
 
 	void useCore(std::shared_ptr<Core> core);
-	QFuture<QByteArray> snapshot();
+	void snapshot();
+
+signals:
+	void snapshotTaken(QByteArray snapshot);
 };
 
 #endif // __CAPTURER_HPP__
