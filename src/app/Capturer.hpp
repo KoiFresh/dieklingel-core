@@ -10,7 +10,6 @@
 #include <mediastreamer2/mswebcam.h>
 #include <memory>
 #include <QString>
-#include <QFuture>
 #include <QtConcurrent>
 
 using namespace linphone;

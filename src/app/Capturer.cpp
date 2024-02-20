@@ -134,9 +134,9 @@ void Capturer::_finishSnapshot()
 
 	QFile file(Capturer::FILENAME);
 	file.open(QIODevice::ReadOnly);
-	const QByteArray contents = file.readAll();
+	const QByteArray contents = file.readAll().toBase64();
 	file.close();
-	emit snapshotTaken(contents);
+	emit snapshotTaken("data:image/jpeg;base64," + contents);
 	_mutex.unlock();
 }
 
