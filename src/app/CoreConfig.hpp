@@ -16,6 +16,7 @@ private:
 		"$HOME/.config/core.ini",
 		"$HOME/core.ini",
 		"/etc/dieklingel-core/core.ini",
+		"/usr/share/dieklingel-core/core.ini",
 	};
 	QSettings *_settings = nullptr;
 
