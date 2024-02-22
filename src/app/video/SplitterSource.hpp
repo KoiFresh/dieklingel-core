@@ -8,27 +8,45 @@
 #include <mediastreamer2/mswebcam.h>
 #include <mediastreamer2/msticker.h>
 #include <QSet>
+#include <QMutex>
+
+#include "SplitterCamera.hpp"
 
 class SplitterSource
 {
+private:
+	static void _init(MSFilter *filter);
+	static void _process(MSFilter *filter);
+	static void _uninit(MSFilter *filter);
+
+	static int _setFps(MSFilter *filter, void *arg);
+	static int _getFps(MSFilter *filter, void *arg);
+	static int _setVideoSize(MSFilter *filter, void *arg);
+	static int _getVideoSize(MSFilter *filter, void *arg);
+	static int _getPixFmt(MSFilter *filter, void *arg);
+
 public:
 	class State
 	{
+	private:
+		MSTicker *_ticker = nullptr;
+		QMutex _mutex;
+
 	public:
-		MSTicker *ticker = nullptr;
-		MSFilter *source = nullptr;
-		MSFilter *pixconv = nullptr;
+		~State();
+
+		MSWebCam *sourceCamera = nullptr;
+		MSFilter *cameraReader = nullptr;
 		MSFilter *sizeconv = nullptr;
-		QSet<MSFilter *> *sinks;
+		QSet<MSFilter *> *splitterSinks = nullptr;
+		MSFilter *parent = nullptr;
+
+		void attach(MSFilter *sink);
+		void detach(MSFilter *sink);
 	};
 
 	static MSFilterMethod methods[];
 	static MSFilterDesc description;
-
-	static void attach(MSFilter *splitterSource, MSFilter *splitterSink);
-	static void detach(MSFilter *splitterSource, MSFilter *splitterSink);
-
-	// static MSFilter *fromWebCam(MSWebCam *camera);
 };
 
 #endif // __FILTER_HPP__

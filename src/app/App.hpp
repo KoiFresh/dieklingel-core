@@ -11,7 +11,7 @@
 #include "CoreConfig.hpp"
 #include "InactivityDetector.hpp"
 #include "Mqtt.hpp"
-#include "video/Camera.hpp"
+#include "video/SplitterCamera.hpp"
 
 using namespace linphone;
 
@@ -28,7 +28,7 @@ private:
 	std::shared_ptr<QQmlApplicationEngine> _engine;
 	std::shared_ptr<InactivityDetector> _filter;
 	std::shared_ptr<Capturer> _capturer;
-	std::shared_ptr<Camera> _camera;
+	// std::shared_ptr<Camera> _camera;
 
 	void _initEnv();
 	void _initCapturer();

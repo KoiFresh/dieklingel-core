@@ -56,7 +56,7 @@ add_executable(
 	dieklingel-core
 	gpio/Input.cpp
 	gpio/Output.cpp
-	video/Camera.cpp
+	video/SplitterCamera.cpp
 	video/SplitterSource.cpp
 	video/SplitterSink.cpp
 	App.cpp

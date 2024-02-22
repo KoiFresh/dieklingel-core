@@ -10,29 +10,15 @@
 #include <mediastreamer2/msticker.h>
 #include <mediastreamer2/allfilters.h>
 #include <mediastreamer2/msvideo.h>
+#include <QString>
 
 #include "SplitterSource.hpp"
 #include "SplitterSink.hpp"
 
-typedef struct
-{
-	MSWebCam *source = nullptr;
-	MSFilter *reader = nullptr;
-	MSFilter *pixconv = nullptr;
-	MSFilter *sizeconv = nullptr;
-	MSFilter *splitter = nullptr;
-} SplitterCameraState;
-
-/*typedef struct
-{
-	MSWebCam *source;
-	QList<MSFilter *> *readers;
-} Splitter;*/
-
-class Camera
+class SplitterCamera
 {
 private:
-	static MSWebCamDesc _description;
+	static QString _cameraId;
 
 	static void _webCamDetectFunc(MSWebCamManager *manager);
 	static void _webCamInitFunc(MSWebCam *camera);
@@ -41,10 +27,17 @@ private:
 	static bool_t _webCamEncodeToMimeType(MSWebCam *camera, const char *mimeType);
 
 public:
-	static void init(MSFactory *factory);
+	static MSWebCamDesc description;
+	static QString init(MSFactory *factory, QString cameraId);
 
-	Camera();
-	~Camera();
+	class State
+	{
+	public:
+		MSWebCam *sourceCamera = nullptr;
+		MSFilter *splitterSource = nullptr;
+
+		MSFilter *createSplitterSink();
+	};
 };
 
 #endif

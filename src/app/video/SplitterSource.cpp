@@ -1,36 +1,30 @@
 #include "SplitterSource.hpp"
 
-static void splitter_init(MSFilter *filter)
+// static
+void SplitterSource::_init(MSFilter *filter)
 {
-	qDebug() << "splitter_init";
+	SplitterSource::State *sourceState = new SplitterSource::State();
+	sourceState->sizeconv = ms_factory_create_filter(filter->factory, MS_SIZE_CONV_ID);
+	sourceState->splitterSinks = new QSet<MSFilter *>();
+	sourceState->cameraReader = nullptr;
 
-	SplitterSource::State *s = new SplitterSource::State();
-	s->ticker = ms_ticker_new();
-	s->source = nullptr;
-	s->sinks = new QSet<MSFilter *>();
-	filter->data = s;
+	sourceState->parent = filter;
+	filter->data = sourceState;
 }
 
-static void splitter_preprocess(MSFilter *filter)
+// static
+void SplitterSource::_process(MSFilter *filter)
 {
-	qDebug() << "splitter_preprocess" << filter->ticker;
-}
-
-static void splitter_process(MSFilter *filter)
-{
-	qDebug() << "splitter source process";
-	SplitterSource::State *s = (SplitterSource::State *)filter->data;
+	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
 
 	mblk_t *im;
 	while ((im = ms_queue_get(filter->inputs[0])) != NULL)
 	{
 		mblk_t *outm;
-		int c = 0;
-		qDebug() << "number of sinks" << s->sinks->size();
-		for (auto i = s->sinks->begin(), end = s->sinks->end(); i != end; i++)
+		int count = 0;
+		for (auto sink = splitterSourceState->splitterSinks->begin(), end = splitterSourceState->splitterSinks->end(); sink != end; sink++)
 		{
-			qDebug() << "splitter source buffer copied";
-			if (c == 0)
+			if (count == 0)
 			{
 				outm = im;
 			}
@@ -38,125 +32,148 @@ static void splitter_process(MSFilter *filter)
 			{
 				outm = dupmsg(im);
 			}
-			qDebug() << (*i)->outputs[0];
-			ms_queue_put((*i)->outputs[0], outm);
-			c++;
+			ms_queue_put((*sink)->outputs[0], outm);
+			count++;
 		}
 	}
-	qDebug() << "splitter_process_finished";
 }
 
-static void splitter_postprocess(MSFilter *filter)
+// static
+void SplitterSource::_uninit(MSFilter *filter)
 {
-	qDebug() << "splitter_postprocess" << filter->ticker;
-}
+	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
 
-static void splitter_uninit(MSFilter *filter)
-{
-	qDebug() << "splitter_uninit // TODO:";
-
-	SplitterSource::State *s = (SplitterSource::State *)filter->data;
-	// ms_filter_unlink(s->tee, s->pid, filter, 0);
-	delete s;
+	delete splitterSourceState;
 	filter->data = nullptr;
-	// SplitterFilterState *s = (SplitterFilterState *)filter->data;
-	// free(s);
-	// filter->data = nullptr;
 }
 
-static int splitter_set_fps(MSFilter *filter, void *arg)
+// static
+int SplitterSource::_setFps(MSFilter *filter, void *arg)
 {
-	qDebug() << "set fps";
-
-	SplitterSource::State *s = (SplitterSource::State *)filter->data;
-	if (s->source == nullptr)
-	{
-		qDebug() << "no source";
-	}
-	return ms_filter_call_method(s->sizeconv, MS_FILTER_SET_FPS, arg);
+	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
+	return ms_filter_call_method(splitterSourceState->sizeconv, MS_FILTER_SET_FPS, arg);
 }
 
-static int splitter_get_fps(MSFilter *filter, void *arg)
+// static
+int SplitterSource::_getFps(MSFilter *filter, void *arg)
 {
-	qDebug() << "get fps";
-
-	SplitterSource::State *s = (SplitterSource::State *)filter->data;
-	return ms_filter_call_method(s->source, MS_FILTER_GET_FPS, arg);
+	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
+	return ms_filter_call_method(splitterSourceState->cameraReader, MS_FILTER_GET_FPS, arg);
 }
 
-static int splitter_set_video_size(MSFilter *filter, void *arg)
+// static
+int SplitterSource::_setVideoSize(MSFilter *filter, void *arg)
 {
-	qDebug() << "source: set video size";
-
-	SplitterSource::State *s = (SplitterSource::State *)filter->data;
-	qDebug() << "s" << s->source;
-
-	return ms_filter_call_method(s->sizeconv, MS_FILTER_SET_VIDEO_SIZE, arg);
+	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
+	return ms_filter_call_method(splitterSourceState->sizeconv, MS_FILTER_SET_VIDEO_SIZE, arg);
 }
 
-static int splitter_get_video_size(MSFilter *filter, void *arg)
+// static
+int SplitterSource::_getVideoSize(MSFilter *filter, void *arg)
 {
-	qDebug() << "get video size";
-
-	SplitterSource::State *s = (SplitterSource::State *)filter->data;
-	return ms_filter_call_method(s->source, MS_FILTER_GET_VIDEO_SIZE, arg);
+	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
+	return ms_filter_call_method(splitterSourceState->cameraReader, MS_FILTER_GET_VIDEO_SIZE, arg);
 }
 
-static int splitter_get_pix_fmt(MSFilter *filter, void *arg)
+// static
+int SplitterSource::_getPixFmt(MSFilter *filter, void *arg)
 {
-	qDebug() << "get pix fmt";
+	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
+	return ms_filter_call_method(splitterSourceState->cameraReader, MS_FILTER_GET_PIX_FMT, arg);
+}
 
-	SplitterSource::State *s = (SplitterSource::State *)filter->data;
-	return ms_filter_call_method(s->source, MS_FILTER_GET_PIX_FMT, arg);
+SplitterSource::State::~State()
+{
+	this->_mutex.lock();
+
+	ms_filter_unlink(this->cameraReader, 0, this->sizeconv, 0);
+	ms_filter_unlink(this->sizeconv, 0, this->parent, 0);
+
+	ms_filter_destroy(this->cameraReader);
+	this->cameraReader = nullptr;
+	ms_filter_destroy(this->sizeconv);
+	this->sizeconv = nullptr;
+
+	delete this->splitterSinks;
+
+	this->_mutex.unlock();
 }
 
 MSFilterMethod SplitterSource::methods[] = {
-	{MS_FILTER_SET_FPS, splitter_set_fps},
-	{MS_FILTER_SET_VIDEO_SIZE, splitter_set_video_size},
-	{MS_FILTER_GET_VIDEO_SIZE, splitter_get_video_size},
-	{MS_FILTER_GET_PIX_FMT, splitter_get_pix_fmt},
-	{MS_FILTER_GET_FPS, splitter_get_fps},
+	{MS_FILTER_SET_FPS, SplitterSource::_setFps},
+	{MS_FILTER_SET_VIDEO_SIZE, SplitterSource::_setVideoSize},
+	{MS_FILTER_GET_VIDEO_SIZE, SplitterSource::_getVideoSize},
+	{MS_FILTER_GET_PIX_FMT, SplitterSource::_getPixFmt},
+	{MS_FILTER_GET_FPS, SplitterSource::_getFps},
 	{0, NULL}};
 
 MSFilterDesc SplitterSource::description = {
 	.id = MS_FILTER_PLUGIN_ID,
 	.name = "SplitterSource",
+	.text = "A filter that was created from a SplitterCamera. It could be connected to a SplitterSink and acts like the end of a graph",
 	.category = MS_FILTER_OTHER,
 	.ninputs = 1,
 	.noutputs = 0,
-	.init = splitter_init,
-	.preprocess = splitter_preprocess,
-	.process = splitter_process,
-	.postprocess = splitter_postprocess,
-	.uninit = splitter_uninit,
+	.init = SplitterSource::_init,
+	.process = SplitterSource::_process,
+	.uninit = SplitterSource::_uninit,
 	.methods = SplitterSource::methods};
 
-// static
-void SplitterSource::attach(MSFilter *source, MSFilter *sink)
+void SplitterSource::State::attach(MSFilter *sink)
 {
-	qDebug() << "attach sink to source";
-	SplitterSource::State *sourceState = (SplitterSource::State *)source->data;
-	sourceState->sinks->insert(sink);
-	if (source->ticker == nullptr)
+	this->_mutex.lock();
+
+	this->splitterSinks->insert(sink);
+
+	if (this->_ticker == nullptr)
 	{
-		ms_ticker_attach(sourceState->ticker, source);
+		this->_ticker = ms_ticker_new();
+		ms_ticker_attach(this->_ticker, this->parent);
 	}
+
+	this->_mutex.unlock();
 }
 
-// static
-void SplitterSource::detach(MSFilter *source, MSFilter *sink)
+void SplitterSource::State::detach(MSFilter *sink)
 {
-	qDebug() << "detach sink from source";
+	this->_mutex.lock();
 
-	SplitterSource::State *s = (SplitterSource::State *)source->data;
-	s->sinks->remove(sink);
-	if (s->sinks->size() == 0)
+	this->splitterSinks->remove(sink);
+
+	if (this->splitterSinks->size() == 0)
 	{
-		ms_ticker_detach(s->ticker, source);
-		qDebug() << "detached!";
+		ms_ticker_detach(this->_ticker, this->parent);
+
+		ms_filter_unlink(this->cameraReader, 0, this->sizeconv, 0);
+		ms_filter_unlink(this->sizeconv, 0, this->parent, 0);
+
+		ms_filter_destroy(this->cameraReader);
+		ms_filter_destroy(this->sizeconv);
+
+		ms_filter_clean_pending_events(this->parent);
+		ms_filter_clear_notify_callback(this->parent);
+
+		ms_ticker_destroy(this->_ticker);
+		this->_ticker = nullptr;
+
+		// init for next start
+		this->cameraReader = ms_web_cam_create_reader(this->sourceCamera);
+		this->sizeconv = ms_factory_create_filter(this->parent->factory, MS_SIZE_CONV_ID);
+
+		ms_filter_link(this->cameraReader, 0, this->sizeconv, 0);
+		ms_filter_link(this->sizeconv, 0, this->parent, 0);
+
+		MSVideoSize size = {
+			.width = 640,
+			.height = 480,
+		};
+		ms_filter_call_method(this->cameraReader, MS_FILTER_SET_VIDEO_SIZE, &size);
+		ms_filter_call_method(this->sizeconv, MS_FILTER_SET_VIDEO_SIZE, &size);
+
+		float fps = 30.0;
+		ms_filter_call_method(this->cameraReader, MS_FILTER_SET_FPS, &fps);
+		ms_filter_call_method(this->sizeconv, MS_FILTER_SET_FPS, &fps);
 	}
-	else
-	{
-		qDebug() << "splitter source has children,ticker not detached";
-	}
+
+	this->_mutex.unlock();
 }

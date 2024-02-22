@@ -79,9 +79,7 @@ void App::_initCore()
 
 	this->_core->enableSelfView(false);
 	this->_core->enableVideoCapture(true);
-	this->_core->enableVideoDisplay(true);
-	// this->_core->enableVideoDisplay(false);
-	// this->_core->enableVideoSourceReuse(true);
+	this->_core->enableVideoDisplay(false);
 
 	// disable all beeping indication sounds
 	// https://github.com/BelledonneCommunications/linphone-desktop/issues/663#issuecomment-1396680741
@@ -118,33 +116,26 @@ void App::_initCore()
 void App::_initCamera()
 {
 	MSFactory *factory = nullptr;
-	MSWebCam *camera = nullptr;
+	QString cameraId;
 	if (this->_core != nullptr)
 	{
 		factory = linphone_core_get_ms_factory(this->_core->cPtr());
-		camera = ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(factory), this->_core->getVideoDevice().c_str());
+		cameraId = this->_core->getVideoDevice().c_str();
 	}
 	else
 	{
 		factory = ms_factory_new_with_voip();
-		camera = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(factory));
+		MSWebCam *camera = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(factory));
+		cameraId = camera->id;
 	}
 
-	Camera::init(factory);
+	cameraId = SplitterCamera::init(factory, cameraId);
+	qDebug() << cameraId;
 	if (this->_core != nullptr)
 	{
 		this->_core->reloadVideoDevices();
-		this->_core->setVideoDevice("Splitter: " + this->_core->getVideoDevice());
+		this->_core->setVideoDevice(cameraId.toStdString().c_str());
 	}
-
-	// ms_web_cam_manager_reload(manager);
-
-	// auto cams = ms_web_cam_manager_get_list(ms_factory_get_web_cam_manager(factory));
-	// qDebug() << "List available Cams 1:";
-	// for (auto c = cams; c != nullptr; c = c->next)
-	//{
-	//	qDebug() << "--" << ms_web_cam_get_string_id((MSWebCam *)c->data);
-	// }
 }
 
 void App::_initMqtt()
