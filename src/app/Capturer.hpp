@@ -8,13 +8,18 @@
 #include <mediastreamer2/msticker.h>
 #include <mediastreamer2/msvideo.h>
 #include <mediastreamer2/mswebcam.h>
+#include <mediastreamer2/allfilters.h>
 #include <memory>
 #include <QString>
 #include <QtConcurrent>
 
 using namespace linphone;
 
-class Capturer : public QObject
+class Capturer
+	: public QObject,
+	  public CoreListener,
+	  public CallListener,
+	  public std::enable_shared_from_this<Capturer>
 {
 	Q_OBJECT
 private:
@@ -25,6 +30,8 @@ private:
 
 	MSFilter *_source = nullptr;
 	MSFilter *_pixconv = nullptr;
+	MSFilter *_pixconv2 = nullptr;
+	MSFilter *_tee = nullptr;
 	MSFilter *_sink = nullptr;
 	MSTicker *_ticker = nullptr;
 
@@ -40,6 +47,8 @@ public:
 
 	void useCore(std::shared_ptr<Core> core);
 	void snapshot();
+	void onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, linphone::Call::State cstate, const std::string &message) override;
+	void onSnapshotTaken(const std::shared_ptr<linphone::Call> &call, const std::string &filepath) override;
 
 signals:
 	void snapshotTaken(QByteArray snapshot);

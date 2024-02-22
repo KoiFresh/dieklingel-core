@@ -13,7 +13,7 @@ Window {
     color: "black"
     minimumWidth: 480
     minimumHeight: 820
-    visibility: Window.FullScreen
+    // visibility: Window.FullScreen
 
     Connections {
         target: App
@@ -41,6 +41,7 @@ Window {
 
             Signs.Sign {}
             Views.Passcode {}
+            Views.Fotobox {}
         }
     }
 }

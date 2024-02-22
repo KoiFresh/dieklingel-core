@@ -28,6 +28,18 @@ endif()
 
 find_library(LIBLINPHONE_LIBRARY NAMES liblinphone.so)
 
+find_library(GPIOD_LIBRARY NAMES libgpiodcxx.so)
+
+if(NOT GPIOD_LIBRARY)
+	message(FATAL_ERROR "gpiod library not found. Install apt install libgpiod-dev")
+endif()
+
+find_package(BelleSIP 4.2.0 REQUIRED)
+find_package(Mediastreamer2 4.2.0 REQUIRED)
+
+# find_package(Ortp 1.0.0 REQUIRED)
+# find_package(BCToolbox 1.0.0 REQUIRED)
+# find_package(Belr 4.2.0 REQUIRED)
 if(NOT LIBLINPHONE_LIBRARY)
 	message(FATAL_ERROR "liblinphone library not found. Install apt install liblinphone-dev")
 endif()
@@ -44,6 +56,9 @@ add_executable(
 	dieklingel-core
 	gpio/Input.cpp
 	gpio/Output.cpp
+	video/Camera.cpp
+	video/SplitterSource.cpp
+	video/SplitterSink.cpp
 	App.cpp
 	Capturer.cpp
 	main.cpp
@@ -59,6 +74,7 @@ target_link_libraries(
 	${LIBLINPHONE_LIBRARY}
 	${LIBLINPHONE_CXX_LIBRARY}
 	mediastreamer
+	ortp
 	paho-mqtt3as
 	paho-mqttpp3
 	Qt5::Core

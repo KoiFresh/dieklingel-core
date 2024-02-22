@@ -24,6 +24,9 @@ void Capturer::useCore(std::shared_ptr<Core> core)
 		ms_factory_destroy(this->_factory);
 		this->_factory = nullptr;
 	}
+
+	this->_core = core;
+	this->_core->addListener(this->shared_from_this());
 	this->_factory = linphone_core_get_ms_factory(core->cPtr());
 }
 
@@ -74,6 +77,7 @@ MSFilter *Capturer::_configure(MSFilter *source)
 		ms_filter_call_method(source, MS_VIDEO_ENCODER_SET_CONFIGURATION, &vconf);
 	}
 	ms_filter_call_method(source, MS_FILTER_GET_PIX_FMT, &format);
+	qDebug() << "format" << format;
 	if (format == MS_MJPEG)
 	{
 		pixconv = ms_factory_create_filter(this->_factory, MS_MJPEG_DEC_ID);
@@ -88,7 +92,6 @@ MSFilter *Capturer::_configure(MSFilter *source)
 		ms_filter_call_method(pixconv, MS_FILTER_SET_PIX_FMT, &format);
 		ms_filter_call_method(pixconv, MS_FILTER_SET_VIDEO_SIZE, &vsize);
 	}
-
 	return pixconv;
 }
 
@@ -96,9 +99,27 @@ void Capturer::snapshot()
 {
 	if (!this->_mutex.tryLock())
 	{
+		qDebug() << "Snapshot already in  progress";
 		return;
 	}
-	auto webcam = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(this->_factory));
+
+	/*if (this->_core != nullptr)
+	{
+		auto call = this->_core->getCurrentCall();
+		if (call != nullptr)
+		{
+			call->takePreviewSnapshot(Capturer::FILENAME.toStdString());
+			return;
+		}
+	}*/
+
+	// auto webcam = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(this->_factory));
+	auto webcam = ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(this->_factory), "Splitter: V4L2: /dev/video0");
+	if (webcam == nullptr)
+	{
+		qDebug() << "use default webcam";
+		webcam = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(this->_factory));
+	}
 	this->_source = ms_web_cam_create_reader(webcam);
 	this->_pixconv = _configure(this->_source);
 	this->_sink = ms_factory_create_filter(this->_factory, MS_JPEG_WRITER_ID);
@@ -118,7 +139,6 @@ void Capturer::_finishSnapshot()
 {
 	ms_ticker_detach(this->_ticker, this->_source);
 
-	ms_filter_unlink(this->_pixconv, 0, this->_sink, 0);
 	ms_filter_unlink(this->_source, 0, this->_pixconv, 0);
 
 	ms_filter_clear_notify_callback(this->_sink);
@@ -140,9 +160,36 @@ void Capturer::_finishSnapshot()
 	_mutex.unlock();
 }
 
+void Capturer::onCallStateChanged(const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, linphone::Call::State cstate, const std::string &message)
+{
+	switch (cstate)
+	{
+	case Call::State::Connected:
+		qDebug() << "add listener";
+		// call->addListener(this->shared_from_this());
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Capturer::onSnapshotTaken(const std::shared_ptr<linphone::Call> &call, const std::string &filepath)
+{
+	// call->removeListener(this->shared_from_this());
+	qDebug() << "snapshot taken during call";
+	/*QFile file(Capturer::FILENAME);
+	file.open(QIODevice::ReadOnly);
+	const QByteArray contents = file.readAll().toBase64();
+	file.close();
+	emit snapshotTaken("data:image/jpeg;base64," + contents);*/
+	_mutex.unlock();
+}
+
 // static
 void Capturer::_onSnapshotTaken(void *userdata, MSFilter *f, unsigned int id, void *arg)
 {
+	qDebug() << "callback";
 	// void *arg is of type MSJpegWriteEventData
 	Capturer *self = reinterpret_cast<Capturer *>(userdata);
 	switch (id)

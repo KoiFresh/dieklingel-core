@@ -9,6 +9,7 @@ App::App(int &argc, char **argv, CoreConfig &settings) : _argc(argc), _argv(argv
 		_initCore();
 		this->_capturer->useCore(this->_core);
 	}
+	_initCamera();
 	if (this->_settings.getCoreMqttEnabled())
 	{
 		_initMqtt();
@@ -78,7 +79,9 @@ void App::_initCore()
 
 	this->_core->enableSelfView(false);
 	this->_core->enableVideoCapture(true);
-	this->_core->enableVideoDisplay(false);
+	this->_core->enableVideoDisplay(true);
+	// this->_core->enableVideoDisplay(false);
+	// this->_core->enableVideoSourceReuse(true);
 
 	// disable all beeping indication sounds
 	// https://github.com/BelledonneCommunications/linphone-desktop/issues/663#issuecomment-1396680741
@@ -110,6 +113,38 @@ void App::_initCore()
 		qCritical() << "the linphone core could not be started successfully!";
 		exit(state);
 	}
+}
+
+void App::_initCamera()
+{
+	MSFactory *factory = nullptr;
+	MSWebCam *camera = nullptr;
+	if (this->_core != nullptr)
+	{
+		factory = linphone_core_get_ms_factory(this->_core->cPtr());
+		camera = ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(factory), this->_core->getVideoDevice().c_str());
+	}
+	else
+	{
+		factory = ms_factory_new_with_voip();
+		camera = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(factory));
+	}
+
+	Camera::init(factory);
+	if (this->_core != nullptr)
+	{
+		this->_core->reloadVideoDevices();
+		this->_core->setVideoDevice("Splitter: " + this->_core->getVideoDevice());
+	}
+
+	// ms_web_cam_manager_reload(manager);
+
+	// auto cams = ms_web_cam_manager_get_list(ms_factory_get_web_cam_manager(factory));
+	// qDebug() << "List available Cams 1:";
+	// for (auto c = cams; c != nullptr; c = c->next)
+	//{
+	//	qDebug() << "--" << ms_web_cam_get_string_id((MSWebCam *)c->data);
+	// }
 }
 
 void App::_initMqtt()
@@ -150,12 +185,12 @@ void App::publish(QString topic, QString message)
 
 void App::snapshot()
 {
-	auto call = this->_core->getCurrentCall();
+	/*auto call = this->_core->getCurrentCall();
 	if (call != nullptr)
 	{
 		qInfo() << "We received a request to capture a snapshot! Taking snapshots, when call is active is currently not supported.";
 		return;
-	}
+	}*/
 	this->_capturer->snapshot();
 }
 
