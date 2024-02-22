@@ -13,14 +13,7 @@ Window {
     color: "black"
     minimumWidth: 480
     minimumHeight: 820
-    visibility: Window.FullScreen
-
-    Connections {
-        target: App
-        function onInactivity() {
-            carousel.currentIndex = 0;
-        }
-    }
+    visibility: App.env("qml.debug.fullscreen") === "false" ? Window.AutomaticVisibility : Window.FullScreen;
 
     Rectangle {
         clip: true
@@ -33,14 +26,54 @@ Window {
         }
         color: "#1c1f1e"
 
-        SwipeView {
-            id: carousel
+        Component {
+            id: debug
+
+            SwipeView {
+                id: carousel
+                anchors {
+                    fill: parent
+                }
+
+                Signs.Sign {}
+                Views.Passcode {}
+                Views.Fotobox {}
+
+                Connections {
+                    target: App
+                    function onInactivity() {
+                        carousel.currentIndex = 0;
+                    }
+                }
+            }
+        }
+
+        Component {
+            id: release
+
+            SwipeView {
+                id: carousel
+                anchors {
+                    fill: parent
+                }
+
+                Signs.Sign {}
+                Views.Passcode {}
+
+                Connections {
+                    target: App
+                    function onInactivity() {
+                        carousel.currentIndex = 0;
+                    }
+                }
+            }
+        }
+
+        Loader {
             anchors {
                 fill: parent
             }
-
-            Signs.Sign {}
-            Views.Passcode {}
+            sourceComponent: App.env("qml.debug.fotobox") === "true" ? debug : release
         }
     }
 }

@@ -9,6 +9,7 @@ App::App(int &argc, char **argv, CoreConfig &settings) : _argc(argc), _argv(argv
 		_initCore();
 		this->_capturer->useCore(this->_core);
 	}
+	_initCamera();
 	if (this->_settings.getCoreMqttEnabled())
 	{
 		_initMqtt();
@@ -112,6 +113,30 @@ void App::_initCore()
 	}
 }
 
+void App::_initCamera()
+{
+	MSFactory *factory = nullptr;
+	QString cameraId;
+	if (this->_core != nullptr)
+	{
+		factory = linphone_core_get_ms_factory(this->_core->cPtr());
+		cameraId = this->_core->getVideoDevice().c_str();
+	}
+	else
+	{
+		factory = ms_factory_new_with_voip();
+		MSWebCam *camera = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(factory));
+		cameraId = camera->id;
+	}
+
+	cameraId = SplitterCamera::init(factory, cameraId);
+	if (this->_core != nullptr)
+	{
+		this->_core->reloadVideoDevices();
+		this->_core->setVideoDevice(cameraId.toStdString().c_str());
+	}
+}
+
 void App::_initMqtt()
 {
 	this->_mqtt = std::make_shared<Mqtt>(this->_settings.getCoreMqttAddress());
@@ -150,12 +175,12 @@ void App::publish(QString topic, QString message)
 
 void App::snapshot()
 {
-	auto call = this->_core->getCurrentCall();
+	/*auto call = this->_core->getCurrentCall();
 	if (call != nullptr)
 	{
 		qInfo() << "We received a request to capture a snapshot! Taking snapshots, when call is active is currently not supported.";
 		return;
-	}
+	}*/
 	this->_capturer->snapshot();
 }
 

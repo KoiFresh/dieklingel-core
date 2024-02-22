@@ -8,6 +8,7 @@
 #include <mediastreamer2/msticker.h>
 #include <mediastreamer2/msvideo.h>
 #include <mediastreamer2/mswebcam.h>
+#include <mediastreamer2/allfilters.h>
 #include <memory>
 #include <QString>
 #include <QtConcurrent>

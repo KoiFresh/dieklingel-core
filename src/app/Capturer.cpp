@@ -24,6 +24,8 @@ void Capturer::useCore(std::shared_ptr<Core> core)
 		ms_factory_destroy(this->_factory);
 		this->_factory = nullptr;
 	}
+
+	this->_core = core;
 	this->_factory = linphone_core_get_ms_factory(core->cPtr());
 }
 
@@ -88,7 +90,6 @@ MSFilter *Capturer::_configure(MSFilter *source)
 		ms_filter_call_method(pixconv, MS_FILTER_SET_PIX_FMT, &format);
 		ms_filter_call_method(pixconv, MS_FILTER_SET_VIDEO_SIZE, &vsize);
 	}
-
 	return pixconv;
 }
 
@@ -98,7 +99,16 @@ void Capturer::snapshot()
 	{
 		return;
 	}
-	auto webcam = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(this->_factory));
+
+	MSWebCam *webcam = nullptr;
+	if (this->_core != nullptr)
+	{
+		webcam = ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(this->_factory), this->_core->getVideoDevice().c_str());
+	}
+	if (webcam == nullptr)
+	{
+		webcam = ms_web_cam_manager_get_default_cam(ms_factory_get_web_cam_manager(this->_factory));
+	}
 	this->_source = ms_web_cam_create_reader(webcam);
 	this->_pixconv = _configure(this->_source);
 	this->_sink = ms_factory_create_filter(this->_factory, MS_JPEG_WRITER_ID);
@@ -118,10 +128,10 @@ void Capturer::_finishSnapshot()
 {
 	ms_ticker_detach(this->_ticker, this->_source);
 
-	ms_filter_unlink(this->_pixconv, 0, this->_sink, 0);
 	ms_filter_unlink(this->_source, 0, this->_pixconv, 0);
 
-	ms_filter_clear_notify_callback(this->_sink);
+	// dont do this here. This leads to crash somethimes when calling core->iterate, and I dont know why
+	// ms_filter_clear_notify_callback(this->_sink);
 
 	ms_ticker_destroy(this->_ticker);
 	this->_ticker = nullptr;
@@ -136,8 +146,9 @@ void Capturer::_finishSnapshot()
 	file.open(QIODevice::ReadOnly);
 	const QByteArray contents = file.readAll().toBase64();
 	file.close();
-	emit snapshotTaken("data:image/jpeg;base64," + contents);
 	_mutex.unlock();
+
+	emit snapshotTaken("data:image/jpeg;base64," + contents);
 }
 
 // static
