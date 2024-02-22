@@ -97,7 +97,6 @@ void Capturer::snapshot()
 {
 	if (!this->_mutex.tryLock())
 	{
-		qDebug() << "Snapshot already in  progress";
 		return;
 	}
 
@@ -131,7 +130,8 @@ void Capturer::_finishSnapshot()
 
 	ms_filter_unlink(this->_source, 0, this->_pixconv, 0);
 
-	ms_filter_clear_notify_callback(this->_sink);
+	// dont do this here. This leads to crash somethimes when calling core->iterate, and I dont know why
+	// ms_filter_clear_notify_callback(this->_sink);
 
 	ms_ticker_destroy(this->_ticker);
 	this->_ticker = nullptr;
@@ -146,8 +146,9 @@ void Capturer::_finishSnapshot()
 	file.open(QIODevice::ReadOnly);
 	const QByteArray contents = file.readAll().toBase64();
 	file.close();
-	emit snapshotTaken("data:image/jpeg;base64," + contents);
 	_mutex.unlock();
+
+	emit snapshotTaken("data:image/jpeg;base64," + contents);
 }
 
 // static

@@ -16,6 +16,7 @@ void SplitterSource::_init(MSFilter *filter)
 void SplitterSource::_process(MSFilter *filter)
 {
 	SplitterSource::State *splitterSourceState = (SplitterSource::State *)filter->data;
+	splitterSourceState->mutex.lock();
 
 	mblk_t *im;
 	while ((im = ms_queue_get(filter->inputs[0])) != NULL)
@@ -36,6 +37,8 @@ void SplitterSource::_process(MSFilter *filter)
 			count++;
 		}
 	}
+
+	splitterSourceState->mutex.unlock();
 }
 
 // static
@@ -84,7 +87,7 @@ int SplitterSource::_getPixFmt(MSFilter *filter, void *arg)
 
 SplitterSource::State::~State()
 {
-	this->_mutex.lock();
+	this->mutex.lock();
 
 	ms_filter_unlink(this->cameraReader, 0, this->sizeconv, 0);
 	ms_filter_unlink(this->sizeconv, 0, this->parent, 0);
@@ -96,7 +99,7 @@ SplitterSource::State::~State()
 
 	delete this->splitterSinks;
 
-	this->_mutex.unlock();
+	this->mutex.unlock();
 }
 
 MSFilterMethod SplitterSource::methods[] = {
@@ -121,7 +124,7 @@ MSFilterDesc SplitterSource::description = {
 
 void SplitterSource::State::attach(MSFilter *sink)
 {
-	this->_mutex.lock();
+	this->mutex.lock();
 
 	this->splitterSinks->insert(sink);
 
@@ -131,12 +134,12 @@ void SplitterSource::State::attach(MSFilter *sink)
 		ms_ticker_attach(this->_ticker, this->parent);
 	}
 
-	this->_mutex.unlock();
+	this->mutex.unlock();
 }
 
 void SplitterSource::State::detach(MSFilter *sink)
 {
-	this->_mutex.lock();
+	this->mutex.lock();
 
 	this->splitterSinks->remove(sink);
 
@@ -178,5 +181,5 @@ void SplitterSource::State::detach(MSFilter *sink)
 		ms_filter_call_method(this->sizeconv, MS_FILTER_SET_FPS, &fps);
 	}
 
-	this->_mutex.unlock();
+	this->mutex.unlock();
 }

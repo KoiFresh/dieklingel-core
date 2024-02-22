@@ -30,11 +30,11 @@ public:
 	{
 	private:
 		MSTicker *_ticker = nullptr;
-		QMutex _mutex;
 
 	public:
 		~State();
 
+		QMutex mutex;
 		MSWebCam *sourceCamera = nullptr;
 		MSFilter *cameraReader = nullptr;
 		MSFilter *sizeconv = nullptr;
