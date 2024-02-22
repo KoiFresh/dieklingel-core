@@ -130,7 +130,6 @@ void App::_initCamera()
 	}
 
 	cameraId = SplitterCamera::init(factory, cameraId);
-	qDebug() << cameraId;
 	if (this->_core != nullptr)
 	{
 		this->_core->reloadVideoDevices();

@@ -19,7 +19,10 @@ QString SplitterCamera::init(MSFactory *factory, QString cameraId)
 
 	auto manager = ms_factory_get_web_cam_manager(factory);
 	ms_web_cam_manager_register_desc(manager, &SplitterCamera::description);
-	ms_web_cam_manager_reload(manager);
+	// for instant detection without reloading all cameras
+	// _webCamDetectFunc(manager);
+	// Warning: it is not save to call ms_web_cam_mananger_reload in here, after calling ms_web_cam_manager_register_desc the linphone core should reload the video devices.
+	// ms_web_cam_manager_reload(manager);/
 
 	return QString(SplitterCamera::description.driver_type) + ": " + cameraId;
 }
@@ -57,7 +60,10 @@ void SplitterCamera::_webCamDetectFunc(MSWebCamManager *manager)
 	ms_filter_call_method(sourceState->sizeconv, MS_FILTER_SET_VIDEO_SIZE, &size);
 
 	float fps = 30.0;
-	ms_filter_call_method(sourceState->cameraReader, MS_FILTER_SET_FPS, &fps);
+	if (ms_filter_get_id(sourceState->cameraReader) != MS_STATIC_IMAGE_ID)
+	{
+		ms_filter_call_method(sourceState->cameraReader, MS_FILTER_SET_FPS, &fps);
+	}
 	ms_filter_call_method(sourceState->sizeconv, MS_FILTER_SET_FPS, &fps);
 
 	camera->data = splitterCameraState;

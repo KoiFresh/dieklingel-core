@@ -171,7 +171,10 @@ void SplitterSource::State::detach(MSFilter *sink)
 		ms_filter_call_method(this->sizeconv, MS_FILTER_SET_VIDEO_SIZE, &size);
 
 		float fps = 30.0;
-		ms_filter_call_method(this->cameraReader, MS_FILTER_SET_FPS, &fps);
+		if (ms_filter_get_id(this->cameraReader) != MS_STATIC_IMAGE_ID)
+		{
+			ms_filter_call_method(this->cameraReader, MS_FILTER_SET_FPS, &fps);
+		}
 		ms_filter_call_method(this->sizeconv, MS_FILTER_SET_FPS, &fps);
 	}
 
