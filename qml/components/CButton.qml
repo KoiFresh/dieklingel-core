@@ -6,7 +6,7 @@ Item {
 	id: root
 	signal pressed()
 	signal released()
-	property url icon: ""
+	property string icon: ""
 	property color color: "white"
 	property alias active: btn.pressed
 
@@ -23,15 +23,16 @@ Item {
 			border.color: root.color
 			radius: 15
 		}
-
-		Image {
-			source: root.icon
-			width: 50
-			height: 50
+		
+		CIcon {
 			anchors {
 				centerIn: parent
 			}
-			fillMode: Image.PreserveAspectFit
+			font {
+				pointSize: 35
+			}
+			icon: root.icon
+			color: root.color
 		}
 
 		onPressed: {

@@ -74,6 +74,7 @@ sudo apt-get install -y \
 sudo apt-get install -y \
     libgl1-mesa-dev \
     qml-module-qtmultimedia \
+    qml-module-qtquick-controls \
     qml-module-qtquick-controls2 \
     qml-module-qtquick2 \
     qtwayland5

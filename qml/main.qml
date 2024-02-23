@@ -19,10 +19,10 @@ Window {
         clip: true
         anchors { 
             fill: parent
-            leftMargin: App.env("qml.global.clip.left")
-            topMargin: App.env("qml.global.clip.top")
-            rightMargin: App.env("qml.global.clip.right")
-            bottomMargin: App.env("qml.global.clip.bottom")
+            leftMargin: Number(App.env("qml.global.clip.left"))
+            topMargin: Number(App.env("qml.global.clip.top"))
+            rightMargin: Number(App.env("qml.global.clip.right"))
+            bottomMargin: Number(App.env("qml.global.clip.bottom"))
         }
         color: "#1c1f1e"
 
