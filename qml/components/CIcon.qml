@@ -8,7 +8,7 @@ Text {
 	property string icon: ""
 
 	FontLoader {
-		source: "../fonts/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf"
+		source: "../fonts/MaterialSymbolsOutlined[FILL=0,GRAD=25,opsz=24,wght=100].ttf"
 	}
 
 	text: icon

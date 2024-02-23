@@ -29,7 +29,7 @@ Item {
 				centerIn: parent
 			}
 			font {
-				pointSize: 35
+				pointSize: 40
 			}
 			icon: root.icon
 			color: root.color
