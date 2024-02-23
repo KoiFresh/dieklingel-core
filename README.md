@@ -64,7 +64,7 @@ sudo apt-get install -y \
     libgpiod-dev \
     liblinphone-dev \
     libpaho-mqtt-dev \
-    libpaho-mqttpp-dev
+    libpaho-mqttpp-dev \
     libssl-dev \
     qtbase5-dev \
     qtdeclarative5-dev \
