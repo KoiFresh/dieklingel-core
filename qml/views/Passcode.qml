@@ -125,7 +125,7 @@ Item {
 
 			CButton {
 				color: "white"
-				icon: "vpn_key"
+				icon: "key"
 
 				onReleased: {
 					let pin = getPasscode();
