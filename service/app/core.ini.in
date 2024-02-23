@@ -124,3 +124,6 @@ qml.sign.street.name=Regenbogenstr.
 qml.sign.street.number=1
 qml.sign.family.name=Fam. Mustermann
 qml.sign.sip.address=sip:601@fritz.box
+
+qml.debug.fullscreen=false
+qml.debug.fotobox=true
