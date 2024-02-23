@@ -7,9 +7,11 @@
 #include <QQmlApplicationEngine>
 #include <QDir>
 
+#include "Capturer.hpp"
 #include "CoreConfig.hpp"
 #include "InactivityDetector.hpp"
 #include "Mqtt.hpp"
+#include "video/SplitterCamera.hpp"
 
 using namespace linphone;
 
@@ -25,10 +27,14 @@ private:
 	std::shared_ptr<QCoreApplication> _application;
 	std::shared_ptr<QQmlApplicationEngine> _engine;
 	std::shared_ptr<InactivityDetector> _filter;
+	std::shared_ptr<Capturer> _capturer;
+	// std::shared_ptr<Camera> _camera;
 
 	void _initEnv();
+	void _initCapturer();
 	void _initApplication();
 	void _initCore();
+	void _initCamera();
 	void _initMqtt();
 
 	void _ring(QString number);
@@ -43,6 +49,7 @@ public:
 	int exec();
 	Q_INVOKABLE void ring(QString number);
 	Q_INVOKABLE void publish(QString topic, QString message);
+	Q_INVOKABLE void snapshot();
 	Q_INVOKABLE QString env(QString key);
 
 	void printCoreInformation();
@@ -50,6 +57,7 @@ public:
 signals:
 	void inactivity();
 	void messageReceived(QString topic, QString message);
+	void snapshotTaken(QByteArray snapshot);
 
 protected:
 	void onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message) override;
