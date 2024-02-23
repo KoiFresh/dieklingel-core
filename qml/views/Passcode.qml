@@ -106,7 +106,7 @@ Item {
 				property bool isOn: false
 
 				color: isOn ? "yellow" : "white"
-				icon: isOn ? "light.on.png" : "light.off.png"
+				icon: isOn ? "lightbulb" : "light_off"
 				
 				onPressed: {
 					App.publish("home/light/main/door", light.isOn ? "off" : "on")
@@ -125,7 +125,7 @@ Item {
 
 			CButton {
 				color: "white"
-				icon: "key.png"
+				icon: "key"
 
 				onReleased: {
 					let pin = getPasscode();

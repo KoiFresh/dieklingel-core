@@ -21,6 +21,7 @@ Item {
 			bottomMargin: 20
 			horizontalCenter: parent.horizontalCenter
 		}
+		icon: "camera"
 
 		onReleased: {
 			App.snapshot();

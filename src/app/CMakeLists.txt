@@ -64,4 +64,6 @@ target_link_libraries(
 install(
 	TARGETS
 	dieklingel-core
+	DESTINATION
+	${CMAKE_INSTALL_PREFIX}/bin
 )
