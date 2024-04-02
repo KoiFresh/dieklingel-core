@@ -38,7 +38,7 @@ build:
 	cmake -B build
 	cmake --build build
 
-### Build and run the executable.
+### Build and run the executable
 run: build
 	build/src/app/dieklingel-core
 
