@@ -1,27 +1,25 @@
 #ifndef __INACTIVITY_DETECTOR_HPP__
 #define __INACTIVITY_DETECTOR_HPP__
 
+#include <QEvent>
 #include <QLoggingCategory>
 #include <QObject>
-#include <QEvent>
 #include <QTimer>
 
-class InactivityDetector : public QObject
-{
-	Q_OBJECT
-private:
-	QTimer _timer;
+class InactivityDetector : public QObject {
+  Q_OBJECT
+ private:
+  QTimer _timer;
 
-public:
-	InactivityDetector();
-	~InactivityDetector();
+ public:
+  InactivityDetector();
+  ~InactivityDetector();
 
-signals:
-	void inactivity();
+ signals:
+  void inactivity();
 
-protected:
-	bool
-	eventFilter(QObject *obj, QEvent *event);
+ protected:
+  bool eventFilter(QObject *obj, QEvent *event);
 };
 
-#endif // __INACTIVITY_DETECTOR_HPP__
+#endif  // __INACTIVITY_DETECTOR_HPP__
