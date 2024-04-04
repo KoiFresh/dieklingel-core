@@ -6,24 +6,27 @@ deps\:build:
 	    build-essential \
     	cmake \
     	git \
+		libgl1-mesa-dev \
     	libgpiod-dev \
     	liblinphone-dev \
     	libpaho-mqtt-dev \
     	libpaho-mqttpp-dev \
     	libssl-dev \
-    	qtbase5-dev \
-    	qtdeclarative5-dev \
-    	qtquickcontrols2-5-dev
+    	qt6-base-dev \
+    	qt6-declarative-dev \
 
 ### Install dependencies to run the executable
 deps\:run:
 	apt-get install -y \
-		libgl1-mesa-dev \
-		qml-module-qtmultimedia \
-		qml-module-qtquick-controls \
-		qml-module-qtquick-controls2 \
-		qml-module-qtquick2 \
-		qtwayland5
+		qml6-module-qtmultimedia \
+		qml6-module-qtqml \
+		qml6-module-qtqml-models \
+		qml6-module-qtqml-workerscript \
+		qml6-module-qtquick \
+		qml6-module-qtquick-controls \
+		qml6-module-qtquick-templates \
+		qml6-module-qtquick-window \
+		qt6-wayland
 
 ### Install dependencies to develop the application
 deps\:dev:

@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update && \
-          sudo make deps:all
+          sudo make deps:dev
 
       - name: Check formating
         run: |
@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update && \
-          sudo make deps:all
+          sudo make deps:build
 
       - name: Build the core
         run: |
