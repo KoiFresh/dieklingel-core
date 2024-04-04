@@ -15,7 +15,7 @@ find_package(LinphoneCxx REQUIRED)
 find_package(Mediastreamer2 4.2.0 REQUIRED)
 find_package(PahoMqttCpp REQUIRED)
 find_package(
-	Qt5
+	Qt6
 	REQUIRED
 	COMPONENTS
 	Core
@@ -53,12 +53,12 @@ target_link_libraries(
 	ortp
 	paho-mqtt3as
 	paho-mqttpp3
-	Qt5::Core
-	Qt5::Concurrent
-	Qt5::Qml
-	Qt5::Gui
-	Qt5::Quick
-	Qt5::QuickControls2
+	Qt6::Core
+	Qt6::Concurrent
+	Qt6::Qml
+	Qt6::Gui
+	Qt6::Quick
+	Qt6::QuickControls2
 )
 
 install(

@@ -4,4 +4,4 @@
 #include "Input.hpp"
 #include "Output.hpp"
 
-#endif // __GPIO_GPIO_HPP__
+#endif  // __GPIO_GPIO_HPP__

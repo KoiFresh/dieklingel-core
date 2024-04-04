@@ -57,40 +57,28 @@ Install dependencies which are required to build and/or run the project.
 
 ```sh
 # Buildtime dependencies
-sudo apt-get install -y \
-    build-essential \
-    cmake \
-    git \
-    libgpiod-dev \
-    liblinphone-dev \
-    libpaho-mqtt-dev \
-    libpaho-mqttpp-dev
-    libssl-dev \
-    qtbase5-dev \
-    qtdeclarative5-dev \
-    qtquickcontrols2-5-dev
+sudo make deps:build
 
 # Runtime dependencies
-sudo apt-get install -y \
-    libgl1-mesa-dev \
-    qml-module-qtmultimedia \
-    qml-module-qtquick-controls \
-    qml-module-qtquick-controls2 \
-    qml-module-qtquick2 \
-    qtwayland5
+sudo make deps:run
+
+# Development dependencies
+sudo make deps:dev
+
+# Or for development, build and runtime
+sudo make deps:all
 ```
 
 ### 🏗️ Build the core
 
 ```sh
-cmake -B build
-make -C build
+make build
 ```
 
 ### 🔧 Install the core
 
 ```sh
-sudo make -C build install
+sudo make install
 ```
 
 ### 🚂 Run the core
