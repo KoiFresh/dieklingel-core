@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import QtMultimedia 6.2
+import QtMultimedia 5.15
 import com.dieklingel 1.0
 import com.dieklingel.gpio 1.0
 

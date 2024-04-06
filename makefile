@@ -12,21 +12,18 @@ deps\:build:
     	libpaho-mqtt-dev \
     	libpaho-mqttpp-dev \
     	libssl-dev \
-    	qt6-base-dev \
-    	qt6-declarative-dev \
+    	qtbase5-dev \
+    	qtdeclarative5-dev \
+    	qtquickcontrols2-5-dev
 
 ### Install dependencies to run the executable
 deps\:run:
 	apt-get install -y \
-		qml6-module-qtmultimedia \
-		qml6-module-qtqml \
-		qml6-module-qtqml-models \
-		qml6-module-qtqml-workerscript \
-		qml6-module-qtquick \
-		qml6-module-qtquick-controls \
-		qml6-module-qtquick-templates \
-		qml6-module-qtquick-window \
-		qt6-wayland
+		qml-module-qtmultimedia \
+		qml-module-qtquick-controls \
+		qml-module-qtquick-controls2 \
+		qml-module-qtquick2 \
+		qtwayland5
 
 ### Install dependencies to develop the application
 deps\:dev:
