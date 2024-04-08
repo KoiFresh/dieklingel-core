@@ -1,3 +1,4 @@
+#include <linphone/core.h>
 #include <unistd.h>
 
 #include <QDir>
@@ -8,17 +9,33 @@
 #include <iostream>
 #include <linphone++/linphone.hh>
 
-#include "App.hpp"
 #include "CoreConfig.hpp"
 #include "gpio/Gpio.hpp"
+#include "kiosk/Kiosk.hpp"
+#include "mqtt/Mqtt.hpp"
+#include "setup/Setup.hpp"
+#include "softphone/Softphone.hpp"
+#include "web/WebServer.hpp"
 
 int main(int argc, char *argv[]) {
-  CoreConfig config;
-  App app = App(argc, argv, config);
+    auto factory = linphone::Factory::get();
+    auto path = QDir::currentPath().toStdString();
+    factory->setDataResourcesDir(path);
+    factory->setImageResourcesDir(path);
+    factory->setTopResourcesDir(path);
 
-  qmlRegisterSingletonInstance<App>("com.dieklingel", 1, 0, "App", &app);
-  qmlRegisterType<Input>("com.dieklingel.gpio", 1, 0, "Input");
-  qmlRegisterType<Output>("com.dieklingel.gpio", 1, 0, "Output");
+    auto core = factory->createCore("", "", nullptr);
 
-  return app.exec();
+    Setup *setup = new Setup(argc, argv);
+    setup->script("core.js")->directory(".");
+
+    setup->configureable("camera", [core]() { return new Camera(core); })
+        ->configureable("core.mqtt", []() { return new Mqtt(); })
+        ->configureable("core.kiosk", [setup]() { return new Kiosk(setup); })
+        ->configureable("core.web", []() { return new WebServer(); })
+        ->configureable("core.sip", [setup, core]() {
+            return new Softphone(setup, core);
+        });
+
+    return setup->exec();
 }

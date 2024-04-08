@@ -30,17 +30,21 @@ add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 
 add_executable(
 	dieklingel-core
+	camera/Camera.cpp
 	gpio/Input.cpp
 	gpio/Output.cpp
+	mqtt/Mqtt.cpp
+	kiosk/InactivityDetector.cpp
+	kiosk/Kiosk.cpp
+	setup/Setup.cpp
+	softphone/Softphone.cpp
 	video/SplitterCamera.cpp
 	video/SplitterSource.cpp
 	video/SplitterSink.cpp
-	App.cpp
+	web/WebServer.cpp
 	Capturer.cpp
 	main.cpp
 	CoreConfig.cpp
-	InactivityDetector.cpp
-	Mqtt.cpp
 )
 
 target_link_libraries(

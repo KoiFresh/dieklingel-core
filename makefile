@@ -52,8 +52,8 @@ clean:
 
 ### Check the format of all cpp, hpp, cc and cxx files
 format\:check:
-	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format --dry-run -Werror -i -style=Google
+	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format --dry-run -Werror -i -style=file
 
 ### Format all cpp, hpp, cc and cxx source files
 format\:format:
-	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format -i -style=Google
+	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format -i -style=file

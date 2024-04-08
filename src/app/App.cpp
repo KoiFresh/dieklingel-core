@@ -1,15 +1,18 @@
 #include "App.hpp"
 
 App::App(int &argc, char **argv, CoreConfig &settings)
-    : _argc(argc), _argv(argv), _settings(settings) {
+    : _argc(argc), _argv(argv), _settings(settings)
+{
   _initEnv();
   _initCapturer();
-  if (this->_settings.getCoreSipEnabled()) {
+  if (this->_settings.getCoreSipEnabled())
+  {
     _initCore();
     this->_capturer->useCore(this->_core);
   }
   _initCamera();
-  if (this->_settings.getCoreMqttEnabled()) {
+  if (this->_settings.getCoreMqttEnabled())
+  {
     _initMqtt();
   }
   _initApplication();
@@ -19,21 +22,26 @@ App::App(int &argc, char **argv, CoreConfig &settings)
 
 App::~App() {}
 
-void App::_initEnv() {
+void App::_initEnv()
+{
   QMap env = this->_settings.getCoreEnv();
-  for (auto entry = env.cbegin(), end = env.cend(); entry != end; entry++) {
+  for (auto entry = env.cbegin(), end = env.cend(); entry != end; entry++)
+  {
     qputenv(entry.key().toLatin1(), entry.value().toLatin1());
   }
 }
 
-void App::_initCapturer() {
+void App::_initCapturer()
+{
   this->_capturer = std::make_shared<Capturer>();
   connect(this->_capturer.get(), &Capturer::snapshotTaken, this,
           &App::snapshotTaken);
 }
 
-void App::_initApplication() {
-  if (this->_settings.getCoreQmlEnabled()) {
+void App::_initApplication()
+{
+  if (this->_settings.getCoreQmlEnabled())
+  {
     this->_application =
         std::make_shared<QGuiApplication>(this->_argc, this->_argv);
     this->_engine = std::make_shared<QQmlApplicationEngine>();
@@ -42,13 +50,16 @@ void App::_initApplication() {
     this->_application->installEventFilter(this->_filter.get());
     connect(this->_filter.get(), &InactivityDetector::inactivity, this,
             &App::inactivity);
-  } else {
+  }
+  else
+  {
     this->_application =
         std::make_shared<QCoreApplication>(this->_argc, this->_argv);
   }
 }
 
-void App::_initCore() {
+void App::_initCore()
+{
   auto factory = Factory::get();
   auto path = QDir::currentPath().toStdString();
   factory->setDataResourcesDir(path);
@@ -103,19 +114,24 @@ void App::_initCore() {
   this->_core->addListener(self);
 
   auto state = this->_core->start();
-  if (state != 0) {
+  if (state != 0)
+  {
     qCritical() << "the linphone core could not be started successfully!";
     exit(state);
   }
 }
 
-void App::_initCamera() {
+void App::_initCamera()
+{
   MSFactory *factory = nullptr;
   QString cameraId;
-  if (this->_core != nullptr) {
+  if (this->_core != nullptr)
+  {
     factory = linphone_core_get_ms_factory(this->_core->cPtr());
     cameraId = this->_core->getVideoDevice().c_str();
-  } else {
+  }
+  else
+  {
     factory = ms_factory_new_with_voip();
     MSWebCam *camera = ms_web_cam_manager_get_default_cam(
         ms_factory_get_web_cam_manager(factory));
@@ -123,18 +139,21 @@ void App::_initCamera() {
   }
 
   cameraId = SplitterCamera::init(factory, cameraId);
-  if (this->_core != nullptr) {
+  if (this->_core != nullptr)
+  {
     this->_core->reloadVideoDevices();
     this->_core->setVideoDevice(cameraId.toStdString().c_str());
   }
 }
 
-void App::_initMqtt() {
+void App::_initMqtt()
+{
   this->_mqtt = std::make_shared<Mqtt>(this->_settings.getCoreMqttAddress());
   auto username = this->_settings.getCoreMqttUsername();
   auto password = this->_settings.getCoreMqttPassword();
   this->_mqtt->connect(username, password);
-  for (auto topic : this->_settings.getCoreMqttSubscriptions()) {
+  for (auto topic : this->_settings.getCoreMqttSubscriptions())
+  {
     this->_mqtt->subscribe(topic);
   }
   connect(this->_mqtt.get(), &Mqtt::messageReceived, this,
@@ -143,22 +162,26 @@ void App::_initMqtt() {
 
 void App::_iterate() { this->_core->iterate(); }
 
-void App::ring(QString number) {
+void App::ring(QString number)
+{
   qInfo() << "emit ring event";
 
   this->_ring(number);
   this->publish("dieklingel/core/event/on/ring", number);
 }
 
-void App::publish(QString topic, QString message) {
-  if (this->_mqtt == nullptr) {
+void App::publish(QString topic, QString message)
+{
+  if (this->_mqtt == nullptr)
+  {
     return;
   }
 
   this->_mqtt->publish(topic, message);
 }
 
-void App::snapshot() {
+void App::snapshot()
+{
   /*auto call = this->_core->getCurrentCall();
   if (call != nullptr)
   {
@@ -170,12 +193,15 @@ void App::snapshot() {
 
 QString App::env(QString key) { return qgetenv(key.toStdString().c_str()); }
 
-void App::_ring(QString number) {
-  if (this->_core == nullptr) {
+void App::_ring(QString number)
+{
+  if (this->_core == nullptr)
+  {
     return;
   }
 
-  if (this->_core->getCurrentCall() != nullptr) {
+  if (this->_core->getCurrentCall() != nullptr)
+  {
     qInfo() << "there is already an ongoing call, we will not invite" << number;
     return;
   }
@@ -187,26 +213,31 @@ void App::_ring(QString number) {
   this->_core->inviteWithParams(number.toStdString(), params);
 }
 
-int App::exec() {
+int App::exec()
+{
   QTimer timer = QTimer();
-  if (this->_core != nullptr) {
+  if (this->_core != nullptr)
+  {
     connect(&timer, &QTimer::timeout, this, &App::_iterate);
     timer.start(0);
   }
-  if (this->_engine != nullptr) {
+  if (this->_engine != nullptr)
+  {
     const QUrl url = this->_settings.getCoreQmlEntry();
     this->_engine->load(url);
   }
 
   int code = this->_application->exec();
 
-  if (this->_core != nullptr) {
+  if (this->_core != nullptr)
+  {
     this->_core->stop();
   }
   return code;
 }
 
-void App::printCoreInformation() {
+void App::printCoreInformation()
+{
   QTextStream info(stdout);
 
   info << "dieklingel core version: " << getVersion() << Qt::endl;
@@ -216,47 +247,57 @@ void App::printCoreInformation() {
 
   info << "qml enabled: "
        << (this->_settings.getCoreQmlEnabled() ? "true" : "false") << Qt::endl;
-  if (this->_settings.getCoreQmlEnabled()) {
+  if (this->_settings.getCoreQmlEnabled())
+  {
     info << "\tentry file: " << this->_settings.getCoreQmlEntry().toString()
          << Qt::endl;
   }
 
   info << "mqtt enabled: "
        << (this->_settings.getCoreMqttEnabled() ? "true" : "false") << Qt::endl;
-  if (this->_settings.getCoreMqttEnabled()) {
+  if (this->_settings.getCoreMqttEnabled())
+  {
     info << "\tmqtt address: " << this->_settings.getCoreMqttAddress()
          << Qt::endl;
   }
 
   info << "sip enabled:"
        << (this->_settings.getCoreSipEnabled() ? "true" : "false") << Qt::endl;
-  if (this->_settings.getCoreSipEnabled()) {
+  if (this->_settings.getCoreSipEnabled())
+  {
     info << "\taudio codecs:" << Qt::endl;
-    for (auto codec : this->_core->getAudioPayloadTypes()) {
+    for (auto codec : this->_core->getAudioPayloadTypes())
+    {
       info << "\t\t- " << codec->getDescription().c_str() << Qt::endl;
     }
 
     info << "\tvideo codecs:" << Qt::endl;
-    for (auto codec : this->_core->getVideoPayloadTypes()) {
+    for (auto codec : this->_core->getVideoPayloadTypes())
+    {
       info << "\t\t- " << codec->getDescription().c_str() << Qt::endl;
     }
 
     info << "\taudio devices:" << Qt::endl;
-    for (auto device : this->_core->getSoundDevicesList()) {
+    for (auto device : this->_core->getSoundDevicesList())
+    {
       info << "\t\t- " << device.c_str();
-      if (device == this->_core->getPlaybackDevice()) {
+      if (device == this->_core->getPlaybackDevice())
+      {
         info << " (selected [playback])";
       }
-      if (device == this->_core->getCaptureDevice()) {
+      if (device == this->_core->getCaptureDevice())
+      {
         info << " (selected [capture])";
       }
       info << Qt::endl;
     }
 
     info << "\tvideo devices:" << Qt::endl;
-    for (auto device : this->_core->getVideoDevicesList()) {
+    for (auto device : this->_core->getVideoDevicesList())
+    {
       info << "\t\t- " << device.c_str();
-      if (device == this->_core->getVideoDevice()) {
+      if (device == this->_core->getVideoDevice())
+      {
         info << " (selected)";
       }
       info << Qt::endl;
@@ -293,7 +334,8 @@ void App::printCoreInformation() {
   }
 }
 
-QString App::getVersion() {
+QString App::getVersion()
+{
 #ifndef DIEKLINGEL_CORE_VERSION
   return "unknown";
 #else
@@ -303,14 +345,16 @@ QString App::getVersion() {
 
 void App::onGlobalStateChanged(const std::shared_ptr<linphone::Core> &lc,
                                linphone::GlobalState gstate,
-                               const std::string &message) {
+                               const std::string &message)
+{
   qInfo() << "Core state changed:" << message.c_str();
 };
 
 void App::onRegistrationStateChanged(const std::shared_ptr<Core> &lc,
                                      const std::shared_ptr<ProxyConfig> &cfg,
                                      RegistrationState cstate,
-                                     const std::string &message) {
+                                     const std::string &message)
+{
   qInfo() << "Registration state changed ["
           << cfg->getIdentityAddress()->asString().c_str()
           << "]:" << message.c_str();
@@ -319,36 +363,41 @@ void App::onRegistrationStateChanged(const std::shared_ptr<Core> &lc,
 void App::onCallStateChanged(const std::shared_ptr<linphone::Core> &lc,
                              const std::shared_ptr<linphone::Call> &call,
                              linphone::Call::State cstate,
-                             const std::string &message) {
+                             const std::string &message)
+{
   qInfo() << "Call state changed [" << call->getRemoteAddressAsString().c_str()
           << "]:" << message.c_str();
-  switch (cstate) {
-    case Call::State::IncomingReceived: {
-      auto state = call->accept();
-      if (state != 0) {
-        qWarning() << "Failed to accept an incomming call";
-      }
-      break;
+  switch (cstate)
+  {
+  case Call::State::IncomingReceived:
+  {
+    auto state = call->accept();
+    if (state != 0)
+    {
+      qWarning() << "Failed to accept an incomming call";
     }
-    case Call::State::OutgoingEarlyMedia:
-      // mute speaker while early media, in order to suppress the remote
-      // ringing sound played by the pbx (like fritzbox)
-      call->setSpeakerMuted(true);
-      break;
-    case Call::State::PausedByRemote:
-    case Call::State::Paused:
-      call->setSpeakerMuted(true);
-      break;
-    case Call::State::StreamsRunning:
-      call->setSpeakerMuted(false);
-      break;
-    default:
-      break;
+    break;
+  }
+  case Call::State::OutgoingEarlyMedia:
+    // mute speaker while early media, in order to suppress the remote
+    // ringing sound played by the pbx (like fritzbox)
+    call->setSpeakerMuted(true);
+    break;
+  case Call::State::PausedByRemote:
+  case Call::State::Paused:
+    call->setSpeakerMuted(true);
+    break;
+  case Call::State::StreamsRunning:
+    call->setSpeakerMuted(false);
+    break;
+  default:
+    break;
   }
 }
 
 void App::onDtmfReceived(const std::shared_ptr<linphone::Core> &lc,
                          const std::shared_ptr<linphone::Call> &call,
-                         int dtmf) {
+                         int dtmf)
+{
   qInfo() << "Dtmf received" << dtmf;
 }

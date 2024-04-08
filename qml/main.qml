@@ -2,6 +2,7 @@ import QtQml 2.12
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.12
+
 import com.dieklingel 1.0
 
 import "signs" as Signs
@@ -13,16 +14,16 @@ Window {
     color: "black"
     minimumWidth: 480
     minimumHeight: 820
-    visibility: App.env("qml.debug.fullscreen") === "false" ? Window.AutomaticVisibility : Window.FullScreen;
+    visibility: (App.qml && App.qml.debug && App.qml.debug.fullscreen == false) ? Window.AutomaticVisibility : Window.FullScreen;
 
     Rectangle {
         clip: true
         anchors { 
             fill: parent
-            leftMargin: Number(App.env("qml.global.clip.left"))
-            topMargin: Number(App.env("qml.global.clip.top"))
-            rightMargin: Number(App.env("qml.global.clip.right"))
-            bottomMargin: Number(App.env("qml.global.clip.bottom"))
+            leftMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.left) || 0
+            topMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.top) || 0
+            rightMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.right) || 0
+            bottomMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.bottom) || 0
         }
         color: "#1c1f1e"
 
@@ -73,7 +74,7 @@ Window {
             anchors {
                 fill: parent
             }
-            sourceComponent: App.env("qml.debug.fotobox") === "true" ? debug : release
+            sourceComponent: (App.qml && App.qml.debug && App.qml.debug.fotobox) ? debug : release
         }
     }
 }

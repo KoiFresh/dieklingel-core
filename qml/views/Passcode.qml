@@ -22,8 +22,9 @@ Item {
 			const tumbler = passcode.children[i];
 			let index = tumbler.currentIndex;
 			for(;;) {
-				tumbler.currentIndex = Math.floor(Math.random() * tumbler.model.length);
-				if(tumbler.currentIndex !== index) {
+				let next = Math.floor(Math.random() * tumbler.model.length);
+				if(next !== index) {
+					tumbler.currentIndex = next;
 					break;
 				}
 			}
@@ -103,22 +104,14 @@ Item {
 
 			CButton {
 				id: light
-				property bool isOn: false
+				property bool isOn: Boolean(App.light && App.light.isOn)
 
 				color: isOn ? "yellow" : "white"
 				icon: isOn ? "lightbulb" : "light_off"
 				
 				onPressed: {
-					App.publish("home/light/main/door", light.isOn ? "off" : "on")
-				}
-
-				Connections {
-					target: App
-
-					function onMessageReceived(topic, message) {;
-						if(topic === "home/light/main/door") {
-							light.isOn = (message === "on") ? true : false;
-						}
+					if(App.light && App.light.toogle) {
+						App.light.toogle();
 					}
 				}
 			}
@@ -130,8 +123,9 @@ Item {
 				onReleased: {
 					let pin = getPasscode();
 					randomize();
-					if(pin === App.env("qml.passcode")) {
-						console.log("TODO: unlock the door");
+
+					if(App.unlock && App.unlock(pin)) {
+						console.log("TODO: handle unlock");
 					}
 				}
 			}
