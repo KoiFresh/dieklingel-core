@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <linphone++/linphone.hh>
 
+#include "../audio/Audio.hpp"
 #include "../camera/Camera.hpp"
 #include "../setup/Configuration.hpp"
 #include "../setup/Setup.hpp"

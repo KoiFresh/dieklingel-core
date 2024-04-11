@@ -54,12 +54,10 @@ configure(!"core.sip", (sip) => {
 	sip.transport(["tls"]);
 });
 
-/* TODO
-configure("audio", (audio) => {
-		audio.playback("PulseAudio Unknown: Echo-Cancel Sink");
-		audio.capture("PulseAudio Unknown: Echo-Cancel Source");
+configure(!"audio", (audio) => {
+	audio.playback("PulseAudio Unknown: Echo-Cancel Sink");
+	audio.capture("PulseAudio Unknown: Echo-Cancel Source");
 });
-*/
 
 /* TODO
 configure("gpios", (gpios) => {

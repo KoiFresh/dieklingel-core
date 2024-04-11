@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     setup->script("core.js")->directory(".");
 
     setup->configureable("camera", [core]() { return new Camera(core); })
+        ->configureable("audio", [core]() { return new Audio(core); })
         ->configureable("core.mqtt", []() { return new Mqtt(); })
         ->configureable("core.kiosk", [setup]() { return new Kiosk(setup); })
         ->configureable("core.web", []() { return new WebServer(); })

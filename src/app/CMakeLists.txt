@@ -30,6 +30,7 @@ add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 
 add_executable(
 	dieklingel-core
+	audio/Audio.cpp
 	camera/Camera.cpp
 	gpio/Input.cpp
 	gpio/Output.cpp

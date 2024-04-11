@@ -24,6 +24,7 @@ Softphone::Softphone(Setup *setup, std::shared_ptr<linphone::Core> core) {
     // configure the camera. But because the camera already configures the video
     // device for the linphone core, no further actions are needed.
     this->_setup->require<Camera>("camera");
+    this->_setup->require<Audio>("audio");
 }
 
 Softphone::~Softphone() {}
@@ -91,7 +92,12 @@ void Softphone::onSetupCompleted() {
         QString("sip:%1@%2").arg(this->_username, this->_proxy).toStdString()
     );
     auto info = factory->createAuthInfo(
-        address->getUsername(), "", this->_password.toStdString(), "", "", ""
+        address->getUsername(),
+        "",
+        this->_password.toStdString(),
+        "",
+        "",
+        ""
     );
     this->_core->addAuthInfo(info);
 
