@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update && \
-          sudo make deps:dev
+          sudo make deps:build
 
       - name: Build the core
         run: |
