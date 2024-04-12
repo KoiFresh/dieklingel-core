@@ -28,6 +28,7 @@ TEST(Setup, useGui_replaces_QCoreApplication_with_QGuiApplication) {
     char **argv = nullptr;
     auto setup = Core::Setup(argc, argv);
 
+    qputenv("QT_QPA_PLATFORM", "vnc");
     setup.useGui();
 
     auto gui = qobject_cast<QGuiApplication *>(QCoreApplication::instance());
