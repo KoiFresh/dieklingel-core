@@ -72,3 +72,36 @@ install(
 	DESTINATION
 	${CMAKE_INSTALL_PREFIX}/bin
 )
+
+# GTest
+
+enable_testing()
+
+add_executable(
+  dieklingel-core_test
+  setup/Setup.cpp
+  setup/SetupTest.cpp
+  web/WebServer.cpp
+  web/WebServerTest.cpp
+)
+target_link_libraries(
+  dieklingel-core_test
+  GTest::gtest_main
+  GTest::gmock_main
+  ${GPIOD_LIBRARY}
+  linphone
+  linphone++
+  mediastreamer
+  ortp
+  paho-mqtt3as
+  paho-mqttpp3
+  Qt5::Core
+  Qt5::Concurrent
+  Qt5::Qml
+  Qt5::Gui
+  Qt5::Quick
+  Qt5::QuickControls2
+)
+
+include(GoogleTest)
+gtest_discover_tests(dieklingel-core_test)

@@ -21,6 +21,21 @@ jobs:
         run: |
           make format:check
 
+  linux-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo make deps:dev
+
+      - name: Build the core
+        run: |
+          make test
+
   linux-build:
     runs-on: ubuntu-latest
     steps:

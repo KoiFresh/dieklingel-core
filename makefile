@@ -42,6 +42,10 @@ build:
 run: build
 	build/src/app/dieklingel-core
 
+### Build and run tests
+test: build
+	build/src/app/dieklingel-core_test
+
 ### Install the executable into a bin location
 install: build
 	make -C build install

@@ -13,6 +13,8 @@
 
 #include "Configuration.hpp"
 
+namespace Core {
+
 typedef std::function<Configuration*()> ConfigurationFactory;
 
 class Setup : public QObject {
@@ -65,5 +67,7 @@ class Setup : public QObject {
    signals:
     void whenSetupCompletes();
 };
+
+}  // namespace Core
 
 #endif  // __SETUP_SETUP_HPP__

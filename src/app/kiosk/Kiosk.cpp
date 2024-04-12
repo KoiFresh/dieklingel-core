@@ -1,7 +1,7 @@
 
 #include "Kiosk.hpp"
 
-Kiosk::Kiosk(Setup* setup) { this->_setup = setup; }
+Kiosk::Kiosk(Core::Setup* setup) { this->_setup = setup; }
 
 Kiosk::~Kiosk() {}
 
