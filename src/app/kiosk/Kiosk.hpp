@@ -14,11 +14,11 @@ class Kiosk : public Configuration {
     Q_OBJECT
    private:
     QString _uri = "qml/main.qml";
-    Core::Setup* _setup = nullptr;
+    std::shared_ptr<Core::Setup> _setup;
     InactivityDetector _detector;
 
    public:
-    Kiosk(Core::Setup* setup);
+    Kiosk(std::shared_ptr<Core::Setup> setup);
     ~Kiosk();
 
     void onSetupCompleted() override;

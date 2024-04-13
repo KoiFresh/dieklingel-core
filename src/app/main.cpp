@@ -26,16 +26,29 @@ int main(int argc, char *argv[]) {
 
     auto core = factory->createCore("", "", nullptr);
 
-    Core::Setup *setup = new Core::Setup(argc, argv);
+    auto setup = std::make_shared<Core::Setup>(argc, argv);
     setup->script("core.js")->directory(".");
 
-    setup->configureable("camera", [core]() { return new Camera(core); })
-        ->configureable("audio", [core]() { return new Audio(core); })
-        ->configureable("core.mqtt", []() { return new Mqtt(); })
-        ->configureable("core.kiosk", [setup]() { return new Kiosk(setup); })
-        ->configureable("core.web", []() { return new WebServer(); })
+    setup
+        ->configureable(
+            "camera",
+            [core]() { return std::make_shared<Camera>(core); }
+        )
+        ->configureable(
+            "audio",
+            [core]() { return std::make_shared<Audio>(core); }
+        )
+        ->configureable("core.mqtt", []() { return std::make_shared<Mqtt>(); })
+        ->configureable(
+            "core.kiosk",
+            [setup]() { return std::make_shared<Kiosk>(setup); }
+        )
+        ->configureable(
+            "core.web",
+            []() { return std::make_shared<WebServer>(); }
+        )
         ->configureable("core.sip", [setup, core]() {
-            return new Softphone(setup, core);
+            return std::make_shared<Softphone>(setup, core);
         });
 
     return setup->exec();

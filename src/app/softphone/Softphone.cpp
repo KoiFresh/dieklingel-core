@@ -1,6 +1,8 @@
 #include "Softphone.hpp"
 
-Softphone::Softphone(Core::Setup *setup, std::shared_ptr<linphone::Core> core) {
+Softphone::Softphone(
+    std::shared_ptr<Core::Setup> setup, std::shared_ptr<linphone::Core> core
+) {
     this->_setup = setup;
     this->_core = core;
 

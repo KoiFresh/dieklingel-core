@@ -15,17 +15,17 @@
 
 namespace Core {
 
-typedef std::function<Configuration*()> ConfigurationFactory;
+typedef std::function<std::shared_ptr<Configuration>()> ConfigurationFactory;
 
-class Setup : public QObject {
+class Setup : public QObject, public std::enable_shared_from_this<Setup> {
     Q_OBJECT
    private:
-    QCoreApplication* _application = nullptr;
+    std::shared_ptr<QCoreApplication> _application;
     QString _file;
     QStringList _directories;
-    QQmlApplicationEngine* _engine = nullptr;
+    std::shared_ptr<QQmlApplicationEngine> _engine;
     QMap<QString, ConfigurationFactory> _factories;
-    QMap<QString, Configuration*> _integrations;
+    QMap<QString, std::shared_ptr<Configuration>> _integrations;
     bool _isSetupCompleted = false;
 
     int _exec(QString uri);
@@ -38,19 +38,23 @@ class Setup : public QObject {
 
     void useGui();
 
-    Setup* script(QString file);
-    Setup* directory(QString directory);
+    std::shared_ptr<Setup> script(QString file);
+    std::shared_ptr<Setup> directory(QString directory);
 
-    Setup* configureable(QString name, ConfigurationFactory factory);
+    std::shared_ptr<Setup> configureable(
+        QString name, ConfigurationFactory factory
+    );
 
     int exec();
-    QQmlApplicationEngine* engine();
+    std::shared_ptr<QQmlApplicationEngine> engine();
 
-    Configuration* require(QString section);
+    std::shared_ptr<Configuration> require(QString section);
 
     template <typename T>
-    T* require(QString section) {
-        auto integration = qobject_cast<T*>(require(section));
+    std::shared_ptr<T> require(QString section) {
+        auto shared = require(section);
+
+        T* integration = qobject_cast<T*>(shared.get());
         if (integration == nullptr) {
             throw std::logic_error(
                 QString("The integration %1 is not of the requested type.")
@@ -58,7 +62,8 @@ class Setup : public QObject {
                     .toStdString()
             );
         }
-        return integration;
+
+        return std::dynamic_pointer_cast<T>(shared);
     }
 
     Q_INVOKABLE void configure(QJSValue section, QJSValue callback);

@@ -1,7 +1,7 @@
 
 #include "Kiosk.hpp"
 
-Kiosk::Kiosk(Core::Setup* setup) { this->_setup = setup; }
+Kiosk::Kiosk(std::shared_ptr<Core::Setup> setup) { this->_setup = setup; }
 
 Kiosk::~Kiosk() {}
 

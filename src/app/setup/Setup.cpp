@@ -1,18 +1,12 @@
 #include "Setup.hpp"
 
 Core::Setup::Setup(int& argc, char** argv) : _argc(argc), _argv(argv) {
-    this->_application = new QCoreApplication(argc, argv);
-    this->_engine = new QQmlApplicationEngine();
+    this->_application = std::make_shared<QCoreApplication>(argc, argv);
+    this->_engine = std::make_shared<QQmlApplicationEngine>();
     this->_engine->installExtensions(QJSEngine::AllExtensions);
 }
 
-Core::Setup::~Setup() {
-    delete this->_engine;
-    this->_engine = nullptr;
-
-    delete this->_application;
-    this->_application = nullptr;
-}
+Core::Setup::~Setup() {}
 
 void Core::Setup::useGui() {
     bool isGui =
@@ -22,15 +16,18 @@ void Core::Setup::useGui() {
         return;
     }
 
-    delete this->_application;
-    this->_application = nullptr;
+    this->_application.reset();
+
+    // delete this->_application;
+    // this->_application = nullptr;
 
     // Use a QGuiApplication instead of the existing one, but only if
     // Kiosk::entry is configured
-    this->_application = new QGuiApplication(this->_argc, this->_argv);
+    this->_application =
+        std::make_shared<QGuiApplication>(this->_argc, this->_argv);
 }
 
-Core::Setup* Core::Setup::script(QString file) {
+std::shared_ptr<Core::Setup> Core::Setup::script(QString file) {
     QQmlEngine::setObjectOwnership(
         this,
         QQmlEngine::ObjectOwnership::CppOwnership
@@ -44,15 +41,15 @@ Core::Setup* Core::Setup::script(QString file) {
     this->_engine->globalObject().setProperty("use", conf.property("use"));
 
     this->_file = file;
-    return this;
+    return shared_from_this();
 }
 
-Core::Setup* Core::Setup::directory(QString directory) {
+std::shared_ptr<Core::Setup> Core::Setup::directory(QString directory) {
     this->_directories.append(directory);
-    return this;
+    return shared_from_this();
 }
 
-Core::Setup* Core::Setup::configureable(
+std::shared_ptr<Core::Setup> Core::Setup::configureable(
     QString name, ConfigurationFactory factory
 ) {
     if (this->_factories.contains(name)) {
@@ -60,7 +57,7 @@ Core::Setup* Core::Setup::configureable(
     }
 
     this->_factories.insert(name, factory);
-    return this;
+    return shared_from_this();
 }
 
 int Core::Setup::exec() {
@@ -82,8 +79,7 @@ int Core::Setup::exec() {
 }
 
 int Core::Setup::_exec(QString uri) {
-    qInfo() << qPrintable(
-        QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
+    qInfo() << qPrintable(QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
     );
 
     QFile script(uri);
@@ -118,7 +114,7 @@ int Core::Setup::_exec(QString uri) {
     return this->_application->exec();
 }
 
-Configuration* Core::Setup::require(QString section) {
+std::shared_ptr<Configuration> Core::Setup::require(QString section) {
     if (this->_isSetupCompleted) {
         if (!this->_integrations.contains(section)) {
             throw std::logic_error(
@@ -137,14 +133,14 @@ Configuration* Core::Setup::require(QString section) {
         auto factory = this->_factories.take(section);
         auto instance = factory();
         QQmlEngine::setObjectOwnership(
-            instance,
+            instance.get(),
             QQmlEngine::ObjectOwnership::CppOwnership
         );
 
         connect(
             this,
             &Core::Setup::whenSetupCompletes,
-            instance,
+            instance.get(),
             &Configuration::onSetupCompleted
         );
 
@@ -176,14 +172,14 @@ void Core::Setup::configure(QJSValue section, QJSValue callback) {
         auto factory = this->_factories.take(identifier);
         auto instance = factory();
         QQmlEngine::setObjectOwnership(
-            instance,
+            instance.get(),
             QQmlEngine::ObjectOwnership::CppOwnership
         );
 
         connect(
             this,
             &Core::Setup::whenSetupCompletes,
-            instance,
+            instance.get(),
             &Configuration::onSetupCompleted
         );
 
@@ -198,7 +194,7 @@ void Core::Setup::configure(QJSValue section, QJSValue callback) {
     }
 
     auto prototype = this->_integrations.value(identifier);
-    QJSValue obj = this->_engine->newQObject(prototype);
+    QJSValue obj = this->_engine->newQObject(prototype.get());
     QJSValueList args = {obj};
     callback.call(args);
 }
@@ -215,14 +211,14 @@ QJSValue Core::Setup::use(QString section) {
         auto factory = this->_factories.take(section);
         auto instance = factory();
         QQmlEngine::setObjectOwnership(
-            instance,
+            instance.get(),
             QQmlEngine::ObjectOwnership::CppOwnership
         );
 
         connect(
             this,
             &Core::Setup::whenSetupCompletes,
-            instance,
+            instance.get(),
             &Configuration::onSetupCompleted
         );
 
@@ -237,8 +233,10 @@ QJSValue Core::Setup::use(QString section) {
     }
 
     auto prototype = this->_integrations.value(section);
-    QJSValue obj = this->_engine->newQObject(prototype);
+    QJSValue obj = this->_engine->newQObject(prototype.get());
     return obj;
 }
 
-QQmlApplicationEngine* Core::Setup::engine() { return this->_engine; }
+std::shared_ptr<QQmlApplicationEngine> Core::Setup::engine() {
+    return this->_engine;
+}
