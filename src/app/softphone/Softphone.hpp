@@ -22,7 +22,7 @@ class Softphone : public Configuration,
     QString _username;
     QString _password;
     QString _proxy;
-    Setup *_setup;
+    Core::Setup *_setup;
 
    private slots:
     void _iterate();
@@ -55,7 +55,7 @@ class Softphone : public Configuration,
     ) override;
 
    public:
-    Softphone(Setup *setup, std::shared_ptr<linphone::Core> core);
+    Softphone(Core::Setup *setup, std::shared_ptr<linphone::Core> core);
     ~Softphone();
 
     Q_INVOKABLE void auth(QString username, QString password);

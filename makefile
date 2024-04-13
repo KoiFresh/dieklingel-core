@@ -7,7 +7,9 @@ deps\:build:
     	cmake \
     	git \
 		libgl1-mesa-dev \
+		libgmock-dev \
     	libgpiod-dev \
+		libgtest-dev \
     	liblinphone-dev \
     	libpaho-mqtt-dev \
     	libpaho-mqttpp-dev \
@@ -41,6 +43,10 @@ build:
 ### Build and run the executable
 run: build
 	build/src/app/dieklingel-core
+
+### Build and run tests
+test: build
+	build/src/app/dieklingel-core_test
 
 ### Install the executable into a bin location
 install: build

@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 
     auto core = factory->createCore("", "", nullptr);
 
-    Setup *setup = new Setup(argc, argv);
+    Core::Setup *setup = new Core::Setup(argc, argv);
     setup->script("core.js")->directory(".");
 
     setup->configureable("camera", [core]() { return new Camera(core); })

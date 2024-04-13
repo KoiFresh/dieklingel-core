@@ -1,17 +1,20 @@
 #include "Setup.hpp"
 
-Setup::Setup(int& argc, char** argv) : _argc(argc), _argv(argv) {
+Core::Setup::Setup(int& argc, char** argv) : _argc(argc), _argv(argv) {
     this->_application = new QCoreApplication(argc, argv);
     this->_engine = new QQmlApplicationEngine();
     this->_engine->installExtensions(QJSEngine::AllExtensions);
 }
 
-Setup::~Setup() {
+Core::Setup::~Setup() {
     delete this->_engine;
     this->_engine = nullptr;
+
+    delete this->_application;
+    this->_application = nullptr;
 }
 
-void Setup::useGui() {
+void Core::Setup::useGui() {
     bool isGui =
         (qobject_cast<QGuiApplication*>(QCoreApplication::instance()) != 0);
 
@@ -27,7 +30,7 @@ void Setup::useGui() {
     this->_application = new QGuiApplication(this->_argc, this->_argv);
 }
 
-Setup* Setup::script(QString file) {
+Core::Setup* Core::Setup::script(QString file) {
     QQmlEngine::setObjectOwnership(
         this,
         QQmlEngine::ObjectOwnership::CppOwnership
@@ -44,12 +47,14 @@ Setup* Setup::script(QString file) {
     return this;
 }
 
-Setup* Setup::directory(QString directory) {
+Core::Setup* Core::Setup::directory(QString directory) {
     this->_directories.append(directory);
     return this;
 }
 
-Setup* Setup::configureable(QString name, ConfigurationFactory factory) {
+Core::Setup* Core::Setup::configureable(
+    QString name, ConfigurationFactory factory
+) {
     if (this->_factories.contains(name)) {
         throw "Cannot register two configureables with the name " + name;
     }
@@ -58,9 +63,8 @@ Setup* Setup::configureable(QString name, ConfigurationFactory factory) {
     return this;
 }
 
-int Setup::exec() {
+int Core::Setup::exec() {
     if (this->_file.isEmpty()) {
-        qWarning() << "Cannot exec the setup, when the JS file is not set.";
         return -1;
     }
     if (this->_directories.isEmpty()) {
@@ -77,7 +81,7 @@ int Setup::exec() {
     return -3;
 }
 
-int Setup::_exec(QString uri) {
+int Core::Setup::_exec(QString uri) {
     qInfo() << qPrintable(QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
     );
 
@@ -113,7 +117,7 @@ int Setup::_exec(QString uri) {
     return this->_application->exec();
 }
 
-Configuration* Setup::require(QString section) {
+Configuration* Core::Setup::require(QString section) {
     if (this->_isSetupCompleted) {
         if (!this->_integrations.contains(section)) {
             throw std::logic_error(
@@ -138,7 +142,7 @@ Configuration* Setup::require(QString section) {
 
         connect(
             this,
-            &Setup::whenSetupCompletes,
+            &Core::Setup::whenSetupCompletes,
             instance,
             &Configuration::onSetupCompleted
         );
@@ -155,7 +159,7 @@ Configuration* Setup::require(QString section) {
     return integration;
 }
 
-void Setup::configure(QJSValue section, QJSValue callback) {
+void Core::Setup::configure(QJSValue section, QJSValue callback) {
     if (!section.toBool()) {
         return;
     }
@@ -177,7 +181,7 @@ void Setup::configure(QJSValue section, QJSValue callback) {
 
         connect(
             this,
-            &Setup::whenSetupCompletes,
+            &Core::Setup::whenSetupCompletes,
             instance,
             &Configuration::onSetupCompleted
         );
@@ -198,7 +202,7 @@ void Setup::configure(QJSValue section, QJSValue callback) {
     callback.call(args);
 }
 
-QJSValue Setup::use(QString section) {
+QJSValue Core::Setup::use(QString section) {
     if (this->_factories.contains(section)) {
         if (this->_isSetupCompleted) {
             this->_engine->throwError(
@@ -216,7 +220,7 @@ QJSValue Setup::use(QString section) {
 
         connect(
             this,
-            &Setup::whenSetupCompletes,
+            &Core::Setup::whenSetupCompletes,
             instance,
             &Configuration::onSetupCompleted
         );
@@ -236,4 +240,4 @@ QJSValue Setup::use(QString section) {
     return obj;
 }
 
-QQmlApplicationEngine* Setup::engine() { return this->_engine; }
+QQmlApplicationEngine* Core::Setup::engine() { return this->_engine; }

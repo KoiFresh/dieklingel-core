@@ -1,8 +1,6 @@
 name: "Build for Linux (Ubuntu)"
 on:
   pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -35,3 +33,18 @@ jobs:
       - name: Build the core
         run: |
           make build
+
+  linux-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo make deps:build
+
+      - name: Build and run tests
+        run: |
+          make test
