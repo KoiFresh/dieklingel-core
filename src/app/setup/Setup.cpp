@@ -65,7 +65,6 @@ Core::Setup* Core::Setup::configureable(
 
 int Core::Setup::exec() {
     if (this->_file.isEmpty()) {
-        qWarning() << "Cannot exec the setup, when the JS file is not set.";
         return -1;
     }
     if (this->_directories.isEmpty()) {
