@@ -41,6 +41,10 @@ configure('core.kiosk', (kiosk) => {
 configure(!"core.mqtt", (mqtt) => {
 	mqtt.auth("username", "password");
 	mqtt.broker("broker.hivemq.com:1883");
+
+	mqtt.subscribe(["dieklingel/core/system/state"], (topic, message) => {
+		console.log(topic, message);
+	});
 });
 
 configure(!"core.web", (web) => {
