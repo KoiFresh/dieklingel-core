@@ -7,7 +7,9 @@ deps\:build:
     	cmake \
     	git \
 		libgl1-mesa-dev \
+		libgmock-dev \
     	libgpiod-dev \
+		libgtest-dev \
     	liblinphone-dev \
     	libpaho-mqtt-dev \
     	libpaho-mqttpp-dev \

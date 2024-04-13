@@ -75,6 +75,8 @@ install(
 
 # GTest
 
+find_package(GTest REQUIRED)
+
 enable_testing()
 
 add_executable(
