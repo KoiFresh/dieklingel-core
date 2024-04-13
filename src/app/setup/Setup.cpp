@@ -82,7 +82,8 @@ int Core::Setup::exec() {
 }
 
 int Core::Setup::_exec(QString uri) {
-    qInfo() << qPrintable(QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
+    qInfo() << qPrintable(
+        QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
     );
 
     QFile script(uri);
