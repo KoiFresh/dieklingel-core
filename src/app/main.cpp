@@ -47,8 +47,12 @@ int main(int argc, char *argv[]) {
             "core.web",
             []() { return std::make_shared<WebServer>(); }
         )
-        ->configureable("core.sip", [setup, core]() {
-            return std::make_shared<Softphone>(setup, core);
+        ->configureable(
+            "core.sip",
+            [setup, core]() { return std::make_shared<Softphone>(setup, core); }
+        )
+        ->configureable("gpio", [setup]() {
+            return std::make_shared<Gpio>(setup->engine());
         });
 
     return setup->exec();

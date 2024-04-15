@@ -63,12 +63,13 @@ configure(!"audio", (audio) => {
 	audio.capture("PulseAudio Unknown: Echo-Cancel Source");
 });
 
-/* TODO
-configure("gpios", (gpios) => {
+configure(!"gpio", (gpios) => {
 	gpios.input(17, (state) => {
+		// handel state changes in here
 	})
+
+	gpios.output(23).low();
 });
-*/
 
 /*
  * Some experimental utility functions, not yet supported by the Setup yet.

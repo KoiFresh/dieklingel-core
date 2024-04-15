@@ -32,6 +32,7 @@ add_executable(
 	dieklingel-core
 	audio/Audio.cpp
 	camera/Camera.cpp
+	gpio/Gpio.cpp
 	gpio/Input.cpp
 	gpio/Output.cpp
 	mqtt/Mqtt.cpp

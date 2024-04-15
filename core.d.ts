@@ -50,6 +50,14 @@ type SIP = {
 	transport: (transports: ("udp" | "tcp" | "tls" | "dtls")[]) => void;
 }
 
+type GPIO = {
+	input: (pin: number, callback: ((state: boolean) => void)) => void;
+	output: () => {
+		high: () => void;
+		low: () => void
+	};
+}
+
 /**
  * The configuration statement, used to configure the kiosk integration.
  */

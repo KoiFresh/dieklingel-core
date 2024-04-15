@@ -1,21 +1,6 @@
 #include "Output.hpp"
 
-Output::Output() {}
-
-Output::~Output() {}
-
-int Output::getPin() { return this->_pin; }
-
-void Output::setPin(int pin) {
-    if (pin == this->_pin) {
-        return;
-    }
-
-    if (this->_pin >= 0) {
-        this->_line.release();
-    }
-    this->_pin = pin;
-
+Output::Output(int pin) {
     try {
         auto chip = gpiod::chip("pinctrl-bcm2711", gpiod::chip::OPEN_LOOKUP);
         gpiod::line_request request;
@@ -30,25 +15,34 @@ void Output::setPin(int pin) {
         qWarning(
         ) << "An error ouccured while requesting the pin"
           << pin
-          << " on chip 'pinctrl-bcm2711'. This causes that the 'Input' "
+          << " on chip 'pinctrl-bcm2711'. This causes that the 'Output' "
              "will not work as excpected. The error message was:"
           << exception.what();
     }
-
-    pinChanged();
-    setValue(this->_value);
 }
 
-bool Output::getValue() { return this->_value; }
+Output::~Output() {}
 
 void Output::setValue(bool value) {
-    if (this->_pin <= 0) {
+    if (this->_pin < 0) {
         return;
     }
 
     this->_line.set_value(value);
-    if (value != this->_value) {
-        this->_value = value;
-        valueChanged();
+}
+
+void Output::high() {
+    if (this->_pin < 0) {
+        return;
     }
+
+    this->setValue(true);
+}
+
+void Output::low() {
+    if (this->_pin < 0) {
+        return;
+    }
+
+    this->setValue(false);
 }

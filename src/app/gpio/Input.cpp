@@ -1,43 +1,6 @@
 #include "Input.hpp"
 
-Input::Input() {
-    this->_timer.setInterval(50);
-    connect(&this->_timer, &QTimer::timeout, this, &Input::_update);
-}
-
-Input::~Input() {}
-
-void Input::_update() {
-    bool value = _line.get_value();
-    bool isRising = value && !_value;
-    bool isFalling = !value && _value;
-    bool hasChanged = value != _value;
-
-    this->_value = value;
-    if (isRising) {
-        risingEdge();
-    }
-    if (isFalling) {
-        fallingEdge();
-    }
-    if (hasChanged) {
-        valueChanged();
-    }
-}
-
-int Input::getPin() { return this->_pin; }
-
-void Input::setPin(int pin) {
-    if (pin == this->_pin) {
-        return;
-    }
-
-    this->_timer.stop();
-    if (this->_pin >= 0) {
-        this->_line.release();
-    }
-    this->_pin = pin;
-
+Input::Input(int pin, QJSValue callback) : _pin(pin), _callback(callback) {
     try {
         auto chip = gpiod::chip("pinctrl-bcm2711", gpiod::chip::OPEN_LOOKUP);
         gpiod::line_request request;
@@ -47,7 +10,6 @@ void Input::setPin(int pin) {
 
         this->_chip = chip;
         this->_line = line;
-        this->_timer.start();
     } catch (std::exception const &exception) {
         this->_pin = -1;
         qWarning(
@@ -57,8 +19,20 @@ void Input::setPin(int pin) {
              "will not work as excpected. The error message was:"
           << exception.what();
     }
-
-    pinChanged();
 }
 
-bool Input::getValue() { return this->_value; }
+Input::~Input() { this->_line.release(); }
+
+void Input::read() {
+    if (this->_pin < 0) {
+        return;
+    }
+
+    bool value = _line.get_value();
+    bool hasChanged = value != _value;
+
+    this->_value = value;
+    if (hasChanged) {
+        this->_callback.call({value});
+    }
+}
