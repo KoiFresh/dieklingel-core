@@ -56,6 +56,10 @@ install: build
 clean:
 	rm -rf build
 
+### Build a debian package
+package: build
+	make -C build package
+
 ### Check the format of all cpp, hpp, cc and cxx files
 format\:check:
 	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format --dry-run -Werror -i -style=file
