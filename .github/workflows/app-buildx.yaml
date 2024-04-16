@@ -18,7 +18,7 @@ jobs:
 
       - name: Build deb package for arm64
         run: |
-          docker buildx build --platform linux/arm64 -t dieklingel-core-buildx-package .
+          docker buildx build --platform linux/arm64 --load -t dieklingel-core-buildx-package .
           docker create --name builder dieklingel-core-buildx-package
           docker cp builder:/app/build .
           docker rm builder
