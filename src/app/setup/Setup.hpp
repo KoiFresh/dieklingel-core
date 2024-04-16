@@ -33,6 +33,8 @@ class Setup : public QObject, public std::enable_shared_from_this<Setup> {
     char** _argv;
 
    public:
+    static QString getVersion();
+
     Setup(int& argc, char** argv);
     ~Setup();
 

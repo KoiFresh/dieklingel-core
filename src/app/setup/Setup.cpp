@@ -1,5 +1,14 @@
 #include "Setup.hpp"
 
+// static
+QString Core::Setup::getVersion() {
+#ifndef DIEKLINGEL_CORE_VERSION
+    return "unknown";
+#else
+    return DIEKLINGEL_CORE_VERSION;
+#endif
+}
+
 Core::Setup::Setup(int& argc, char** argv) : _argc(argc), _argv(argv) {
     this->_application = std::make_shared<QCoreApplication>(argc, argv);
     this->_engine = std::make_shared<QQmlApplicationEngine>();
@@ -79,9 +88,9 @@ int Core::Setup::exec() {
 }
 
 int Core::Setup::_exec(QString uri) {
-    qInfo() << qPrintable(
-        QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
+    qInfo() << qPrintable(QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
     );
+    qInfo() << "\tVersion:" << qPrintable(Setup::getVersion());
 
     QFile script(uri);
     if (!script.open(QIODevice::ReadOnly)) {
