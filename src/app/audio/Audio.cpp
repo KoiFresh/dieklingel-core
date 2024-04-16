@@ -28,3 +28,7 @@ void Audio::print(QTextStream &log) {
         log << Qt::endl;
     }
 }
+
+void Audio::play(QUrl file) {
+    this->_core->playLocal(file.toString().toStdString());
+}

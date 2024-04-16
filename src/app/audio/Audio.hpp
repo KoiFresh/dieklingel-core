@@ -1,7 +1,10 @@
 #ifndef __AUDIO_AUDIO_HPP__
 #define __AUDIO_AUDIO_HPP__
 
+#include <QDebug>
+#include <QDir>
 #include <QTextStream>
+#include <QUrl>
 #include <linphone++/linphone.hh>
 
 #include "../setup/Configuration.hpp"
@@ -17,6 +20,7 @@ class Audio : public Configuration {
 
     Q_INVOKABLE void playback(QString device);
     Q_INVOKABLE void capture(QString device);
+    Q_INVOKABLE void play(QUrl file);
 
     void onSetupCompleted() override;
     void print(QTextStream &log) override;

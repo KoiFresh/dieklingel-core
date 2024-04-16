@@ -6,6 +6,7 @@ type CAMERA = {
 type AUDIO = {
 	playback: (device: string) => void;
 	capture: (device: string) => void;
+	play: (file: URL) => void;
 }
 
 type MQTT = {
