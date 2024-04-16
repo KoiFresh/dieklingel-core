@@ -7,7 +7,9 @@ deps\:build:
     	cmake \
     	git \
 		libgl1-mesa-dev \
+		libgmock-dev \
     	libgpiod-dev \
+		libgtest-dev \
     	liblinphone-dev \
     	libpaho-mqtt-dev \
     	libpaho-mqttpp-dev \
@@ -28,10 +30,11 @@ deps\:run:
 ### Install dependencies to develop the application
 deps\:dev:
 	apt-get install -y \
-		clang-format
+		clang-format \
+		file
 
 ### Install dependencies to build and run the executable
-deps\:all: deps\:build deps\:run
+deps\:all: deps\:build deps\:run deps\:dev
 
 ### Build the executable file
 build:
@@ -42,6 +45,10 @@ build:
 run: build
 	build/src/app/dieklingel-core
 
+### Build and run tests
+test: build
+	build/src/app/dieklingel-core_test
+
 ### Install the executable into a bin location
 install: build
 	make -C build install
@@ -50,10 +57,14 @@ install: build
 clean:
 	rm -rf build
 
+### Build a debian package
+package: build
+	make -C build package
+
 ### Check the format of all cpp, hpp, cc and cxx files
 format\:check:
-	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format --dry-run -Werror -i -style=Google
+	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format --dry-run -Werror -i -style=file
 
 ### Format all cpp, hpp, cc and cxx source files
 format\:format:
-	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format -i -style=Google
+	find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format -i -style=file

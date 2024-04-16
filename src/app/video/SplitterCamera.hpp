@@ -16,26 +16,28 @@
 #include "SplitterSource.hpp"
 
 class SplitterCamera {
- private:
-  static QString _cameraId;
+   private:
+    static QString _cameraId;
 
-  static void _webCamDetectFunc(MSWebCamManager *manager);
-  static void _webCamInitFunc(MSWebCam *camera);
-  static MSFilter *_webCamCreateReaderFunc(MSWebCam *camera);
-  static void _webCamUninitFunc(MSWebCam *camera);
-  static bool_t _webCamEncodeToMimeType(MSWebCam *camera, const char *mimeType);
+    static void _webCamDetectFunc(MSWebCamManager *manager);
+    static void _webCamInitFunc(MSWebCam *camera);
+    static MSFilter *_webCamCreateReaderFunc(MSWebCam *camera);
+    static void _webCamUninitFunc(MSWebCam *camera);
+    static bool_t _webCamEncodeToMimeType(
+        MSWebCam *camera, const char *mimeType
+    );
 
- public:
-  static MSWebCamDesc description;
-  static QString init(MSFactory *factory, QString cameraId);
-
-  class State {
    public:
-    MSWebCam *sourceCamera = nullptr;
-    MSFilter *splitterSource = nullptr;
+    static MSWebCamDesc description;
+    static QString init(MSFactory *factory, QString cameraId);
 
-    MSFilter *createSplitterSink();
-  };
+    class State {
+       public:
+        MSWebCam *sourceCamera = nullptr;
+        MSFilter *splitterSource = nullptr;
+
+        MSFilter *createSplitterSink();
+    };
 };
 
 #endif

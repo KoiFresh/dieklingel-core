@@ -2,74 +2,89 @@
 
 // static
 void SplitterSink::_init(MSFilter *filter) {
-  SplitterSink::State *sinkState = new SplitterSink::State();
+    SplitterSink::State *sinkState = new SplitterSink::State();
 
-  sinkState->parent = filter;
-  filter->data = sinkState;
+    sinkState->parent = filter;
+    filter->data = sinkState;
 }
 
 // static
 void SplitterSink::_preprocess(MSFilter *filter) {
-  SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
-  SplitterSource::State *sourceState =
-      (SplitterSource::State *)sinkState->splitterSource->data;
+    SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
+    SplitterSource::State *sourceState =
+        (SplitterSource::State *)sinkState->splitterSource->data;
 
-  sourceState->attach(filter);
+    sourceState->attach(filter);
 }
 // static
 void SplitterSink::_process(MSFilter *filter) {
-  // Nothing to do here
+    // Nothing to do here
 }
 
 // static
 void SplitterSink::_postprocess(MSFilter *filter) {
-  SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
-  SplitterSource::State *sourceState =
-      (SplitterSource::State *)sinkState->splitterSource->data;
+    SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
+    SplitterSource::State *sourceState =
+        (SplitterSource::State *)sinkState->splitterSource->data;
 
-  sourceState->detach(filter);
+    sourceState->detach(filter);
 }
 
 // static
 void SplitterSink::_uninit(MSFilter *filter) {
-  SplitterSink::State *s = (SplitterSink::State *)filter->data;
-  delete s;
-  filter->data = nullptr;
+    SplitterSink::State *s = (SplitterSink::State *)filter->data;
+    delete s;
+    filter->data = nullptr;
 }
 
 // static
 int SplitterSink::_setFps(MSFilter *filter, void *arg) {
-  SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
-  return ms_filter_call_method(sinkState->splitterSource, MS_FILTER_SET_FPS,
-                               arg);
+    SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
+    return ms_filter_call_method(
+        sinkState->splitterSource,
+        MS_FILTER_SET_FPS,
+        arg
+    );
 }
 
 // static
 int SplitterSink::_getFps(MSFilter *filter, void *arg) {
-  SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
-  return ms_filter_call_method(sinkState->splitterSource, MS_FILTER_GET_FPS,
-                               arg);
+    SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
+    return ms_filter_call_method(
+        sinkState->splitterSource,
+        MS_FILTER_GET_FPS,
+        arg
+    );
 }
 
 // static
 int SplitterSink::_setVideoSize(MSFilter *filter, void *arg) {
-  SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
-  return ms_filter_call_method(sinkState->splitterSource,
-                               MS_FILTER_SET_VIDEO_SIZE, arg);
+    SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
+    return ms_filter_call_method(
+        sinkState->splitterSource,
+        MS_FILTER_SET_VIDEO_SIZE,
+        arg
+    );
 }
 
 // static
 int SplitterSink::_getVideoSize(MSFilter *filter, void *arg) {
-  SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
-  return ms_filter_call_method(sinkState->splitterSource,
-                               MS_FILTER_GET_VIDEO_SIZE, arg);
+    SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
+    return ms_filter_call_method(
+        sinkState->splitterSource,
+        MS_FILTER_GET_VIDEO_SIZE,
+        arg
+    );
 }
 
 // static
 int SplitterSink::_getPixFmt(MSFilter *filter, void *arg) {
-  SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
-  return ms_filter_call_method(sinkState->splitterSource, MS_FILTER_GET_PIX_FMT,
-                               arg);
+    SplitterSink::State *sinkState = (SplitterSink::State *)filter->data;
+    return ms_filter_call_method(
+        sinkState->splitterSource,
+        MS_FILTER_GET_PIX_FMT,
+        arg
+    );
 }
 
 MSFilterMethod SplitterSink::methods[] = {

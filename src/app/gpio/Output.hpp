@@ -7,27 +7,20 @@
 #include <gpiod.hpp>
 
 class Output : public QObject {
-  Q_OBJECT
-  Q_PROPERTY(int pin READ getPin WRITE setPin NOTIFY pinChanged)
-  Q_PROPERTY(bool value READ getValue WRITE setValue NOTIFY valueChanged)
- private:
-  int _pin = -1;
-  bool _value = false;
-  gpiod::chip _chip;
-  gpiod::line _line;
+    Q_OBJECT
+   private:
+    int _pin = -1;
+    gpiod::chip _chip;
+    gpiod::line _line;
 
- public:
-  Output();
-  ~Output();
+   public:
+    Output(int pin);
+    ~Output();
 
-  int getPin();
-  void setPin(int pin);
-  bool getValue();
-  void setValue(bool value);
+    void setValue(bool value);
 
- signals:
-  void pinChanged();
-  void valueChanged();
+    Q_INVOKABLE void high();
+    Q_INVOKABLE void low();
 };
 
 #endif  // __GPIO_OUTPUT_HPP__

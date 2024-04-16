@@ -10,6 +10,7 @@ Item {
 		anchors {
 			centerIn: parent
 		}
+		source: (App.fotobox && App.fotobox.image) || ""
 		width: Math.min(640, parent.width)
 		height: 480
 		fillMode: Image.PreserveAspectFit
@@ -24,15 +25,17 @@ Item {
 		icon: "camera"
 
 		onReleased: {
-			App.snapshot();
+			if(App.snapshot) {
+				App.snapshot();
+			}
 		}
 	}
 
-	Connections {
+	/*Connections {
 		target: App
 
 		function onSnapshotTaken(snapshot) {
 			img.source = snapshot;
 		}
-	}
+	}*/
 }

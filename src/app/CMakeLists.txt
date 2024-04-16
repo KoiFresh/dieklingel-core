@@ -30,17 +30,23 @@ add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 
 add_executable(
 	dieklingel-core
+	audio/Audio.cpp
+	camera/Camera.cpp
+	camera/Capturer.cpp
+	gpio/Gpio.cpp
 	gpio/Input.cpp
 	gpio/Output.cpp
+	mqtt/Mqtt.cpp
+	kiosk/InactivityDetector.cpp
+	kiosk/Kiosk.cpp
+	setup/Setup.cpp
+	softphone/Softphone.cpp
 	video/SplitterCamera.cpp
 	video/SplitterSource.cpp
 	video/SplitterSink.cpp
-	App.cpp
-	Capturer.cpp
+	web/WebServer.cpp
 	main.cpp
 	CoreConfig.cpp
-	InactivityDetector.cpp
-	Mqtt.cpp
 )
 
 target_link_libraries(
@@ -67,3 +73,38 @@ install(
 	DESTINATION
 	${CMAKE_INSTALL_PREFIX}/bin
 )
+
+# GTest
+
+find_package(GTest REQUIRED)
+
+enable_testing()
+
+add_executable(
+  dieklingel-core_test
+  setup/Setup.cpp
+  setup/SetupTest.cpp
+  web/WebServer.cpp
+  web/WebServerTest.cpp
+)
+target_link_libraries(
+  dieklingel-core_test
+  GTest::gtest_main
+  GTest::gmock_main
+  ${GPIOD_LIBRARY}
+  linphone
+  linphone++
+  mediastreamer
+  ortp
+  paho-mqtt3as
+  paho-mqttpp3
+  Qt5::Core
+  Qt5::Concurrent
+  Qt5::Qml
+  Qt5::Gui
+  Qt5::Quick
+  Qt5::QuickControls2
+)
+
+include(GoogleTest)
+gtest_discover_tests(dieklingel-core_test)
