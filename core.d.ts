@@ -1,24 +1,11 @@
-type KIOSK = {
-	/**
-	 * The entry qml file for the Kiosk to load as soon as the configuration is completed.
-	 * 
-	 * @param file the .qml file to use
-	 * 
-	 * @example
-	 * 	kiosk.entry("qml/main.qml")
-	 */
-	entry: (file: string) => void;
+type CAMERA = {
+	device: (device: string) => void;
+	takeB64Snapshot: (callback: (image: string) => void) => void
+}
 
-	/**
-	 * The environment variable wich should be used for the Qt platform abstraction.
-	 * 
-	 * @param platform the value to use as env var for QT_QPA_PLATFORM
-	 * 
-	 * @see https://wiki.qt.io/Qt_Platform_Abstraction
-	 * @example
-	 * 	kiosk.platform("wayland")
-	 */
-	platform: (platform: string) => void;
+type AUDIO = {
+	playback: (device: string) => void;
+	capture: (device: string) => void;
 }
 
 type MQTT = {
@@ -44,6 +31,31 @@ type MQTT = {
 	broker: (uri: string) => void;
 }
 
+type KIOSK = {
+	/**
+	 * The entry qml file for the Kiosk to load as soon as the configuration is completed.
+	 * 
+	 * @param file the .qml file to use
+	 * 
+	 * @example
+	 * 	kiosk.entry("qml/main.qml")
+	 */
+	entry: (file: string) => void;
+
+	/**
+	 * The environment variable wich should be used for the Qt platform abstraction.
+	 * 
+	 * @param platform the value to use as env var for QT_QPA_PLATFORM
+	 * 
+	 * @see https://wiki.qt.io/Qt_Platform_Abstraction
+	 * @example
+	 * 	kiosk.platform("wayland")
+	 */
+	platform: (platform: string) => void;
+}
+
+type WEB = {}
+
 type SIP = {
 	auth: (username: string, password: string) => void;
 	proxy: (proxy: string) => void;
@@ -58,17 +70,15 @@ type GPIO = {
 	};
 }
 
-/**
- * The configuration statement, used to configure the kiosk integration.
- */
-declare function configure(v: "core.kiosk", c: (kiosk: KIOSK) => void): void;
+type OPTIONS = {
+	"camera": CAMERA;
+	"audio": AUDIO;
+	"core.mqtt": MQTT;
+	"core.kioks": KIOSK;
+	"core.web": WEB;
+	"gpio": GPIO;
+}
 
-/**
- * The configuration statement, used to configure the mqtt integration.
- */
-declare function configure(v: "core.mqtt", c: (mqtt: MQTT) => void): void;
+declare function configure<KEY extends keyof OPTIONS>(v: KEY, c: (e: OPTIONS[KEY]) => void): void;
 
-/**
- * The configuration statement, used to configure the sip integration.
- */
-declare function configure(v: "core.sip", c: (sip: SIP) => void): void;
+declare function use<KEY extends keyof OPTIONS>(v: KEY): OPTIONS[KEY];
