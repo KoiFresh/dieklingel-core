@@ -14,14 +14,12 @@
 #include <linphone++/linphone.hh>
 #include <memory>
 
-using namespace linphone;
-
 class Capturer : public QObject {
     Q_OBJECT
    private:
     static const QString FILENAME;
 
-    std::shared_ptr<Core> _core;
+    std::shared_ptr<linphone::Core> _core;
     MSFactory *_factory = nullptr;
 
     MSFilter *_source = nullptr;
@@ -38,10 +36,9 @@ class Capturer : public QObject {
     void _finishSnapshot();
 
    public:
-    Capturer();
+    Capturer(std::shared_ptr<linphone::Core> core);
     ~Capturer();
 
-    void useCore(std::shared_ptr<Core> core);
     void snapshot();
 
    signals:

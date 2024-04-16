@@ -4,24 +4,11 @@
 const QString Capturer::FILENAME =
     QDir::tempPath() + "/dieklingel-snapshot-tmp.jpg";
 
-Capturer::Capturer() { this->_factory = ms_factory_new_with_voip(); }
-
-Capturer::~Capturer() {
-    if (this->_core == nullptr) {
-        ms_factory_destroy(this->_factory);
-        this->_factory = nullptr;
-    }
-}
-
-void Capturer::useCore(std::shared_ptr<Core> core) {
-    if (this->_core == nullptr) {
-        ms_factory_destroy(this->_factory);
-        this->_factory = nullptr;
-    }
-
-    this->_core = core;
+Capturer::Capturer(std::shared_ptr<linphone::Core> core) : _core(core) {
     this->_factory = linphone_core_get_ms_factory(core->cPtr());
 }
+
+Capturer::~Capturer() {}
 
 /**
  * create a pixelconverter which should be linked between the source and the
@@ -101,18 +88,11 @@ void Capturer::snapshot() {
         return;
     }
 
-    MSWebCam *webcam = nullptr;
-    if (this->_core != nullptr) {
-        webcam = ms_web_cam_manager_get_cam(
-            ms_factory_get_web_cam_manager(this->_factory),
-            this->_core->getVideoDevice().c_str()
-        );
-    }
-    if (webcam == nullptr) {
-        webcam = ms_web_cam_manager_get_default_cam(
-            ms_factory_get_web_cam_manager(this->_factory)
-        );
-    }
+    MSWebCam *webcam = ms_web_cam_manager_get_cam(
+        ms_factory_get_web_cam_manager(this->_factory),
+        this->_core->getVideoDevice().c_str()
+    );
+
     this->_source = ms_web_cam_create_reader(webcam);
     this->_pixconv = _configure(this->_source);
     this->_sink = ms_factory_create_filter(this->_factory, MS_JPEG_WRITER_ID);
@@ -122,7 +102,7 @@ void Capturer::snapshot() {
         this->_sink,
         Capturer::_onSnapshotTaken,
         this,
-        false
+        true
     );
 
     ms_filter_link(this->_source, 0, this->_pixconv, 0);

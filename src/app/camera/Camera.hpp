@@ -6,16 +6,21 @@
 
 #include <QJSValue>
 #include <QTextStream>
+#include <QtConcurrent>
 #include <linphone++/linphone.hh>
 
 #include "../setup/Configuration.hpp"
 #include "../video/SplitterCamera.hpp"
+#include "Capturer.hpp"
 
 class Camera : public Configuration {
     Q_OBJECT
    private:
     std::shared_ptr<linphone::Core> _core;
+    Capturer _capturer;
     QString _device;
+    QMutex _mutex;
+    bool _isSetupCompleted = false;
 
    public:
     Camera(std::shared_ptr<linphone::Core>);
@@ -25,7 +30,7 @@ class Camera : public Configuration {
     Q_INVOKABLE void takeB64Snapshot(QJSValue callback);
 
     void onSetupCompleted() override;
-    void print(QTextStream& log);
+    void print(QTextStream &log);
 };
 
 #endif  // __CAMERA_CAMERA_HPP__

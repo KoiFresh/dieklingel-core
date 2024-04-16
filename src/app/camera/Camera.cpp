@@ -1,6 +1,7 @@
 #include "Camera.hpp"
 
-Camera::Camera(std::shared_ptr<linphone::Core> core) { this->_core = core; }
+Camera::Camera(std::shared_ptr<linphone::Core> core)
+    : _core(core), _capturer(core) {}
 
 Camera::~Camera() {}
 
@@ -19,12 +20,12 @@ void Camera::onSetupCompleted() {
     auto factory = linphone_core_get_ms_factory(this->_core->cPtr());
     QString device = this->_core->getVideoDevice().c_str();
 
-    qDebug() << "device" << device;
     device = SplitterCamera::init(factory, device);
-    qDebug() << "device" << device;
 
     this->_core->reloadVideoDevices();
     this->_core->setVideoDevice(device.toStdString().c_str());
+
+    this->_isSetupCompleted = true;
 }
 
 void Camera::print(QTextStream& log) {
@@ -40,5 +41,26 @@ void Camera::print(QTextStream& log) {
 }
 
 void Camera::takeB64Snapshot(QJSValue callback) {
-    // TODO: take snapshot
+    if (!this->_isSetupCompleted) {
+        return;
+    }
+
+    this->_mutex.lock();
+
+    QObject* ctx = new QObject();
+    connect(
+        &this->_capturer,
+        &Capturer::snapshotTaken,
+        ctx,
+        [callback, ctx](QByteArray base64) {
+            // destroy the context/receiver to disconnect
+            ctx->deleteLater();
+
+            // call js callback
+            QJSValue(callback).call({QString(base64)});
+        }
+    );
+    this->_capturer.snapshot();
+
+    this->_mutex.unlock();
 }

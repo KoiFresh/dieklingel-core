@@ -32,6 +32,7 @@ add_executable(
 	dieklingel-core
 	audio/Audio.cpp
 	camera/Camera.cpp
+	camera/Capturer.cpp
 	gpio/Gpio.cpp
 	gpio/Input.cpp
 	gpio/Output.cpp
@@ -44,7 +45,6 @@ add_executable(
 	video/SplitterSource.cpp
 	video/SplitterSink.cpp
 	web/WebServer.cpp
-	Capturer.cpp
 	main.cpp
 	CoreConfig.cpp
 )

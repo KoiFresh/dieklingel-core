@@ -71,6 +71,10 @@ configure(!"gpio", (gpios) => {
 	gpios.output(23).low();
 });
 
+configure(!"camera", (camera) => {
+
+});
+
 /*
  * Some experimental utility functions, not yet supported by the Setup yet.
  */
