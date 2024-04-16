@@ -30,10 +30,11 @@ deps\:run:
 ### Install dependencies to develop the application
 deps\:dev:
 	apt-get install -y \
-		clang-format
+		clang-format \
+		file
 
 ### Install dependencies to build and run the executable
-deps\:all: deps\:build deps\:run
+deps\:all: deps\:build deps\:run deps\:dev
 
 ### Build the executable file
 build:

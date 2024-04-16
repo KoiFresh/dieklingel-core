@@ -1,0 +1,30 @@
+name: "Build package for arm64 (Ubuntu)"
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  deb-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build deb package for arm64
+        run: |
+          docker buildx build --platform linux/arm64 -t dieklingel-core-buildx-package .
+          docker create --name builder dieklingel-core-buildx-package
+          docker cp builder:/app/build .
+          docker rm builder
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          path: build/*.deb
+          retention-days: 5
