@@ -8,7 +8,7 @@ RUN apt-get update && \
 	apt-get install -y make && \
 	make deps:all
 
-RUN make clean package
+RUN make clean package RASPBERRYPI_LIBCAMERA_SUPPORT="ON"
 
 FROM ubuntu:22.04 as runner
 

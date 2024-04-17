@@ -38,7 +38,7 @@ deps\:all: deps\:build deps\:run deps\:dev
 
 ### Build the executable file
 build:
-	cmake -B build
+	cmake -B build -DRASPBERRYPI_LIBCAMERA_SUPPORT=${RASPBERRYPI_LIBCAMERA_SUPPORT}
 	cmake --build build
 
 ### Build and run the executable
