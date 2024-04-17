@@ -89,9 +89,8 @@ int Core::Setup::exec() {
 }
 
 int Core::Setup::_exec(QString uri) {
-    qInfo() << qPrintable(QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
-    );
-    qInfo() << "\tVersion:" << qPrintable(Setup::getVersion());
+    qInfo("🏗️  Setup dieklingel-core from %s.", qUtf8Printable(uri));
+    qInfo("\tVersion: %s", qUtf8Printable(Setup::getVersion()));
 
     QFile script(uri);
     if (!script.open(QIODevice::ReadOnly)) {
