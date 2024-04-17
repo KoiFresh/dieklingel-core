@@ -17,17 +17,29 @@
 #include "softphone/Softphone.hpp"
 #include "web/WebServer.hpp"
 
+QString FALLBACK_DIR = "/usr/share/dieklingel-core";
+
 int main(int argc, char *argv[]) {
+    std::string topResourcesDir =
+        QProcessEnvironment::systemEnvironment()
+            .value("DIEKLINGEL_CORE_TOP_RESOURCES_DIR", FALLBACK_DIR)
+            .toStdString();
+
     auto factory = linphone::Factory::get();
     auto path = QDir::currentPath().toStdString();
     factory->setDataResourcesDir(path);
     factory->setImageResourcesDir(path);
-    factory->setTopResourcesDir(path);
+    factory->setTopResourcesDir(topResourcesDir);
 
     auto core = factory->createCore("", "", nullptr);
 
     auto setup = std::make_shared<Core::Setup>(argc, argv);
-    setup->script("core.js")->directory(".");
+    setup->script("core.js")
+        ->directory(".")
+        ->directory("$HOME/.config")
+        ->directory("$HOME")
+        ->directory("/etc/dieklingel-core")
+        ->directory("/usr/share/dieklingel-core");
 
     setup
         ->configureable(
