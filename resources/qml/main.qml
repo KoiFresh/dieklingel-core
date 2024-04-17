@@ -14,16 +14,16 @@ Window {
     color: "black"
     minimumWidth: 480
     minimumHeight: 820
-    visibility: (App.qml && App.qml.debug && App.qml.debug.fullscreen == false) ? Window.AutomaticVisibility : Window.FullScreen;
+    visibility: (App.core && App.core.debug && App.core.debug.fullscreen == false) ? Window.AutomaticVisibility : Window.FullScreen;
 
     Rectangle {
         clip: true
         anchors { 
             fill: parent
-            leftMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.left) || 0
-            topMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.top) || 0
-            rightMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.right) || 0
-            bottomMargin: Number(App.qml && App.qml.global && App.qml.global.clip && App.qml.global.clip.bottom) || 0
+            leftMargin: Number(App.core && App.core.global && App.core.global.clip && App.core.global.clip.left) || 0
+            topMargin: Number(App.core && App.core.global && App.core.global.clip && App.core.global.clip.top) || 0
+            rightMargin: Number(App.core && App.core.global && App.core.global.clip && App.core.global.clip.right) || 0
+            bottomMargin: Number(App.core && App.core.global && App.core.global.clip && App.core.global.clip.bottom) || 0
         }
         color: "#1c1f1e"
 
@@ -74,7 +74,7 @@ Window {
             anchors {
                 fill: parent
             }
-            sourceComponent: (App.qml && App.qml.debug && App.qml.debug.fotobox) ? debug : release
+            sourceComponent: (App.core && App.core.debug && App.core.debug.fotobox) ? debug : release
         }
     }
 }

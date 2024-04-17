@@ -84,12 +84,12 @@ int Core::Setup::exec() {
         }
     }
 
+    qWarning() << "No configuration file 'core.js' could be found.";
     return -3;
 }
 
 int Core::Setup::_exec(QString uri) {
-    qInfo() << qPrintable(
-        QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
+    qInfo() << qPrintable(QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
     );
     qInfo() << "\tVersion:" << qPrintable(Setup::getVersion());
 
