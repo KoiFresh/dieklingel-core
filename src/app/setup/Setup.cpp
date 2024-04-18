@@ -80,6 +80,7 @@ int Core::Setup::exec() {
     for (QString path : this->_directories) {
         QString uri = path + "/" + this->_file;
         if (QFile::exists(uri)) {
+            QDir::setCurrent(uri);
             return _exec(uri);
         }
     }

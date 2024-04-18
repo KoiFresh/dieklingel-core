@@ -5,9 +5,9 @@ configure('core.kiosk', (kiosk) => {
 	kiosk.core = reactive({
 		snapshot: reactive({
 			image: "",
-			capture: () => {
+			capture: function() {
 				use("camera").takeB64Snapshot((image) => {
-					kiosk.core.snapshot.image = image;
+					this.image = image;
 				});
 			}
 		}),
@@ -18,7 +18,7 @@ configure('core.kiosk', (kiosk) => {
 			bottom: 0 
 		}),
 		sign: reactive({
-			ring: () => {
+			ring: function() {
 				use("core.sip").call("kai123@sip.linphone.org");
 			},
 			street: {
@@ -31,15 +31,15 @@ configure('core.kiosk', (kiosk) => {
 		}),
 		debug: reactive({
 			fotobox: true,
-			fullscreen: false,
+			fullscreen: true,
 		}),
 		light: reactive({
 			state: false,
-			toogle: () => {
+			toogle: function() {
 				kiosk.core.light.state = !kiosk.core.light.state;
 			}
 		}),
-		unlock: (pin) => {
+		unlock: function(pin) {
 			return pin === "ABCDEF"
 		}
 	})

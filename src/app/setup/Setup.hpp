@@ -3,6 +3,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
 #include <QException>
 #include <QFile>
 #include <QGuiApplication>
