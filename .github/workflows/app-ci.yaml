@@ -48,3 +48,18 @@ jobs:
       - name: Build and run tests
         run: |
           make test
+
+  debian-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo make deps:build
+
+      - name: Build and run tests
+        run: |
+          make package
