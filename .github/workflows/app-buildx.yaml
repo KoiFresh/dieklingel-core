@@ -20,11 +20,11 @@ jobs:
         run: |
           docker buildx build --platform linux/arm64 --load -t dieklingel-core-buildx-package .
           docker create --name builder dieklingel-core-buildx-package
-          docker cp builder:/app/build .
+          docker cp builder:/app package
           docker rm builder
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
-          path: build/*.deb
+          path: package/*.deb
           retention-days: 5

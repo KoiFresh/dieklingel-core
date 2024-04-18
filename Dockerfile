@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as builder
 
 WORKDIR /app
 
@@ -10,4 +10,11 @@ RUN apt-get update && \
 
 RUN make clean package
 
-CMD [ "exit" ]
+FROM ubuntu:22.04 as runner
+
+COPY --from=builder /app/build/dieklingel-core*.deb /app/
+
+RUN apt-get update && \
+	apt-get install -y /app/dieklingel-core*.deb
+
+ENTRYPOINT ["dieklingel-core"]
