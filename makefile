@@ -4,6 +4,7 @@
 deps\:build:
 	apt-get install -y \
 	    build-essential \
+		clang-tidy \
     	cmake \
     	git \
 		libgl1-mesa-dev \
