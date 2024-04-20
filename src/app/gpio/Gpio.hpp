@@ -20,7 +20,7 @@ class Gpio : public Configuration {
     void _read();
 
    public:
-    Gpio(std::shared_ptr<QJSEngine>);
+    Gpio(std::shared_ptr<QJSEngine> engine);
     ~Gpio();
 
     Q_INVOKABLE void input(int pin, QJSValue callback);

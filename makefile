@@ -9,6 +9,7 @@ deps\:build:
     	git \
 		libgl1-mesa-dev \
 		libgmock-dev \
+		libmsgsl-dev \
     	libgpiod-dev \
 		libgtest-dev \
     	liblinphone-dev \

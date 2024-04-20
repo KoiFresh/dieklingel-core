@@ -27,6 +27,7 @@ find_package(
 	Quick
 	QuickControls2
 )
+find_package(Microsoft.GSL REQUIRED)
 
 add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 
@@ -48,7 +49,6 @@ add_executable(
 	video/SplitterSink.cpp
 	web/WebServer.cpp
 	main.cpp
-	CoreConfig.cpp
 )
 
 target_link_libraries(

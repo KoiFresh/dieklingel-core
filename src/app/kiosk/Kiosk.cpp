@@ -1,9 +1,9 @@
 
 #include "Kiosk.hpp"
 
-Kiosk::Kiosk(std::shared_ptr<Core::Setup> setup) { this->_setup = setup; }
+Kiosk::Kiosk(std::shared_ptr<Core::Setup> setup) : _setup(std::move(setup)) {}
 
-Kiosk::~Kiosk() {}
+Kiosk::~Kiosk() = default;
 
 void Kiosk::onSetupCompleted() {
     if (this->_uri.isEmpty()) {
@@ -12,20 +12,13 @@ void Kiosk::onSetupCompleted() {
 
     this->_setup->useGui();
     QGuiApplication::instance()->installEventFilter(&_detector);
-    connect(
-        &this->_detector,
-        &InactivityDetector::inactivity,
-        this,
-        &Kiosk::inactivity
-    );
+    connect(&this->_detector, &InactivityDetector::inactivity, this, &Kiosk::inactivity);
 
     qmlRegisterSingletonInstance("com.dieklingel", 1, 0, "App", this);
     this->_setup->engine()->load(_uri);
 }
 
-void Kiosk::platform(QString platform) {
-    qputenv("QT_QPA_PLATFORM", platform.toLatin1());
-}
+void Kiosk::platform(QString platform) { qputenv("QT_QPA_PLATFORM", platform.toLatin1()); }
 
 void Kiosk::entry(QString uri) { this->_uri = uri; }
 

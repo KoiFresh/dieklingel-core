@@ -7,6 +7,7 @@
 #include <QJSValue>
 #include <QTextStream>
 #include <QtConcurrent>
+#include <gsl/gsl>
 #include <linphone++/linphone.hh>
 
 #include "../setup/Configuration.hpp"
@@ -23,7 +24,7 @@ class Camera : public Configuration {
     bool _isSetupCompleted = false;
 
    public:
-    Camera(std::shared_ptr<linphone::Core>);
+    Camera(std::shared_ptr<linphone::Core> core);
     ~Camera();
 
     Q_INVOKABLE void device(QString device);

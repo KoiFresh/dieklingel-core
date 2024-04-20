@@ -2,9 +2,13 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <gsl/gsl>
+
 #include "Setup.hpp"
 
+// NOLINTNEXTLINE
 static int argc = 0;
+// NOLINTNEXTLINE
 static char **argv = nullptr;
 
 TEST(Setup, creates_QCoreApplication) {
@@ -22,7 +26,7 @@ TEST(Setup, creates_QQmlApplicationEngine) {
 }
 
 TEST(Setup, destruction_deletes_QCoreApplication) {
-    auto setup = new Core::Setup(argc, argv);
+    auto setup = gsl::owner<Core::Setup *>(new Core::Setup(argc, argv));
     delete setup;
 
     EXPECT_TRUE(QCoreApplication::instance() == nullptr);

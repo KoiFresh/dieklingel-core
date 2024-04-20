@@ -12,6 +12,7 @@
 #include <QLoggingCategory>
 #include <QString>
 
+#include "../Constants.hpp"
 #include "SplitterSink.hpp"
 #include "SplitterSource.hpp"
 
@@ -23,12 +24,18 @@ class SplitterCamera {
     static void _webCamInitFunc(MSWebCam *camera);
     static MSFilter *_webCamCreateReaderFunc(MSWebCam *camera);
     static void _webCamUninitFunc(MSWebCam *camera);
-    static bool_t _webCamEncodeToMimeType(
-        MSWebCam *camera, const char *mimeType
-    );
+    static bool_t _webCamEncodeToMimeType(MSWebCam *camera, const char *mimeType);
 
    public:
-    static MSWebCamDesc description;
+    static inline MSWebCamDesc description = {
+        .driver_type = "SplitterCamera",
+        .detect = _webCamDetectFunc,
+        .init = _webCamInitFunc,
+        .create_reader = _webCamCreateReaderFunc,
+        .uninit = _webCamUninitFunc,
+        .encode_to_mime_type = _webCamEncodeToMimeType,
+    };
+
     static QString init(MSFactory *factory, QString cameraId);
 
     class State {

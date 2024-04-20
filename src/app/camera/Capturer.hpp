@@ -14,6 +14,8 @@
 #include <linphone++/linphone.hh>
 #include <memory>
 
+#include "../Constants.hpp"
+
 class Capturer : public QObject {
     Q_OBJECT
    private:
@@ -30,9 +32,7 @@ class Capturer : public QObject {
     QMutex _mutex;
 
     MSFilter *_configure(MSFilter *source);
-    static void _onSnapshotTaken(
-        void *userdata, MSFilter *f, unsigned int id, void *arg
-    );
+    static void _onSnapshotTaken(void *userdata, MSFilter *f, unsigned int id, void *arg);
     void _finishSnapshot();
 
    public:

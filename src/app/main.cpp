@@ -9,7 +9,6 @@
 #include <iostream>
 #include <linphone++/linphone.hh>
 
-#include "CoreConfig.hpp"
 #include "gpio/Gpio.hpp"
 #include "kiosk/Kiosk.hpp"
 #include "mqtt/Mqtt.hpp"
@@ -17,13 +16,11 @@
 #include "softphone/Softphone.hpp"
 #include "web/WebServer.hpp"
 
-QString FALLBACK_DIR = "/usr/share/dieklingel-core";
+const QString FALLBACK_DIR = "/usr/share/dieklingel-core";
 
 int main(int argc, char *argv[]) {
     std::string resourcesDir =
-        QProcessEnvironment::systemEnvironment()
-            .value("DIEKLINGEL_CORE_RESOURCES_DIR", FALLBACK_DIR)
-            .toStdString();
+        QProcessEnvironment::systemEnvironment().value("DIEKLINGEL_CORE_RESOURCES_DIR", FALLBACK_DIR).toStdString();
 
     auto factory = linphone::Factory::get();
     auto path = QDir::currentPath().toStdString();
@@ -41,31 +38,13 @@ int main(int argc, char *argv[]) {
         ->directory("/etc/dieklingel-core")
         ->directory("/usr/share/dieklingel-core");
 
-    setup
-        ->configureable(
-            "camera",
-            [core]() { return std::make_shared<Camera>(core); }
-        )
-        ->configureable(
-            "audio",
-            [core]() { return std::make_shared<Audio>(core); }
-        )
+    setup->configureable("camera", [core]() { return std::make_shared<Camera>(core); })
+        ->configureable("audio", [core]() { return std::make_shared<Audio>(core); })
         ->configureable("core.mqtt", []() { return std::make_shared<Mqtt>(); })
-        ->configureable(
-            "core.kiosk",
-            [setup]() { return std::make_shared<Kiosk>(setup); }
-        )
-        ->configureable(
-            "core.web",
-            []() { return std::make_shared<WebServer>(); }
-        )
-        ->configureable(
-            "core.sip",
-            [setup, core]() { return std::make_shared<Softphone>(setup, core); }
-        )
-        ->configureable("gpio", [setup]() {
-            return std::make_shared<Gpio>(setup->engine());
-        });
+        ->configureable("core.kiosk", [setup]() { return std::make_shared<Kiosk>(setup); })
+        ->configureable("core.web", []() { return std::make_shared<WebServer>(); })
+        ->configureable("core.sip", [setup, core]() { return std::make_shared<Softphone>(setup, core); })
+        ->configureable("gpio", [setup]() { return std::make_shared<Gpio>(setup->engine()); });
 
     return setup->exec();
 }

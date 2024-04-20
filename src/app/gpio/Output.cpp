@@ -12,16 +12,14 @@ Output::Output(int pin) {
         this->_line = line;
     } catch (std::exception const &exception) {
         this->_pin = -1;
-        qWarning(
-        ) << "An error ouccured while requesting the pin"
-          << pin
-          << " on chip 'pinctrl-bcm2711'. This causes that the 'Output' "
-             "will not work as excpected. The error message was:"
-          << exception.what();
+        qWarning() << "An error ouccured while requesting the pin" << pin
+                   << " on chip 'pinctrl-bcm2711'. This causes that the 'Output' "
+                      "will not work as excpected. The error message was:"
+                   << exception.what();
     }
 }
 
-Output::~Output() {}
+Output::~Output() = default;
 
 void Output::setValue(bool value) {
     if (this->_pin < 0) {
