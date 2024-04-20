@@ -20,16 +20,16 @@
 QString FALLBACK_DIR = "/usr/share/dieklingel-core";
 
 int main(int argc, char *argv[]) {
-    std::string topResourcesDir =
+    std::string resourcesDir =
         QProcessEnvironment::systemEnvironment()
-            .value("DIEKLINGEL_CORE_TOP_RESOURCES_DIR", FALLBACK_DIR)
+            .value("DIEKLINGEL_CORE_RESOURCES_DIR", FALLBACK_DIR)
             .toStdString();
 
     auto factory = linphone::Factory::get();
     auto path = QDir::currentPath().toStdString();
-    factory->setDataResourcesDir(path);
-    factory->setImageResourcesDir(path);
-    factory->setTopResourcesDir(topResourcesDir);
+    factory->setDataResourcesDir(resourcesDir);
+    factory->setImageResourcesDir(resourcesDir);
+    factory->setTopResourcesDir(resourcesDir);
 
     auto core = factory->createCore("", "", nullptr);
 

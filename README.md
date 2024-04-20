@@ -73,12 +73,18 @@ sudo make deps:all
 
 ```sh
 make build
+
+# Or build a debian package archive
+make package
 ```
 
 ### 🔧 Install the core
 
 ```sh
 sudo make install
+
+# Or if you build a debian package archive
+sudo apt-get install ./build/dieklingel-core_<VERSION>_<ARCH>.deb
 ```
 
 ### 🚂 Run the core
@@ -89,15 +95,15 @@ Now you should be able to run the core with its default configuration. Don't wor
 dieklingel-core
 ```
 
-Now its time to enable the integrations you would like to use. The configuration file is called `core.ini` and the core will look in multiple locations and choose the first file wich will be found.
+Now its time to enable the integrations you would like to use. The configuration file is called `core.js` and the core will look in multiple locations and choose the first file wich will be found.
 
-- `$(pwd)/core.ini`
-- `$HOME/.config/core.ini`
-- `$HOME/core.ini`
-- `/etc/dieklingel-core/core.ini`
-- `/usr/share/dieklingel-core/core.ini`
+- `$(pwd)/core.js`
+- `$HOME/.config/core.js`
+- `$HOME/core.js`
+- `/etc/dieklingel-core/core.js`
+- `/usr/share/dieklingel-core/core.js`
 
-To configure the core as needed refere to [core.ini](/service/app/core.ini.in).
+To configure the core as needed refere to [core.js](/resources/core.js) and [core.d.ts](/core.d.ts).
 
 ### 🚅 Run as service
 

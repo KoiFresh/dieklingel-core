@@ -80,18 +80,18 @@ int Core::Setup::exec() {
     for (QString path : this->_directories) {
         QString uri = path + "/" + this->_file;
         if (QFile::exists(uri)) {
+            QDir::setCurrent(uri);
             return _exec(uri);
         }
     }
 
+    qWarning() << "No configuration file 'core.js' could be found.";
     return -3;
 }
 
 int Core::Setup::_exec(QString uri) {
-    qInfo() << qPrintable(
-        QString("🏗️  Setup dieklingel-core from %1.").arg(uri)
-    );
-    qInfo() << "\tVersion:" << qPrintable(Setup::getVersion());
+    qInfo("🏗️  Setup dieklingel-core from %s.", qUtf8Printable(uri));
+    qInfo("\tVersion: %s", qUtf8Printable(Setup::getVersion()));
 
     QFile script(uri);
     if (!script.open(QIODevice::ReadOnly)) {

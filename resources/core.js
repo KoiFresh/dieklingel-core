@@ -1,17 +1,25 @@
-configure(!'core.kiosk', (kiosk) => {
-	kiosk.entry('qml/main.qml');
+configure('core.kiosk', (kiosk) => {
 	kiosk.platform('wayland');
 
-	kiosk.qml = {
-		global: {
-			clip: {
-				left: 0, 
-				top: 0,
-				right: 0, 
-				bottom: 0 
+	kiosk.core = reactive({
+		snapshot: reactive({
+			image: "",
+			capture: () => {
+				use("camera").takeB64Snapshot((image) => {
+					kiosk.core.snapshot.image = image;
+				});
 			}
-		},
-		sign: {
+		}),
+		clip: reactive({
+			left: 0, 
+			top: 0,
+			right: 0, 
+			bottom: 0 
+		}),
+		sign: reactive({
+			ring: () => {
+				use("core.sip").call("username@proxy.tld");
+			},
 			street: {
 				number: "1",
 				name: "Bienenweg"
@@ -19,31 +27,30 @@ configure(!'core.kiosk', (kiosk) => {
 			family: {
 				name: "Fam. Schoch"
 			}
-		},
-		debug: {
-			fotobox: false,
-			fullscreen: false,
-		}
-	}
-
-	kiosk.light = reactive({
-		isOn: false,
-		toogle: () => {
-			kiosk.light.isOn = !kiosk.light.isOn
+		}),
+		debug: reactive({
+			fotobox: true,
+			fullscreen: true,
+		}),
+		light: reactive({
+			state: false,
+			toogle: () => {
+				kiosk.core.light.state = !kiosk.core.light.state;
+			}
+		}),
+		unlock: (pin) => {
+			return pin === "ABCDEF"
 		}
 	})
-
-	kiosk.unlock = (pin) => {
-		return pin === "ABCDEF"
-	}
 });
 
-/*
- * The "core.mqtt" category is used to define the mqtt intergration of the core.
- */
 configure(!"core.mqtt", (mqtt) => {
 	mqtt.auth("username", "password");
 	mqtt.broker("broker.hivemq.com:1883");
+
+	mqtt.subscribe(["dieklingel/core/system/state"], (topic, message) => {
+		console.log(topic, message);
+	});
 });
 
 configure(!"core.web", (web) => {
@@ -51,7 +58,7 @@ configure(!"core.web", (web) => {
 	web.port(80);
 });
 
-configure(!"core.sip", (sip) => {
+configure("core.sip", (sip) => {
 	sip.auth("username", "password");
 	sip.proxy("sip.linphone.org");
 	sip.transport(["tls"]);
@@ -63,7 +70,15 @@ configure(!"audio", (audio) => {
 });
 
 configure(!"gpio", (gpios) => {
-	// TODO: add gpio configuration
+	gpios.input(17, (state) => {
+		// handel state changes in here
+	})
+
+	gpios.output(23).low();
+});
+
+configure(!"camera", (camera) => {
+
 });
 
 /*

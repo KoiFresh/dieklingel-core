@@ -1,17 +1,26 @@
 configure('core.kiosk', (kiosk) => {
-	kiosk.entry('qml/main.qml');
+	kiosk.entry('resources/qml/main.qml');
 	kiosk.platform('wayland');
 
-	kiosk.qml = {
-		global: {
-			clip: {
-				left: 0, 
-				top: 0,
-				right: 0, 
-				bottom: 0 
+	kiosk.core = reactive({
+		snapshot: reactive({
+			image: "",
+			capture: function() {
+				use("camera").takeB64Snapshot((image) => {
+					this.image = image;
+				});
 			}
-		},
-		sign: {
+		}),
+		clip: reactive({
+			left: 0, 
+			top: 0,
+			right: 0, 
+			bottom: 0 
+		}),
+		sign: reactive({
+			ring: function() {
+				use("core.sip").call("kai123@sip.linphone.org");
+			},
 			street: {
 				number: "1",
 				name: "Bienenweg"
@@ -19,23 +28,21 @@ configure('core.kiosk', (kiosk) => {
 			family: {
 				name: "Fam. Schoch"
 			}
-		},
-		debug: {
-			fotobox: false,
-			fullscreen: false,
-		}
-	}
-
-	kiosk.light = reactive({
-		isOn: false,
-		toogle: () => {
-			kiosk.light.isOn = !kiosk.light.isOn
+		}),
+		debug: reactive({
+			fotobox: true,
+			fullscreen: true,
+		}),
+		light: reactive({
+			state: false,
+			toogle: function() {
+				kiosk.core.light.state = !kiosk.core.light.state;
+			}
+		}),
+		unlock: function(pin) {
+			return pin === "ABCDEF"
 		}
 	})
-
-	kiosk.unlock = (pin) => {
-		return pin === "ABCDEF"
-	}
 });
 
 configure(!"core.mqtt", (mqtt) => {
@@ -52,7 +59,7 @@ configure(!"core.web", (web) => {
 	web.port(80);
 });
 
-configure(!"core.sip", (sip) => {
+configure("core.sip", (sip) => {
 	sip.auth("username", "password");
 	sip.proxy("sip.linphone.org");
 	sip.transport(["tls"]);

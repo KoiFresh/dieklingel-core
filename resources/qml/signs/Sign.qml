@@ -17,7 +17,7 @@ Item {
             anchors {
                 horizontalCenter: parent.horizontalCenter
             }
-            text: (App.qml && App.qml.sign && App.qml.sign.street && App.qml.sign.street.number) ?? "-"
+            text: (App.core && App.core.sign && App.core.sign.street && App.core.sign.street.number) ?? "-"
             color: "wheat"
             font {
                 pointSize: 200
@@ -29,7 +29,7 @@ Item {
             anchors {
                 horizontalCenter: parent.horizontalCenter
             }
-            text: (App.qml && App.qml.sign && App.qml.sign.street && App.qml.sign.street.name) ?? "-"
+            text: (App.core && App.core.sign && App.core.sign.street && App.core.sign.street.name) ?? "-"
             color: "wheat"
             font {
                 pointSize: 35
@@ -48,11 +48,9 @@ Item {
             }
             width: 460
             height: 120
-            onPressed: {
-                const sip = use("core.sip");
-    
-                if(App.qml && App.qml.sign && App.qml.sign.sip && App.qml.sign.sip.address) {
-                    sip.call(App.qml.sign.sip.address);
+            onPressed: {    
+                if(App.core && App.core.sign && App.core.sign.ring) {
+                    App.core.sign.ring();
                 }
             }
             onReleased: {
@@ -87,7 +85,7 @@ Item {
                     }
                     x: ((img.width * 0.75) + parent.width - width) / 2
                     horizontalAlignment: Text.AlignHCenter
-                    text: (App.qml && App.qml.sign && App.qml.sign.family && App.qml.sign.family.name) ?? "-"
+                    text: (App.core && App.core.sign && App.core.sign.family && App.core.sign.family.name) ?? "-"
                     color: "white"
                     font {
                         pointSize: 28

@@ -104,14 +104,14 @@ Item {
 
 			CButton {
 				id: light
-				property bool isOn: Boolean(App.light && App.light.isOn)
+				property bool isOn: Boolean(App.core && App.core.light && App.core.light.state)
 
 				color: isOn ? "yellow" : "white"
 				icon: isOn ? "lightbulb" : "light_off"
 				
 				onPressed: {
-					if(App.light && App.light.toogle) {
-						App.light.toogle();
+					if(App.core && App.core.light && App.core.light.toogle) {
+						App.core.light.toogle();
 					}
 				}
 			}
@@ -124,7 +124,7 @@ Item {
 					let pin = getPasscode();
 					randomize();
 
-					if(App.unlock && App.unlock(pin)) {
+					if(App.core && App.core.unlock && App.core.unlock(pin)) {
 						console.log("TODO: handle unlock");
 					}
 				}

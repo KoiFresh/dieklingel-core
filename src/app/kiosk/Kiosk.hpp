@@ -13,7 +13,7 @@
 class Kiosk : public Configuration {
     Q_OBJECT
    private:
-    QString _uri = "qml/main.qml";
+    QString _uri = "/usr/share/dieklingel-core/qml/main.qml";
     std::shared_ptr<Core::Setup> _setup;
     InactivityDetector _detector;
 
