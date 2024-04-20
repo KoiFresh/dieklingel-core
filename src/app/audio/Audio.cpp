@@ -1,16 +1,12 @@
 #include "Audio.hpp"
 
-Audio::Audio(std::shared_ptr<linphone::Core> core) { this->_core = core; }
+Audio::Audio(std::shared_ptr<linphone::Core> core) : _core(std::move(core)) {}
 
-Audio::~Audio() {}
+Audio::~Audio() = default;
 
-void Audio::capture(QString device) {
-    this->_core->setCaptureDevice(device.toStdString());
-}
+void Audio::capture(QString device) { this->_core->setCaptureDevice(device.toStdString()); }
 
-void Audio::playback(QString device) {
-    this->_core->setPlaybackDevice(device.toStdString());
-}
+void Audio::playback(QString device) { this->_core->setPlaybackDevice(device.toStdString()); }
 
 void Audio::onSetupCompleted() {}
 
@@ -29,6 +25,4 @@ void Audio::print(QTextStream &log) {
     }
 }
 
-void Audio::play(QUrl file) {
-    this->_core->playLocal(file.toString().toStdString());
-}
+void Audio::play(QUrl file) { this->_core->playLocal(file.toString().toStdString()); }

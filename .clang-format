@@ -4,3 +4,4 @@ AlignAfterOpenBracket: BlockIndent
 BinPackArguments: false
 BinPackParameters: false
 AllowAllArgumentsOnNextLine: false
+ColumnLimit: 120

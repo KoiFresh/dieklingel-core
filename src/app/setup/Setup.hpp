@@ -44,9 +44,7 @@ class Setup : public QObject, public std::enable_shared_from_this<Setup> {
     std::shared_ptr<Setup> script(QString file);
     std::shared_ptr<Setup> directory(QString directory);
 
-    std::shared_ptr<Setup> configureable(
-        QString name, ConfigurationFactory factory
-    );
+    std::shared_ptr<Setup> configureable(QString name, ConfigurationFactory factory);
 
     int exec();
     std::shared_ptr<QQmlApplicationEngine> engine();
@@ -60,9 +58,7 @@ class Setup : public QObject, public std::enable_shared_from_this<Setup> {
         T* integration = qobject_cast<T*>(shared.get());
         if (integration == nullptr) {
             throw std::logic_error(
-                QString("The integration %1 is not of the requested type.")
-                    .arg(section)
-                    .toStdString()
+                QString("The integration %1 is not of the requested type.").arg(section).toStdString()
             );
         }
 

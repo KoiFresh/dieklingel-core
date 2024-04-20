@@ -2,15 +2,13 @@
 
 #include "Mqtt.hpp"
 
-Mqtt::Mqtt() {}
+Mqtt::Mqtt() = default;
 
-Mqtt::~Mqtt() {}
+Mqtt::~Mqtt() = default;
 
 void Mqtt::auth(QString username, QString password) {
     if (this->_isSetupCompleted) {
-        throw std::logic_error(
-            "Cannot set auth information, after the setup is completed"
-        );
+        throw std::logic_error("Cannot set auth information, after the setup is completed");
     }
 
     this->_username = username;
@@ -19,9 +17,7 @@ void Mqtt::auth(QString username, QString password) {
 
 void Mqtt::broker(QString broker) {
     if (this->_isSetupCompleted) {
-        throw std::logic_error(
-            "Cannot set broker information, after the setup is completed"
-        );
+        throw std::logic_error("Cannot set broker information, after the setup is completed");
     }
 
     this->_broker = broker;
@@ -30,11 +26,8 @@ void Mqtt::broker(QString broker) {
 void Mqtt::onSetupCompleted() {
     _isSetupCompleted = true;
 
-    this->_client = std::make_shared<mqtt::async_client>(
-        this->_broker.toStdString(),
-        QUuid().toString().toStdString(),
-        nullptr
-    );
+    this->_client =
+        std::make_shared<mqtt::async_client>(this->_broker.toStdString(), QUuid().toString().toStdString(), nullptr);
     this->_client->set_callback(*this);
 
     this->connect();
@@ -48,12 +41,7 @@ void Mqtt::print(QTextStream &log) {
 }
 
 void Mqtt::connect() {
-    auto message = mqtt::message(
-        "dieklingel/core/system/state",
-        "disconnected",
-        mqtt::GRANTED_QOS_2,
-        true
-    );
+    auto message = mqtt::message("dieklingel/core/system/state", "disconnected", mqtt::GRANTED_QOS_2, true);
 
     auto options = mqtt::connect_options_builder()
                        .clean_session()
@@ -69,17 +57,9 @@ void Mqtt::connect() {
                 token = this->_client->connect(options);
                 token->wait();
 
-                this->_client->publish(
-                    "dieklingel/core/system/state",
-                    "connected",
-                    mqtt::GRANTED_QOS_2,
-                    true
-                );
+                this->_client->publish("dieklingel/core/system/state", "connected", mqtt::GRANTED_QOS_2, true);
                 for (auto topic : this->_subscriptions) {
-                    this->_client->subscribe(
-                        topic.toStdString(),
-                        mqtt::GRANTED_QOS_2
-                    );
+                    this->_client->subscribe(topic.toStdString(), mqtt::GRANTED_QOS_2);
                 }
                 return;
             } catch (mqtt::exception e) {

@@ -1,12 +1,10 @@
 #include "Softphone.hpp"
 
-Softphone::Softphone(
-    std::shared_ptr<Core::Setup> setup, std::shared_ptr<linphone::Core> core
-) {
-    this->_setup = setup;
-    this->_core = core;
+Softphone::Softphone(std::shared_ptr<Core::Setup> setup, std::shared_ptr<linphone::Core> core)
+    : _setup(std::move(setup)), _core(std::move(core)) {
+    const int LINPHONE_ITERATION_INTERVAL_MS = 20;
 
-    this->_timer.setInterval(20);
+    this->_timer.setInterval(LINPHONE_ITERATION_INTERVAL_MS);
     connect(&this->_timer, &QTimer::timeout, this, &Softphone::_iterate);
 
     this->_core->enableSelfView(false);
@@ -29,7 +27,7 @@ Softphone::Softphone(
     this->_setup->require<Audio>("audio");
 }
 
-Softphone::~Softphone() {}
+Softphone::~Softphone() = default;
 
 void Softphone::_iterate() { this->_core->iterate(); }
 
@@ -69,12 +67,11 @@ void Softphone::transport(QStringList transports) {
 
 void Softphone::call(QString number) {
     if (this->_core->getCurrentCall() != nullptr) {
-        qInfo() << "there is already an ongoing call, we will not invite"
-                << number;
+        qInfo() << "there is already an ongoing call, we will not invite" << number;
         return;
     }
 
-    auto params = this->_core->createCallParams(NULL);
+    auto params = this->_core->createCallParams(nullptr);
     params->enableEarlyMediaSending(true);
     params->setMediaEncryption(linphone::MediaEncryption::SRTP);
 
@@ -90,17 +87,8 @@ void Softphone::onSetupCompleted() {
     }
 
     auto factory = linphone::Factory::get();
-    auto address = factory->createAddress(
-        QString("sip:%1@%2").arg(this->_username, this->_proxy).toStdString()
-    );
-    auto info = factory->createAuthInfo(
-        address->getUsername(),
-        "",
-        this->_password.toStdString(),
-        "",
-        "",
-        ""
-    );
+    auto address = factory->createAddress(QString("sip:%1@%2").arg(this->_username, this->_proxy).toStdString());
+    auto info = factory->createAuthInfo(address->getUsername(), "", this->_password.toStdString(), "", "", "");
     this->_core->addAuthInfo(info);
 
     auto proxy = this->_core->createProxyConfig();
@@ -117,9 +105,7 @@ void Softphone::onSetupCompleted() {
 }
 
 void Softphone::onGlobalStateChanged(
-    const std::shared_ptr<linphone::Core> &lc,
-    linphone::GlobalState gstate,
-    const std::string &message
+    const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message
 ) {
     qInfo() << "Core state changed:" << message.c_str();
 };
@@ -130,8 +116,7 @@ void Softphone::onRegistrationStateChanged(
     linphone::RegistrationState cstate,
     const std::string &message
 ) {
-    qInfo() << "Registration state changed ["
-            << cfg->getIdentityAddress()->asString().c_str()
+    qInfo() << "Registration state changed [" << cfg->getIdentityAddress()->asString().c_str()
             << "]:" << message.c_str();
 }
 
@@ -141,9 +126,7 @@ void Softphone::onCallStateChanged(
     linphone::Call::State cstate,
     const std::string &message
 ) {
-    qInfo() << "Call state changed ["
-            << call->getRemoteAddressAsString().c_str()
-            << "]:" << message.c_str();
+    qInfo() << "Call state changed [" << call->getRemoteAddressAsString().c_str() << "]:" << message.c_str();
     switch (cstate) {
         case linphone::Call::State::IncomingReceived: {
             auto state = call->accept();
@@ -170,17 +153,14 @@ void Softphone::onCallStateChanged(
 }
 
 void Softphone::onDtmfReceived(
-    const std::shared_ptr<linphone::Core> &lc,
-    const std::shared_ptr<linphone::Call> &call,
-    int dtmf
+    const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, int dtmf
 ) {
     qInfo() << "Dtmf received" << dtmf;
 }
 
 void Softphone::print(QTextStream &info) {
     info << "📞 SIP enabled:" << Qt::endl;
-    info << "\tliblinphone version: " << this->_core->getVersion().c_str()
-         << Qt::endl;
+    info << "\tliblinphone version: " << this->_core->getVersion().c_str() << Qt::endl;
 
     info << "\taudio codecs:" << Qt::endl;
     for (auto codec : this->_core->getAudioPayloadTypes()) {
@@ -205,34 +185,18 @@ void Softphone::print(QTextStream &info) {
     }
 
     info << "\tdirectories:" << Qt::endl;
-    info << "\t\t- config: "
-         << linphone::Factory::get()->getConfigDir(nullptr).c_str() << Qt::endl;
-    info << "\t\t- data: "
-         << linphone::Factory::get()->getDataDir(nullptr).c_str() << Qt::endl;
-    info << "\t\t- data resources: "
-         << linphone::Factory::get()->getDataResourcesDir().c_str() << Qt::endl;
-    info << "\t\t- download: "
-         << linphone::Factory::get()->getDownloadDir(nullptr).c_str()
-         << Qt::endl;
-    info << "\t\t- image resources: "
-         << linphone::Factory::get()->getImageResourcesDir().c_str()
-         << Qt::endl;
-    info << "\t\t- mediastreamer plugins: "
-         << linphone::Factory::get()->getMspluginsDir().c_str() << Qt::endl;
-    info << "\t\t- ring resources: "
-         << linphone::Factory::get()->getRingResourcesDir().c_str() << Qt::endl;
-    info << "\t\t- sound resources: "
-         << linphone::Factory::get()->getSoundResourcesDir().c_str()
-         << Qt::endl;
-    info << "\t\t- top resources: "
-         << linphone::Factory::get()->getTopResourcesDir().c_str() << Qt::endl;
+    info << "\t\t- config: " << linphone::Factory::get()->getConfigDir(nullptr).c_str() << Qt::endl;
+    info << "\t\t- data: " << linphone::Factory::get()->getDataDir(nullptr).c_str() << Qt::endl;
+    info << "\t\t- data resources: " << linphone::Factory::get()->getDataResourcesDir().c_str() << Qt::endl;
+    info << "\t\t- download: " << linphone::Factory::get()->getDownloadDir(nullptr).c_str() << Qt::endl;
+    info << "\t\t- image resources: " << linphone::Factory::get()->getImageResourcesDir().c_str() << Qt::endl;
+    info << "\t\t- mediastreamer plugins: " << linphone::Factory::get()->getMspluginsDir().c_str() << Qt::endl;
+    info << "\t\t- ring resources: " << linphone::Factory::get()->getRingResourcesDir().c_str() << Qt::endl;
+    info << "\t\t- sound resources: " << linphone::Factory::get()->getSoundResourcesDir().c_str() << Qt::endl;
+    info << "\t\t- top resources: " << linphone::Factory::get()->getTopResourcesDir().c_str() << Qt::endl;
     info << "\tports:" << Qt::endl;
-    info << "\t\tudp: " << this->_core->getTransportsUsed()->getUdpPort()
-         << Qt::endl;
-    info << "\t\tdtls: " << this->_core->getTransportsUsed()->getDtlsPort()
-         << Qt::endl;
-    info << "\t\ttcp: " << this->_core->getTransportsUsed()->getTcpPort()
-         << Qt::endl;
-    info << "\t\ttls: " << this->_core->getTransportsUsed()->getTlsPort()
-         << Qt::endl;
+    info << "\t\tudp: " << this->_core->getTransportsUsed()->getUdpPort() << Qt::endl;
+    info << "\t\tdtls: " << this->_core->getTransportsUsed()->getDtlsPort() << Qt::endl;
+    info << "\t\ttcp: " << this->_core->getTransportsUsed()->getTcpPort() << Qt::endl;
+    info << "\t\ttls: " << this->_core->getTransportsUsed()->getTlsPort() << Qt::endl;
 }

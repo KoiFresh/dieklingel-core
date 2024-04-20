@@ -1,5 +1,5 @@
-#ifndef __FILTER_HPP__
-#define __FILTER_HPP__
+#ifndef __VIDEO_SPLITTERSOURCE_HPP__
+#define __VIDEO_SPLITTERSOURCE_HPP__
 
 #include <mediastreamer2/mscommon.h>
 #include <mediastreamer2/msfilter.h>
@@ -10,7 +10,9 @@
 #include <QLoggingCategory>
 #include <QMutex>
 #include <QSet>
+#include <gsl/gsl>
 
+#include "../Constants.hpp"
 #include "SplitterCamera.hpp"
 
 class SplitterSource {
@@ -44,8 +46,27 @@ class SplitterSource {
         void detach(MSFilter *sink);
     };
 
-    static MSFilterMethod methods[];
-    static MSFilterDesc description;
+    static inline MSFilterMethod methods[] = {
+        {MS_FILTER_SET_FPS, SplitterSource::_setFps},
+        {MS_FILTER_SET_VIDEO_SIZE, SplitterSource::_setVideoSize},
+        {MS_FILTER_GET_VIDEO_SIZE, SplitterSource::_getVideoSize},
+        {MS_FILTER_GET_PIX_FMT, SplitterSource::_getPixFmt},
+        {MS_FILTER_GET_FPS, SplitterSource::_getFps},
+        {0, nullptr}};
+
+    static inline MSFilterDesc description = {
+        .id = MS_FILTER_PLUGIN_ID,
+        .name = "SplitterSource",
+        .text =
+            "A filter that was created from a SplitterCamera. It could be "
+            "connected to a SplitterSink and acts like the end of a graph",
+        .category = MS_FILTER_OTHER,
+        .ninputs = 1,
+        .noutputs = 0,
+        .init = SplitterSource::_init,
+        .process = SplitterSource::_process,
+        .uninit = SplitterSource::_uninit,
+        .methods = SplitterSource::methods};
 };
 
-#endif  // __FILTER_HPP__
+#endif  // __VIDEO_SPLITTERSOURCE_HPP__

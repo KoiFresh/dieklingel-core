@@ -1,14 +1,12 @@
 #include "Capturer.hpp"
 
 // static
-const QString Capturer::FILENAME =
-    QDir::tempPath() + "/dieklingel-snapshot-tmp.jpg";
+const QString Capturer::FILENAME = QDir::tempPath() + "/dieklingel-snapshot-tmp.jpg";
 
-Capturer::Capturer(std::shared_ptr<linphone::Core> core) : _core(core) {
-    this->_factory = linphone_core_get_ms_factory(core->cPtr());
-}
+Capturer::Capturer(std::shared_ptr<linphone::Core> core)
+    : _core(core), _factory(linphone_core_get_ms_factory(core->cPtr())) {}
 
-Capturer::~Capturer() {}
+Capturer::~Capturer() = default;
 
 /**
  * create a pixelconverter which should be linked between the source and the
@@ -24,12 +22,12 @@ Capturer::~Capturer() {}
 MSFilter *Capturer::_configure(MSFilter *source) {
     MSFilter *pixconv = nullptr;
 
-    MSPixFmt format;
+    MSPixFmt format = {};
     MSVideoSize vsize = {
-        .width = 640,
-        .height = 480,
+        .width = DEFAULT_VIDEO_WIDTH,
+        .height = DEFAULT_VIDEO_HEIGHT,
     };
-    float fps = (float)29.97;
+    float fps = DEFAULT_VIDEO_FPS;
 
     // use this for the possibility to rotate the camera
     /*if (ms_filter_has_method(source, MS_VIDEO_CAPTURE_SET_DEVICE_ORIENTATION))
@@ -41,10 +39,7 @@ MSFilter *Capturer::_configure(MSFilter *source) {
     MS_VIDEO_DISPLAY_SET_DEVICE_ORIENTATION, 0);
     }*/
 
-    if (!ms_filter_implements_interface(
-            source,
-            MSFilterVideoEncoderInterface
-        )) {
+    if (!ms_filter_implements_interface(source, MSFilterVideoEncoderInterface)) {
         ms_filter_call_method(source, MS_FILTER_SET_VIDEO_SIZE, &vsize);
         if (ms_filter_get_id(source) != MS_STATIC_IMAGE_ID) {
             ms_filter_call_method(source, MS_FILTER_SET_FPS, &fps);
@@ -52,30 +47,18 @@ MSFilter *Capturer::_configure(MSFilter *source) {
         ms_filter_call_method(source, MS_FILTER_GET_VIDEO_SIZE, &vsize);
     } else {
         MSVideoConfiguration vconf;
-        ms_filter_call_method(
-            source,
-            MS_VIDEO_ENCODER_GET_CONFIGURATION,
-            &vconf
-        );
+        ms_filter_call_method(source, MS_VIDEO_ENCODER_GET_CONFIGURATION, &vconf);
         vconf.vsize = vsize;
         vconf.fps = fps;
-        ms_filter_call_method(
-            source,
-            MS_VIDEO_ENCODER_SET_CONFIGURATION,
-            &vconf
-        );
+        ms_filter_call_method(source, MS_VIDEO_ENCODER_SET_CONFIGURATION, &vconf);
     }
     ms_filter_call_method(source, MS_FILTER_GET_PIX_FMT, &format);
     if (format == MS_MJPEG) {
         pixconv = ms_factory_create_filter(this->_factory, MS_MJPEG_DEC_ID);
-        if (pixconv == NULL) {
-            qWarning(
-            ) << "Could not create mjpeg decoder, check your build options.";
+        if (pixconv == nullptr) {
+            qWarning() << "Could not create mjpeg decoder, check your build options.";
         }
-    } else if (!ms_filter_implements_interface(
-                   source,
-                   MSFilterVideoEncoderInterface
-               )) {
+    } else if (!ms_filter_implements_interface(source, MSFilterVideoEncoderInterface)) {
         pixconv = ms_factory_create_filter(this->_factory, MS_PIX_CONV_ID);
         ms_filter_call_method(pixconv, MS_FILTER_SET_PIX_FMT, &format);
         ms_filter_call_method(pixconv, MS_FILTER_SET_VIDEO_SIZE, &vsize);
@@ -98,23 +81,14 @@ void Capturer::snapshot() {
     this->_sink = ms_factory_create_filter(this->_factory, MS_JPEG_WRITER_ID);
     this->_ticker = ms_ticker_new();
 
-    ms_filter_add_notify_callback(
-        this->_sink,
-        Capturer::_onSnapshotTaken,
-        this,
-        true
-    );
+    ms_filter_add_notify_callback(this->_sink, Capturer::_onSnapshotTaken, this, true);
 
     ms_filter_link(this->_source, 0, this->_pixconv, 0);
     ms_filter_link(this->_pixconv, 0, this->_sink, 0);
 
     ms_ticker_attach(this->_ticker, this->_source);
 
-    ms_filter_call_method(
-        this->_sink,
-        MS_JPEG_WRITER_TAKE_SNAPSHOT,
-        (void *)Capturer::FILENAME.toStdString().c_str()
-    );
+    ms_filter_call_method(this->_sink, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void *)Capturer::FILENAME.toStdString().c_str());
 }
 
 void Capturer::_finishSnapshot() {
@@ -145,11 +119,9 @@ void Capturer::_finishSnapshot() {
 }
 
 // static
-void Capturer::_onSnapshotTaken(
-    void *userdata, MSFilter *f, unsigned int id, void *arg
-) {
+void Capturer::_onSnapshotTaken(void *userdata, MSFilter *f, unsigned int id, void *arg) {
     // void *arg is of type MSJpegWriteEventData
-    Capturer *self = reinterpret_cast<Capturer *>(userdata);
+    auto self = static_cast<Capturer *>(userdata);
     switch (id) {
         case MS_JPEG_WRITER_SNAPSHOT_TAKEN: {
             QtConcurrent::run([self]() { self->_finishSnapshot(); });

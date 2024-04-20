@@ -11,9 +11,7 @@
 #include "../setup/Configuration.hpp"
 #include "../setup/Setup.hpp"
 
-class Softphone : public Configuration,
-                  public linphone::CoreListener,
-                  public std::enable_shared_from_this<Softphone> {
+class Softphone : public Configuration, public linphone::CoreListener, public std::enable_shared_from_this<Softphone> {
     Q_OBJECT
    private:
     QTimer _timer;
@@ -29,9 +27,7 @@ class Softphone : public Configuration,
 
    protected:
     void onGlobalStateChanged(
-        const std::shared_ptr<linphone::Core> &lc,
-        linphone::GlobalState gstate,
-        const std::string &message
+        const std::shared_ptr<linphone::Core> &lc, linphone::GlobalState gstate, const std::string &message
     ) override;
 
     void onRegistrationStateChanged(
@@ -49,15 +45,11 @@ class Softphone : public Configuration,
     ) override;
 
     void onDtmfReceived(
-        const std::shared_ptr<linphone::Core> &lc,
-        const std::shared_ptr<linphone::Call> &call,
-        int dtmf
+        const std::shared_ptr<linphone::Core> &lc, const std::shared_ptr<linphone::Call> &call, int dtmf
     ) override;
 
    public:
-    Softphone(
-        std::shared_ptr<Core::Setup> setup, std::shared_ptr<linphone::Core> core
-    );
+    Softphone(std::shared_ptr<Core::Setup> setup, std::shared_ptr<linphone::Core> core);
     ~Softphone();
 
     Q_INVOKABLE void auth(QString username, QString password);

@@ -1,6 +1,6 @@
 #include "Input.hpp"
 
-Input::Input(int pin, QJSValue callback) : _pin(pin), _callback(callback) {
+Input::Input(int pin, QJSValue &callback) : _pin(pin), _callback(callback) {
     try {
         auto chip = gpiod::chip("pinctrl-bcm2711", gpiod::chip::OPEN_LOOKUP);
         gpiod::line_request request;
@@ -12,12 +12,10 @@ Input::Input(int pin, QJSValue callback) : _pin(pin), _callback(callback) {
         this->_line = line;
     } catch (std::exception const &exception) {
         this->_pin = -1;
-        qWarning(
-        ) << "An error ouccured while requesting the pin"
-          << pin
-          << " on chip 'pinctrl-bcm2711'. This causes that the 'Input' "
-             "will not work as excpected. The error message was:"
-          << exception.what();
+        qWarning() << "An error ouccured while requesting the pin" << pin
+                   << " on chip 'pinctrl-bcm2711'. This causes that the 'Input' "
+                      "will not work as excpected. The error message was:"
+                   << exception.what();
     }
 }
 

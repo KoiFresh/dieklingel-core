@@ -1,8 +1,8 @@
 #include "WebServer.hpp"
 
-WebServer::WebServer() {}
+WebServer::WebServer() = default;
 
-WebServer::~WebServer() {}
+WebServer::~WebServer() = default;
 
 void WebServer::port(int value) { this->_port = value; }
 

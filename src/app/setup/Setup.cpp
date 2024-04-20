@@ -15,11 +15,10 @@ Core::Setup::Setup(int& argc, char** argv) : _argc(argc), _argv(argv) {
     this->_engine->installExtensions(QJSEngine::AllExtensions);
 }
 
-Core::Setup::~Setup() {}
+Core::Setup::~Setup() = default;
 
 void Core::Setup::useGui() {
-    bool isGui =
-        (qobject_cast<QGuiApplication*>(QCoreApplication::instance()) != 0);
+    bool isGui = (qobject_cast<QGuiApplication*>(QCoreApplication::instance()) != 0);
 
     if (isGui) {
         return;
@@ -32,21 +31,14 @@ void Core::Setup::useGui() {
 
     // Use a QGuiApplication instead of the existing one, but only if
     // Kiosk::entry is configured
-    this->_application =
-        std::make_shared<QGuiApplication>(this->_argc, this->_argv);
+    this->_application = std::make_shared<QGuiApplication>(this->_argc, this->_argv);
 }
 
 std::shared_ptr<Core::Setup> Core::Setup::script(QString file) {
-    QQmlEngine::setObjectOwnership(
-        this,
-        QQmlEngine::ObjectOwnership::CppOwnership
-    );
+    QQmlEngine::setObjectOwnership(this, QQmlEngine::ObjectOwnership::CppOwnership);
 
     QJSValue conf = this->_engine->newQObject(this);
-    this->_engine->globalObject().setProperty(
-        "configure",
-        conf.property("configure")
-    );
+    this->_engine->globalObject().setProperty("configure", conf.property("configure"));
     this->_engine->globalObject().setProperty("use", conf.property("use"));
 
     this->_file = file;
@@ -58,9 +50,7 @@ std::shared_ptr<Core::Setup> Core::Setup::directory(QString directory) {
     return shared_from_this();
 }
 
-std::shared_ptr<Core::Setup> Core::Setup::configureable(
-    QString name, ConfigurationFactory factory
-) {
+std::shared_ptr<Core::Setup> Core::Setup::configureable(QString name, ConfigurationFactory factory) {
     if (this->_factories.contains(name)) {
         throw "Cannot register two configureables with the name " + name;
     }
@@ -90,8 +80,8 @@ int Core::Setup::exec() {
 }
 
 int Core::Setup::_exec(QString uri) {
-    qInfo("🏗️  Setup dieklingel-core from %s.", qUtf8Printable(uri));
-    qInfo("\tVersion: %s", qUtf8Printable(Setup::getVersion()));
+    qInfo() << qPrintable(QString("🏗️  Setup dieklingel-core from %1.").arg(uri));
+    qInfo() << qPrintable(QString("\tVersion: %1").arg(Setup::getVersion()));
 
     QFile script(uri);
     if (!script.open(QIODevice::ReadOnly)) {
@@ -128,13 +118,11 @@ int Core::Setup::_exec(QString uri) {
 std::shared_ptr<Configuration> Core::Setup::require(QString section) {
     if (this->_isSetupCompleted) {
         if (!this->_integrations.contains(section)) {
-            throw std::logic_error(
-                QString("An integration with the identifier %1 was not "
-                        "requested, before the setup completed, this it will "
-                        "not be constructed.")
-                    .arg(section)
-                    .toStdString()
-            );
+            throw std::logic_error(QString("An integration with the identifier %1 was not "
+                                           "requested, before the setup completed, this it will "
+                                           "not be constructed.")
+                                       .arg(section)
+                                       .toStdString());
         }
         auto integration = this->_integrations.value(section);
         return integration;
@@ -143,25 +131,15 @@ std::shared_ptr<Configuration> Core::Setup::require(QString section) {
     if (this->_factories.contains(section)) {
         auto factory = this->_factories.take(section);
         auto instance = factory();
-        QQmlEngine::setObjectOwnership(
-            instance.get(),
-            QQmlEngine::ObjectOwnership::CppOwnership
-        );
+        QQmlEngine::setObjectOwnership(instance.get(), QQmlEngine::ObjectOwnership::CppOwnership);
 
-        connect(
-            this,
-            &Core::Setup::whenSetupCompletes,
-            instance.get(),
-            &Configuration::onSetupCompleted
-        );
+        connect(this, &Core::Setup::whenSetupCompletes, instance.get(), &Configuration::onSetupCompleted);
 
         this->_integrations.insert(section, instance);
     }
 
     if (!this->_integrations.contains(section)) {
-        throw std::logic_error(QString("A integration with %1 does not exists.")
-                                   .arg(section)
-                                   .toStdString());
+        throw std::logic_error(QString("A integration with %1 does not exists.").arg(section).toStdString());
     }
     auto integration = this->_integrations.value(section);
     return integration;
@@ -182,25 +160,15 @@ void Core::Setup::configure(QJSValue section, QJSValue callback) {
     if (this->_factories.contains(identifier)) {
         auto factory = this->_factories.take(identifier);
         auto instance = factory();
-        QQmlEngine::setObjectOwnership(
-            instance.get(),
-            QQmlEngine::ObjectOwnership::CppOwnership
-        );
+        QQmlEngine::setObjectOwnership(instance.get(), QQmlEngine::ObjectOwnership::CppOwnership);
 
-        connect(
-            this,
-            &Core::Setup::whenSetupCompletes,
-            instance.get(),
-            &Configuration::onSetupCompleted
-        );
+        connect(this, &Core::Setup::whenSetupCompletes, instance.get(), &Configuration::onSetupCompleted);
 
         this->_integrations.insert(identifier, instance);
     }
 
     if (!this->_integrations.contains(identifier)) {
-        this->_engine->throwError(
-            QString("A configuration with %1 does not exists.").arg(identifier)
-        );
+        this->_engine->throwError(QString("A configuration with %1 does not exists.").arg(identifier));
         return;
     }
 
@@ -213,34 +181,22 @@ void Core::Setup::configure(QJSValue section, QJSValue callback) {
 QJSValue Core::Setup::use(QString section) {
     if (this->_factories.contains(section)) {
         if (this->_isSetupCompleted) {
-            this->_engine->throwError(
-                QString("Cannot use(%1) before creation.").arg(section)
-            );
-            return QJSValue();
+            this->_engine->throwError(QString("Cannot use(%1) before creation.").arg(section));
+            return {};
         }
 
         auto factory = this->_factories.take(section);
         auto instance = factory();
-        QQmlEngine::setObjectOwnership(
-            instance.get(),
-            QQmlEngine::ObjectOwnership::CppOwnership
-        );
+        QQmlEngine::setObjectOwnership(instance.get(), QQmlEngine::ObjectOwnership::CppOwnership);
 
-        connect(
-            this,
-            &Core::Setup::whenSetupCompletes,
-            instance.get(),
-            &Configuration::onSetupCompleted
-        );
+        connect(this, &Core::Setup::whenSetupCompletes, instance.get(), &Configuration::onSetupCompleted);
 
         this->_integrations.insert(section, instance);
     }
 
     if (!this->_integrations.contains(section)) {
-        this->_engine->throwError(
-            QString("A configuration with %1 does not exists.").arg(section)
-        );
-        return QJSValue();
+        this->_engine->throwError(QString("A configuration with %1 does not exists.").arg(section));
+        return {};
     }
 
     auto prototype = this->_integrations.value(section);
@@ -248,6 +204,4 @@ QJSValue Core::Setup::use(QString section) {
     return obj;
 }
 
-std::shared_ptr<QQmlApplicationEngine> Core::Setup::engine() {
-    return this->_engine;
-}
+std::shared_ptr<QQmlApplicationEngine> Core::Setup::engine() { return this->_engine; }

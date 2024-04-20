@@ -1,11 +1,11 @@
+
 #include "SplitterSource.hpp"
 
 // static
 void SplitterSource::_init(MSFilter *filter) {
-    SplitterSource::State *sourceState = new SplitterSource::State();
-    sourceState->sizeconv =
-        ms_factory_create_filter(filter->factory, MS_SIZE_CONV_ID);
-    sourceState->splitterSinks = new QSet<MSFilter *>();
+    auto sourceState = gsl::owner<SplitterSource::State *>(new SplitterSource::State());
+    sourceState->sizeconv = ms_factory_create_filter(filter->factory, MS_SIZE_CONV_ID);
+    sourceState->splitterSinks = gsl::owner<QSet<MSFilter *> *>(new QSet<MSFilter *>());
     sourceState->cameraReader = nullptr;
 
     sourceState->parent = filter;
@@ -14,16 +14,17 @@ void SplitterSource::_init(MSFilter *filter) {
 
 // static
 void SplitterSource::_process(MSFilter *filter) {
-    SplitterSource::State *splitterSourceState =
-        (SplitterSource::State *)filter->data;
+    auto splitterSourceState = static_cast<SplitterSource::State *>(filter->data);
     splitterSourceState->mutex.lock();
 
-    mblk_t *im;
-    while ((im = ms_queue_get(filter->inputs[0])) != NULL) {
-        mblk_t *outm;
+    mblk_t *im = {};
+    // NOLINTNEXTLINE
+    while ((im = ms_queue_get(filter->inputs[0])) != nullptr) {
+        mblk_t *outm = {};
         int count = 0;
-        for (auto sink = splitterSourceState->splitterSinks->begin(),
-                  end = splitterSourceState->splitterSinks->end();
+
+        // NOLINTNEXTLINE
+        for (auto sink = splitterSourceState->splitterSinks->begin(), end = splitterSourceState->splitterSinks->end();
              sink != end;
              sink++) {
             if (count == 0) {
@@ -31,6 +32,8 @@ void SplitterSource::_process(MSFilter *filter) {
             } else {
                 outm = dupmsg(im);
             }
+
+            // NOLINTNEXTLINE
             ms_queue_put((*sink)->outputs[0], outm);
             count++;
         }
@@ -41,8 +44,7 @@ void SplitterSource::_process(MSFilter *filter) {
 
 // static
 void SplitterSource::_uninit(MSFilter *filter) {
-    SplitterSource::State *splitterSourceState =
-        (SplitterSource::State *)filter->data;
+    auto splitterSourceState = static_cast<gsl::owner<SplitterSource::State *>>(filter->data);
 
     delete splitterSourceState;
     filter->data = nullptr;
@@ -50,57 +52,32 @@ void SplitterSource::_uninit(MSFilter *filter) {
 
 // static
 int SplitterSource::_setFps(MSFilter *filter, void *arg) {
-    SplitterSource::State *splitterSourceState =
-        (SplitterSource::State *)filter->data;
-    return ms_filter_call_method(
-        splitterSourceState->sizeconv,
-        MS_FILTER_SET_FPS,
-        arg
-    );
+    auto splitterSourceState = static_cast<SplitterSource::State *>(filter->data);
+    return ms_filter_call_method(splitterSourceState->sizeconv, MS_FILTER_SET_FPS, arg);
 }
 
 // static
 int SplitterSource::_getFps(MSFilter *filter, void *arg) {
-    SplitterSource::State *splitterSourceState =
-        (SplitterSource::State *)filter->data;
-    return ms_filter_call_method(
-        splitterSourceState->cameraReader,
-        MS_FILTER_GET_FPS,
-        arg
-    );
+    auto splitterSourceState = static_cast<SplitterSource::State *>(filter->data);
+    return ms_filter_call_method(splitterSourceState->cameraReader, MS_FILTER_GET_FPS, arg);
 }
 
 // static
 int SplitterSource::_setVideoSize(MSFilter *filter, void *arg) {
-    SplitterSource::State *splitterSourceState =
-        (SplitterSource::State *)filter->data;
-    return ms_filter_call_method(
-        splitterSourceState->sizeconv,
-        MS_FILTER_SET_VIDEO_SIZE,
-        arg
-    );
+    auto splitterSourceState = static_cast<SplitterSource::State *>(filter->data);
+    return ms_filter_call_method(splitterSourceState->sizeconv, MS_FILTER_SET_VIDEO_SIZE, arg);
 }
 
 // static
 int SplitterSource::_getVideoSize(MSFilter *filter, void *arg) {
-    SplitterSource::State *splitterSourceState =
-        (SplitterSource::State *)filter->data;
-    return ms_filter_call_method(
-        splitterSourceState->cameraReader,
-        MS_FILTER_GET_VIDEO_SIZE,
-        arg
-    );
+    auto splitterSourceState = static_cast<SplitterSource::State *>(filter->data);
+    return ms_filter_call_method(splitterSourceState->cameraReader, MS_FILTER_GET_VIDEO_SIZE, arg);
 }
 
 // static
 int SplitterSource::_getPixFmt(MSFilter *filter, void *arg) {
-    SplitterSource::State *splitterSourceState =
-        (SplitterSource::State *)filter->data;
-    return ms_filter_call_method(
-        splitterSourceState->cameraReader,
-        MS_FILTER_GET_PIX_FMT,
-        arg
-    );
+    auto splitterSourceState = static_cast<SplitterSource::State *>(filter->data);
+    return ms_filter_call_method(splitterSourceState->cameraReader, MS_FILTER_GET_PIX_FMT, arg);
 }
 
 SplitterSource::State::~State() {
@@ -118,28 +95,6 @@ SplitterSource::State::~State() {
 
     this->mutex.unlock();
 }
-
-MSFilterMethod SplitterSource::methods[] = {
-    {MS_FILTER_SET_FPS, SplitterSource::_setFps},
-    {MS_FILTER_SET_VIDEO_SIZE, SplitterSource::_setVideoSize},
-    {MS_FILTER_GET_VIDEO_SIZE, SplitterSource::_getVideoSize},
-    {MS_FILTER_GET_PIX_FMT, SplitterSource::_getPixFmt},
-    {MS_FILTER_GET_FPS, SplitterSource::_getFps},
-    {0, NULL}};
-
-MSFilterDesc SplitterSource::description = {
-    .id = MS_FILTER_PLUGIN_ID,
-    .name = "SplitterSource",
-    .text =
-        "A filter that was created from a SplitterCamera. It could be "
-        "connected to a SplitterSink and acts like the end of a graph",
-    .category = MS_FILTER_OTHER,
-    .ninputs = 1,
-    .noutputs = 0,
-    .init = SplitterSource::_init,
-    .process = SplitterSource::_process,
-    .uninit = SplitterSource::_uninit,
-    .methods = SplitterSource::methods};
 
 void SplitterSource::State::attach(MSFilter *sink) {
     this->mutex.lock();
@@ -176,24 +131,19 @@ void SplitterSource::State::detach(MSFilter *sink) {
 
         // init for next start
         this->cameraReader = ms_web_cam_create_reader(this->sourceCamera);
-        this->sizeconv =
-            ms_factory_create_filter(this->parent->factory, MS_SIZE_CONV_ID);
+        this->sizeconv = ms_factory_create_filter(this->parent->factory, MS_SIZE_CONV_ID);
 
         ms_filter_link(this->cameraReader, 0, this->sizeconv, 0);
         ms_filter_link(this->sizeconv, 0, this->parent, 0);
 
         MSVideoSize size = {
-            .width = 640,
-            .height = 480,
+            .width = DEFAULT_VIDEO_WIDTH,
+            .height = DEFAULT_VIDEO_HEIGHT,
         };
-        ms_filter_call_method(
-            this->cameraReader,
-            MS_FILTER_SET_VIDEO_SIZE,
-            &size
-        );
+        ms_filter_call_method(this->cameraReader, MS_FILTER_SET_VIDEO_SIZE, &size);
         ms_filter_call_method(this->sizeconv, MS_FILTER_SET_VIDEO_SIZE, &size);
 
-        float fps = 30.0;
+        float fps = DEFAULT_VIDEO_FPS;
         if (ms_filter_get_id(this->cameraReader) != MS_STATIC_IMAGE_ID) {
             ms_filter_call_method(this->cameraReader, MS_FILTER_SET_FPS, &fps);
         }

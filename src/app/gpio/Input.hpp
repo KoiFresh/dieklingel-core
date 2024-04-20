@@ -18,7 +18,7 @@ class Input : public QObject {
     QJSValue _callback;
 
    public:
-    Input(int pin, QJSValue callback);
+    Input(int pin, QJSValue &callback);
     ~Input();
 
     void read();

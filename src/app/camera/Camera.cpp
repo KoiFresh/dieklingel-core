@@ -1,16 +1,13 @@
 #include "Camera.hpp"
 
-Camera::Camera(std::shared_ptr<linphone::Core> core)
-    : _core(core), _capturer(core) {}
+Camera::Camera(std::shared_ptr<linphone::Core> core) : _core(core), _capturer(core), _device(), _mutex() {}
 
-Camera::~Camera() {}
+Camera::~Camera() = default;
 
 void Camera::device(QString device) {
     if (!this->_device.isEmpty()) {
         throw std::logic_error(
-            QString("The camera.device can only be set once. The device is %1.")
-                .arg(this->_device)
-                .toStdString()
+            QString("The camera.device can only be set once. The device is %1.").arg(this->_device).toStdString()
         );
     }
     this->_core->setVideoDevice(device.toStdString().c_str());
@@ -47,19 +44,12 @@ void Camera::takeB64Snapshot(QJSValue callback) {
 
     this->_mutex.lock();
 
-    QObject* ctx = new QObject();
-    connect(
-        &this->_capturer,
-        &Capturer::snapshotTaken,
-        ctx,
-        [callback, ctx](QByteArray base64) {
-            // destroy the context/receiver to disconnect
-            ctx->deleteLater();
-
-            // call js callback
-            QJSValue(callback).call({QString(base64)});
-        }
-    );
+    // NOLINTNEXTLINE
+    auto ctx = new QObject();
+    connect(&this->_capturer, &Capturer::snapshotTaken, ctx, [callback, ctx](QByteArray base64) {
+        ctx->deleteLater();
+        QJSValue(callback).call({QString(base64)});
+    });
     this->_capturer.snapshot();
 
     this->_mutex.unlock();

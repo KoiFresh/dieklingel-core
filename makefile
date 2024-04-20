@@ -4,10 +4,12 @@
 deps\:build:
 	apt-get install -y \
 	    build-essential \
+		clang-tidy \
     	cmake \
     	git \
 		libgl1-mesa-dev \
 		libgmock-dev \
+		libmsgsl-dev \
     	libgpiod-dev \
 		libgtest-dev \
     	liblinphone-dev \

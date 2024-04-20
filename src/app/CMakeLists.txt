@@ -1,5 +1,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -25,6 +27,7 @@ find_package(
 	Quick
 	QuickControls2
 )
+find_package(Microsoft.GSL REQUIRED)
 
 add_definitions(-DDIEKLINGEL_CORE_VERSION="${CMAKE_PROJECT_VERSION}")
 
@@ -46,7 +49,6 @@ add_executable(
 	video/SplitterSink.cpp
 	web/WebServer.cpp
 	main.cpp
-	CoreConfig.cpp
 )
 
 target_link_libraries(
