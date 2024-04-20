@@ -52,8 +52,7 @@ class SplitterSource {
         {MS_FILTER_GET_VIDEO_SIZE, SplitterSource::_getVideoSize},
         {MS_FILTER_GET_PIX_FMT, SplitterSource::_getPixFmt},
         {MS_FILTER_GET_FPS, SplitterSource::_getFps},
-        {0, nullptr}
-    };
+        {0, nullptr}};
 
     static inline MSFilterDesc description = {
         .id = MS_FILTER_PLUGIN_ID,
@@ -67,8 +66,7 @@ class SplitterSource {
         .init = SplitterSource::_init,
         .process = SplitterSource::_process,
         .uninit = SplitterSource::_uninit,
-        .methods = SplitterSource::methods
-    };
+        .methods = SplitterSource::methods};
 };
 
 #endif  // __VIDEO_SPLITTERSOURCE_HPP__
