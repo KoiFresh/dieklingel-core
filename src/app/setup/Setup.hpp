@@ -16,7 +16,7 @@
 
 namespace Core {
 
-typedef std::function<std::shared_ptr<Configuration>()> ConfigurationFactory;
+using ConfigurationFactory = std::function<std::shared_ptr<Configuration>()>;
 
 class Setup : public QObject, public std::enable_shared_from_this<Setup> {
     Q_OBJECT
@@ -36,8 +36,12 @@ class Setup : public QObject, public std::enable_shared_from_this<Setup> {
    public:
     static QString getVersion();
 
+    Setup(const Setup&) = delete;
+    Setup& operator=(const Setup&) = delete;
+    Setup(const Setup&&) = delete;
+    Setup& operator=(const Setup&&) = delete;
     Setup(int& argc, char** argv);
-    ~Setup();
+    ~Setup() override;
 
     void useGui();
 

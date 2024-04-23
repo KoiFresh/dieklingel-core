@@ -1,5 +1,6 @@
 #ifndef __VIDEO_SPLITTERSOURCE_HPP__
 #define __VIDEO_SPLITTERSOURCE_HPP__
+// NOLINTBEGIN
 
 #include <mediastreamer2/mscommon.h>
 #include <mediastreamer2/msfilter.h>
@@ -69,4 +70,5 @@ class SplitterSource {
         .methods = SplitterSource::methods};
 };
 
+// NOLINTEND
 #endif  // __VIDEO_SPLITTERSOURCE_HPP__

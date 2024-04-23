@@ -15,8 +15,12 @@ class Audio : public Configuration {
     std::shared_ptr<linphone::Core> _core;
 
    public:
+    Audio(const Audio &) = delete;
+    Audio &operator=(const Audio &) = delete;
+    Audio(const Audio &&) = delete;
+    Audio &operator=(const Audio &&) = delete;
     Audio(std::shared_ptr<linphone::Core> core);
-    ~Audio();
+    ~Audio() override;
 
     Q_INVOKABLE void playback(QString device);
     Q_INVOKABLE void capture(QString device);

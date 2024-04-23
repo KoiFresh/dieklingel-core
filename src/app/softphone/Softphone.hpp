@@ -49,8 +49,12 @@ class Softphone : public Configuration, public linphone::CoreListener, public st
     ) override;
 
    public:
+    Softphone(const Softphone &) = delete;
+    Softphone &operator=(const Softphone &) = delete;
+    Softphone(const Softphone &&) = delete;
+    Softphone &operator=(const Softphone &&) = delete;
     Softphone(std::shared_ptr<Core::Setup> setup, std::shared_ptr<linphone::Core> core);
-    ~Softphone();
+    ~Softphone() override;
 
     Q_INVOKABLE void auth(QString username, QString password);
     Q_INVOKABLE void proxy(QString proxy);

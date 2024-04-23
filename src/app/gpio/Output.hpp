@@ -14,8 +14,12 @@ class Output : public QObject {
     gpiod::line _line;
 
    public:
+    Output(const Output &) = delete;
+    Output &operator=(const Output &) = delete;
+    Output(const Output &&) = delete;
+    Output &operator=(const Output &&) = delete;
     Output(int pin);
-    ~Output();
+    ~Output() override;
 
     void setValue(bool value);
 

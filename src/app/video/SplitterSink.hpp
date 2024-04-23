@@ -1,5 +1,6 @@
 #ifndef __SPLITTER_SINK_HPP__
 #define __SPLITTER_SINK_HPP__
+// NOLINTBEGIN
 
 #include <mediastreamer2/mscommon.h>
 #include <mediastreamer2/msfilter.h>
@@ -57,4 +58,5 @@ class SplitterSink {
     ;
 };
 
+// NOLINTEND
 #endif

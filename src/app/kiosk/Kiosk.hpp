@@ -18,11 +18,15 @@ class Kiosk : public Configuration {
     InactivityDetector _detector;
 
    public:
+    Kiosk(const Kiosk &) = delete;
+    Kiosk &operator=(const Kiosk &) = delete;
+    Kiosk(const Kiosk &&) = delete;
+    Kiosk &operator=(const Kiosk &&) = delete;
     Kiosk(std::shared_ptr<Core::Setup> setup);
-    ~Kiosk();
+    ~Kiosk() override;
 
     void onSetupCompleted() override;
-    void print(QTextStream& log) override;
+    void print(QTextStream &log) override;
 
     Q_INVOKABLE void platform(QString platform);
     Q_INVOKABLE void entry(QString uri);

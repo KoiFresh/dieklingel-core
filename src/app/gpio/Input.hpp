@@ -18,8 +18,12 @@ class Input : public QObject {
     QJSValue _callback;
 
    public:
+    Input(const Input &) = delete;
+    Input &operator=(const Input &) = delete;
+    Input(const Input &&) = delete;
+    Input &operator=(const Input &&) = delete;
     Input(int pin, QJSValue &callback);
-    ~Input();
+    ~Input() override;
 
     void read();
 };
