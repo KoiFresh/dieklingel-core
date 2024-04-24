@@ -10,14 +10,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       
+      - name: Init taskfile
+        run: bash taskfile init
+
       - name: Install dependencies
         run: |
-          sudo apt-get update && \
-          sudo make deps:dev
+          sudo apt-get update
+          sudo ./taskfile deps:dev
 
       - name: Check formating
         run: |
-          make format:check
+          ./taskfile format:check
 
   linux-build:
     runs-on: ubuntu-latest
@@ -25,14 +28,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       
+      - name: Init taskfile
+        run: bash taskfile init
+
       - name: Install dependencies
         run: |
-          sudo apt-get update && \
-          sudo make deps:build
+          sudo apt-get update
+          sudo ./taskfile deps:build
 
       - name: Build the core
         run: |
-          make build
+          ./taskfile build
 
   linux-test:
     runs-on: ubuntu-latest
@@ -40,14 +46,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       
+      - name: Init taskfile
+        run: bash taskfile init
+
       - name: Install dependencies
         run: |
-          sudo apt-get update && \
-          sudo make deps:build
+          sudo apt-get update
+          sudo ./taskfile deps:build
 
       - name: Build and run tests
         run: |
-          make test
+          ./taskfile test
 
   debian-package:
     runs-on: ubuntu-latest
@@ -55,11 +64,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       
+      - name: Init taskfile
+        run: bash taskfile init
+    
       - name: Install dependencies
         run: |
-          sudo apt-get update && \
-          sudo make deps:build
+          sudo apt-get update
+          sudo ./taskfile deps:build
 
       - name: Build and run tests
         run: |
-          make package
+          ./taskfile package
