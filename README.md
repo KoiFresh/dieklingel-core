@@ -56,32 +56,35 @@ To be able to run the project you have to build it. Start by cloning this reposi
 Install dependencies which are required to build and/or run the project.
 
 ```sh
+# Init the taskfile
+bash taskfile init
+
 # Buildtime dependencies
-sudo make deps:build
+sudo ./taskfile deps:build
 
 # Runtime dependencies
-sudo make deps:run
+sudo ./taskfile deps:run
 
 # Development dependencies
-sudo make deps:dev
+sudo ./taskfile deps:dev
 
 # Or for development, build and runtime
-sudo make deps:all
+sudo ./taskfile deps:all
 ```
 
 ### 🏗️ Build the core
 
 ```sh
-make build
+./taskfile build
 
 # Or build a debian package archive
-make package
+./taskfile package
 ```
 
 ### 🔧 Install the core
 
 ```sh
-sudo make install
+sudo ./taskfile install
 
 # Or if you build a debian package archive
 sudo apt-get install ./build/dieklingel-core_<VERSION>_<ARCH>.deb
