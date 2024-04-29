@@ -1,0 +1,138 @@
+#!.taskfile/runtime
+
+# Fail on error
+set -e
+
+## General functions
+
+function init {
+    curl -sL https://raw.githubusercontent.com/KoiFresh/.taskfile/main/init | bash
+}
+
+function help {
+    cat <<EOF
+Usage: ./taskfile [OPTIONS] TASKS
+
+.taskfile: a taskrunner implemented in bash, which is easy to write, read and use.
+
+Available options:
+
+--help, -h          Print this help and exit
+--no-lint           Disables the clang-tidy linter for the build
+--with-libcamera    Builds the package with the v4l2-libcamera compability layer 
+
+Available tasks:
+
+help             Print this help and exit
+deps:build       Install all dependencies, needed to build the project (sudo)
+deps:run         Install all dependencies, needed to run the project
+deps:dev         Install all dependencies, needed to develop the project
+deps:all         Install build, run and dev dependencies
+build            Build the binary file
+run              Build and run the binary file
+test             Build and run the tests
+install          Build and install the binary (and ressources)
+clean            Clean the build folder
+package          Build the .deb packapge
+format:check     Check the format of the source files
+format:format    Format all source files
+EOF
+    exit 0
+}
+
+## Flags
+
+function flag:-h { help; }
+function flag:--help { help; }
+
+function flag:--no-lint {
+    export NO_LINT=ON
+}
+
+function flag:--with-libcamera {
+    export RASPBERRYPI_LIBCAMERA_SUPPORT=ON
+}
+
+## Tasks
+
+function task:help { help; }
+
+function task:deps:build {
+    apt-get install -y \
+        build-essential \
+        clang-tidy \
+        cmake \
+        git \
+        libgl1-mesa-dev \
+        libgmock-dev \
+        libmsgsl-dev \
+        libgpiod-dev \
+        libgtest-dev \
+        liblinphone-dev \
+        libpaho-mqtt-dev \
+        libpaho-mqttpp-dev \
+        libssl-dev \
+        qtbase5-dev \
+        qtdeclarative5-dev \
+        qtquickcontrols2-5-dev
+}
+
+function task:deps:run {
+    apt-get install -y \
+        qml-module-qtmultimedia \
+        qml-module-qtquick-controls \
+        qml-module-qtquick-controls2 \
+        qml-module-qtquick2 \
+        qtwayland5
+
+}
+
+function task:deps:dev {
+    apt-get install -y \
+        clang-format \
+        file
+}
+
+function task:deps:all {
+  needs deps:build
+  needs deps:run
+  needs deps:dev
+}
+
+function task:build {
+    cmake -B build -DRASPBERRYPI_LIBCAMERA_SUPPORT=${RASPBERRYPI_LIBCAMERA_SUPPORT} -DNO_LINT=${NO_LINT}
+	cmake --build build
+}
+
+function task:run {
+    needs build
+    build/src/app/dieklingel-core
+}
+
+function task:test {
+    needs build
+    build/src/app/dieklingel-core_test
+}
+
+function task:install {
+    make -C build install
+}
+
+function task:clean {
+    rm -rf build
+}
+
+function task:package {
+    needs build
+    make -C build package
+}
+
+function task:format:check {
+    find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format --dry-run -Werror -i -style=file && echo "✅ All files are formated correctly"
+}
+
+function task:format:format {
+    find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' | xargs clang-format -i -style=file && echo "✅ All files are formated"
+}
+
+$1

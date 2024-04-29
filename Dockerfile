@@ -5,10 +5,11 @@ WORKDIR /app
 COPY . .
 
 RUN apt-get update && \
-	apt-get install -y make && \
-	make deps:all
+	apt-get install curl -y && \
+	bash taskfile init && \
+	./taskfile deps:all
 
-RUN make clean package RASPBERRYPI_LIBCAMERA_SUPPORT="ON"
+RUN ./taskfile clean package --with-libcamera
 
 FROM ubuntu:22.04 as runner
 
