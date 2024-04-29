@@ -1,5 +1,8 @@
 #!.taskfile/runtime
 
+# Fail on error
+set -e
+
 ## General functions
 
 function init {

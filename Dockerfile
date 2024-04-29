@@ -5,6 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN apt-get update && \
+	apt-get install curl -y && \
 	bash taskfile init && \
 	./taskfile deps:all
 
