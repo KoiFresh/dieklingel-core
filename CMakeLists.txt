@@ -9,7 +9,7 @@ option(RASPBERRYPI_LIBCAMERA_SUPPORT "Append the libcamera-v4l2 compability laye
 if(RASPBERRYPI_LIBCAMERA_SUPPORT) 
 	message("OPTION: Build with Rasberry Pi Libcamera support (service only)")
 endif()
-
+option(NO_LINT "Ignores the clang-tidy linter, which increases build time." OFF)
 option(GENERATE_SAMPLE_CONFIG "Install a sample core.ini configuration file in /etc/dieklingel-core/core.ini." ON)
 
 add_subdirectory(resources)

@@ -20,14 +20,18 @@ class Gpio : public Configuration {
     void _read();
 
    public:
+    Gpio(const Gpio &) = delete;
+    Gpio &operator=(const Gpio &) = delete;
+    Gpio(const Gpio &&) = delete;
+    Gpio &operator=(const Gpio &&) = delete;
     Gpio(std::shared_ptr<QJSEngine> engine);
-    ~Gpio();
+    ~Gpio() override;
 
     Q_INVOKABLE void input(int pin, QJSValue callback);
     Q_INVOKABLE QJSValue output(int pin);
 
     void onSetupCompleted() override;
-    void print(QTextStream &log);
+    void print(QTextStream &log) override;
 };
 
 #endif  // __GPIO_GPIO_HPP__

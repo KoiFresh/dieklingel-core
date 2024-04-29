@@ -24,14 +24,18 @@ class Camera : public Configuration {
     bool _isSetupCompleted = false;
 
    public:
+    Camera(const Camera &) = delete;
+    Camera &operator=(const Camera &) = delete;
+    Camera(const Camera &&) = delete;
+    Camera &operator=(const Camera &&) = delete;
     Camera(std::shared_ptr<linphone::Core> core);
-    ~Camera();
+    ~Camera() override;
 
     Q_INVOKABLE void device(QString device);
     Q_INVOKABLE void takeB64Snapshot(QJSValue callback);
 
     void onSetupCompleted() override;
-    void print(QTextStream &log);
+    void print(QTextStream &log) override;
 };
 
 #endif  // __CAMERA_CAMERA_HPP__

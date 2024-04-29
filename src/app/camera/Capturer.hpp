@@ -36,8 +36,12 @@ class Capturer : public QObject {
     void _finishSnapshot();
 
    public:
+    Capturer(const Capturer &) = delete;
+    Capturer &operator=(const Capturer &) = delete;
+    Capturer(const Capturer &&) = delete;
+    Capturer &operator=(const Capturer &&) = delete;
     Capturer(std::shared_ptr<linphone::Core> core);
-    ~Capturer();
+    ~Capturer() override;
 
     void snapshot();
 

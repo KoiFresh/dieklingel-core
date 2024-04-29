@@ -1,6 +1,8 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+if(NOT NO_LINT)
+	set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+endif()
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)

@@ -1,5 +1,6 @@
 #ifndef __CAMERA_HPP__
 #define __CAMERA_HPP__
+// NOLINTBEGIN
 
 #include <mediastreamer2/allfilters.h>
 #include <mediastreamer2/mscommon.h>
@@ -47,4 +48,5 @@ class SplitterCamera {
     };
 };
 
+// NOLINTEND
 #endif

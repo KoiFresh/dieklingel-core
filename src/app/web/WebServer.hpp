@@ -4,16 +4,21 @@
 #include <QDebug>
 #include <QObject>
 
+#include "../Constants.hpp"
 #include "../setup/Configuration.hpp"
 
 class WebServer : public Configuration {
     Q_OBJECT
    private:
-    int _port = 80;
+    int _port = HTTP_DEFAULT_PORT;
 
    public:
+    WebServer(const WebServer &) = delete;
+    WebServer &operator=(const WebServer &) = delete;
+    WebServer(const WebServer &&) = delete;
+    WebServer &operator=(const WebServer &&) = delete;
     WebServer();
-    ~WebServer();
+    ~WebServer() override;
 
     void onSetupCompleted() override;
     void print(QTextStream &log) override;

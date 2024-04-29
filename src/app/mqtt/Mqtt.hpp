@@ -21,8 +21,12 @@ class Mqtt : public Configuration, public mqtt::callback {
     QJSValue _callback;
 
    public:
+    Mqtt(const Mqtt &) = delete;
+    Mqtt &operator=(const Mqtt &) = delete;
+    Mqtt(const Mqtt &&) = delete;
+    Mqtt &operator=(const Mqtt &&) = delete;
     Mqtt();
-    ~Mqtt();
+    ~Mqtt() override;
 
     Q_INVOKABLE void auth(QString username, QString password);
     Q_INVOKABLE void broker(QString broker);

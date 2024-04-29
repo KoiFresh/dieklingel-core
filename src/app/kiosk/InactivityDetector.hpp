@@ -12,14 +12,18 @@ class InactivityDetector : public QObject {
     QTimer _timer;
 
    public:
+    InactivityDetector(const InactivityDetector &) = delete;
+    InactivityDetector &operator=(const InactivityDetector &) = delete;
+    InactivityDetector(const InactivityDetector &&) = delete;
+    InactivityDetector &operator=(const InactivityDetector &&) = delete;
     InactivityDetector();
-    ~InactivityDetector();
+    ~InactivityDetector() override;
 
    signals:
     void inactivity();
 
    protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
 #endif  // __INACTIVITY_DETECTOR_HPP__
