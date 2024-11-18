@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as builder
+FROM debian:bookworm AS builder
 
 WORKDIR /app
 
@@ -8,9 +8,9 @@ RUN apt-get update && \
 	apt-get install -y make && \
 	make deps:all
 
-RUN make clean package RASPBERRYPI_LIBCAMERA_SUPPORT="ON"
+RUN make clean package RASPBERRYPI_LIBCAMERA_SUPPORT="ON" NO_LINT="ON"
 
-FROM ubuntu:22.04 as runner
+FROM debian:bookworm AS runner
 
 COPY --from=builder /app/build/dieklingel-core*.deb /app/
 
